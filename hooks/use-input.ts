@@ -12,7 +12,7 @@ export const useInput = (validate: any) => {
     setValue(event.target.value);
   };
   const blurHandler = (event: any) => {
-    setIsTouched(true);
+    setIsTouched(value.length > 0);
   };
   const reset = () => {
     setValue("");
