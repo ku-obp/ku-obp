@@ -1,3 +1,6 @@
+import { useDispatch } from "react-redux";
+import { Chess } from "chess.js";
+
 import {
   move,
   reset,
@@ -5,9 +8,7 @@ import {
   gotoNext,
   changeColor,
 } from "@/redux/features/chess-slice";
-import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { Chess } from "chess.js";
 import { playAudio } from "@/lib/utils";
 
 export const Panel = () => {

@@ -1,10 +1,12 @@
-import { Chess } from "chess.js";
-import { fenToSquareInfo, playAudio } from "@/lib/utils";
-import { Square } from "./Square";
-import { move, select, deselect } from "@/redux/features/chess-slice";
-import { useDispatch } from "react-redux";
-import { AppDispatch, useAppSelector } from "@/redux/store";
 import { useCallback, useEffect, useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { Chess } from "chess.js";
+
+import { move, select, deselect } from "@/redux/features/chess-slice";
+import { AppDispatch, useAppSelector } from "@/redux/store";
+import { fenToSquareInfo, playAudio } from "@/lib/utils";
+
+import { Square } from "./Square";
 
 export const Board = () => {
   const dispatch = useDispatch<AppDispatch>();
