@@ -13,7 +13,7 @@ export const SignInput = (props: any) => {
         placeholder={props.placeholder}
       />
       {props.inputState?.hasError && (
-        <p className="h-fit mt-2 mr-4 mb-0 text-sm text-rose-500 opacity-90">
+        <p className="h-fit mt-2 mr-4 mb-0 ml-4 text-sm text-rose-500">
           {props.errorMessage}
         </p>
       )}

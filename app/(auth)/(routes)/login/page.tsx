@@ -7,12 +7,10 @@ import { AxiosError } from "axios";
 import { SignInput } from "@/components/auth/SignInput";
 import { SignButton } from "@/components/auth/SignButton";
 import { SignLink } from "@/components/auth/SignLink";
+import { SignError } from "@/components/auth/SignError";
 
 import { validateEmail, validatePW } from "@/lib/validate-input";
 import { useInput } from "@/hooks/use-input";
-import { SignError } from "@/components/auth/SignError";
-
-// CSRF 토큰
 
 const Login = () => {
   const email = useInput(validateEmail);
@@ -25,9 +23,7 @@ const Login = () => {
     setIsValid(valid);
 
     if (valid) {
-      // 상태가 바로 업데이트 되지 않기 때문에 새로운 값을 선언한다.
       const newValue = { email: email.value, pw: pw.value };
-
       try {
         const response = await axios.post("/api/auth/login", newValue);
         console.log(response.data);

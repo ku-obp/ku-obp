@@ -3,19 +3,24 @@ import { query } from "@/database/db";
 
 export async function POST(req: Request) {
   try {
-    const { email, pw } = await req.json();
-    if (!email || !pw) {
-      return new NextResponse("Bad Request", { status: 400 });
+    const { email, pw, name } = await req.json();
+    if (!email || !pw || !name) {
+      return new NextResponse("Not Enough Arguments", { status: 400 });
     }
 
-    const result = await query("SELECT * FROM signin($1, $2)", [email, pw]);
-    const users = result.rows[0];
+    const value = [email, pw, name];
+    const result = await query("SELECT signup($1, $2, $3)", value);
+    const message = result.rows[0].signup;
 
-    return NextResponse.json(users);
+    return NextResponse.json(message);
   } catch (error) {
     console.log("[DATABASE_ERROR]", error);
-    return new NextResponse("Login Failed. Check Email And Password Again.", {
-      status: 500,
-    });
+    // @ts-ignore
+    const errorMessage = error?.message;
+    if (errorMessage === "The same email already exists.") {
+      return new NextResponse(errorMessage, { status: 500 });
+    } else {
+      return new NextResponse("Register Failed.", { status: 500 });
+    }
   }
 }

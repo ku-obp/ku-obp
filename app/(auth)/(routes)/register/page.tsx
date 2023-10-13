@@ -9,12 +9,8 @@ import { SignButton } from "@/components/auth/SignButton";
 import { SignLink } from "@/components/auth/SignLink";
 import { SignError } from "@/components/auth/SignError";
 
-import {
-  validateEmail,
-  validatePW,
-  validateConfirm,
-  validateNickname,
-} from "@/lib/validate-input";
+import { validateEmail, validatePW } from "@/lib/validate-input";
+import { validateConfirm, validateNickname } from "@/lib/validate-input";
 import { useInput } from "@/hooks/use-input";
 
 const Register = () => {
@@ -31,11 +27,9 @@ const Register = () => {
     setIsValid(valid);
 
     if (valid) {
-      // 상태가 바로 업데이트 되지 않기 때문에 새로운 값을 선언한다.
       const newValue = { email: email.value, pw: pw.value, name: name.value };
-
       try {
-        const response = await axios.post("/api/auth/signup", newValue);
+        const response = await axios.post("/api/auth/register", newValue);
         console.log(response.data);
       } catch (error) {
         const axiosError = error as AxiosError;
