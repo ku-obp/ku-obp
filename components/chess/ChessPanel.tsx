@@ -1,3 +1,5 @@
+"use client";
+
 import { useDispatch } from "react-redux";
 import { Chess } from "chess.js";
 
@@ -11,7 +13,7 @@ import {
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { playAudio } from "@/lib/utils";
 
-export const Panel = () => {
+export const ChessPanel = () => {
   const state = useAppSelector((state) => state.chessReducer);
   const dispatch = useDispatch<AppDispatch>();
   const chess = new Chess(state.history[state.boardIndex]);

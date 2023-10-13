@@ -1,15 +1,9 @@
 "use client";
 
-import { Board } from "@/components/chess/Board";
-import { Panel } from "@/components/chess/Panel";
+import { ChessGame } from "@/components/chess/ChessGame";
 
 const Chess = () => {
-  return (
-    <div className="flex justify-center items-center h-screen bg-chessboard-black">
-      <Board />
-      <Panel />
-    </div>
-  );
+  return <ChessGame />;
 };
 
 export default Chess;

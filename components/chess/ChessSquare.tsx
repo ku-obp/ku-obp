@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 
 interface CellProps {
@@ -28,7 +30,7 @@ const svg: { [key: string]: string } = {
   "p-w": "assets/images/pawn-light.svg",
 };
 
-export const Square = ({
+export const ChessSquare = ({
   squareId,
   type,
   color,

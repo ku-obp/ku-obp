@@ -1,4 +1,27 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: "/worker",
+        destination: "/_next/static/worker",
+      },
+    ];
+  },
 
-module.exports = nextConfig
+  async headers() {
+    return [
+      {
+        source: "/worker/(.*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store",
+          },
+        ],
+      },
+    ];
+  },
+};
+
+module.exports = nextConfig;
