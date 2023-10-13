@@ -21,6 +21,9 @@ type ChessState = {
   boardIndex: number;
   history: string[];
   lastMove: LastMove[];
+  playerColor: "w" | "b";
+  opponentColor: "w" | "b";
+  aiMode: boolean;
   turnColor: "w" | "b";
   from: string;
   to: string[];
@@ -30,6 +33,9 @@ const initialState = {
   boardIndex: 0,
   history: [startFen],
   lastMove: [{ from: "none", to: "none" }],
+  playerColor: "w",
+  opponentColor: "b",
+  aiMode: true,
   turnColor: "w",
   from: "",
   to: [] as string[],
@@ -67,7 +73,6 @@ export const chessSlice = createSlice({
     gotoNext: (state) => {
       state.boardIndex = state.boardIndex + 1;
       state.turnColor = state.turnColor === "w" ? "b" : "w";
-      console.log(state.boardIndex);
     },
     lastMove: (state, action: PayloadAction<LastMovePayload>) => {
       state.lastMove = [
@@ -75,10 +80,24 @@ export const chessSlice = createSlice({
         action.payload,
       ];
     },
+    changeColor: (state) => {
+      if (state.boardIndex === 0) {
+        state.playerColor = state.playerColor === "w" ? "b" : "w";
+        state.opponentColor = state.opponentColor === "w" ? "b" : "w";
+      }
+    },
   },
 });
 
-export const { reset, move, gotoPrev, gotoNext, select, deselect, lastMove } =
-  chessSlice.actions;
+export const {
+  reset,
+  move,
+  gotoPrev,
+  gotoNext,
+  select,
+  deselect,
+  lastMove,
+  changeColor,
+} = chessSlice.actions;
 
 export default chessSlice.reducer;

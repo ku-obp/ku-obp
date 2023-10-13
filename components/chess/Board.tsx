@@ -4,11 +4,17 @@ import { Square } from "./Square";
 import { move, select, deselect, lastMove } from "@/redux/features/chess-slice";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
+import { useCallback, useEffect, useMemo } from "react";
 
 export const Board = () => {
   const dispatch = useDispatch<AppDispatch>();
   const state = useAppSelector((state) => state.chessReducer);
-  const chess = new Chess(state.history[state.boardIndex]);
+  const chess = useMemo(() => {
+    return new Chess(state.history[state.boardIndex]);
+  }, [state.boardIndex, state.history]);
+  const stockfish = useMemo(() => {
+    return new Worker("stockfish.js");
+  }, []);
 
   const selectPiece = (squareId: string) => {
     const possibleMoves = chess
@@ -17,20 +23,23 @@ export const Board = () => {
     dispatch(select({ from: squareId, possibleMoves }));
   };
 
-  const movePiece = (squareId: string) => {
-    if (state.to.some((str) => str.includes("=Q"))) {
-      chess.move({ from: state.from, to: squareId, promotion: "q" });
-    } else {
-      chess.move({ from: state.from, to: squareId });
-    }
-    dispatch(move(chess.fen()));
-    playAudio(chess.history()[0]);
+  const movePiece = useCallback(
+    (from: string, to: string) => {
+      if (state.to.some((str) => str.includes("=Q"))) {
+        chess.move({ from, to, promotion: "q" });
+      } else {
+        chess.move({ from, to });
+      }
+      dispatch(move(chess.fen()));
+      playAudio(chess.history()[0]);
 
-    const last = chess.history({ verbose: true }).at(-1);
-    if (last) {
-      dispatch(lastMove({ from: last.from, to: last.to }));
-    }
-  };
+      const last = chess.history({ verbose: true }).at(-1);
+      if (last) {
+        dispatch(lastMove({ from: last.from, to: last.to }));
+      }
+    },
+    [chess, dispatch, state.to]
+  );
 
   const handleSquareClick = (squareId: string) => {
     if (state.from === squareId) {
@@ -43,17 +52,44 @@ export const Board = () => {
     ) {
       dispatch(deselect());
     } else if (state.to.some((str) => str.includes(squareId))) {
-      movePiece(squareId);
+      movePiece(state.from, squareId);
     }
   };
+
+  useEffect(() => {
+    if (state.aiMode && state.turnColor === state.opponentColor) {
+      stockfish.postMessage(`position fen ${state.history[state.boardIndex]}`);
+      stockfish.postMessage("go depth 15");
+      stockfish.onmessage = function (event) {
+        const receivedMessage = event.data.split(" ");
+        if (receivedMessage.includes("bestmove")) {
+          const aiFrom = receivedMessage[1].slice(0, 2);
+          const aiTo = receivedMessage[1].slice(2, 4);
+          movePiece(aiFrom, aiTo);
+        }
+      };
+    }
+  }, [
+    movePiece,
+    state.aiMode,
+    state.boardIndex,
+    state.history,
+    state.opponentColor,
+    state.turnColor,
+    stockfish,
+  ]);
 
   let board = [];
   const last = state.lastMove[state.boardIndex];
   const squareInfo = fenToSquareInfo(chess.fen());
-  // const rows = ["1", "2", "3", "4", "5", "6", "7", "8"]; // 순서 변경
-  // const cols = ["h", "g", "f", "e", "d", "c", "b", "a"]; // 순서 변경
-  const rows = ["8", "7", "6", "5", "4", "3", "2", "1"];
-  const cols = ["a", "b", "c", "d", "e", "f", "g", "h"];
+  let rows, cols;
+  if (state.playerColor === "b") {
+    rows = ["1", "2", "3", "4", "5", "6", "7", "8"];
+    cols = ["h", "g", "f", "e", "d", "c", "b", "a"];
+  } else {
+    rows = ["8", "7", "6", "5", "4", "3", "2", "1"];
+    cols = ["a", "b", "c", "d", "e", "f", "g", "h"];
+  }
   for (const row of rows) {
     for (const col of cols) {
       const squareId = col.concat(row);
