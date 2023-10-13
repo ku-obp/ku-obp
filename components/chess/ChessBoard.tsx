@@ -65,6 +65,7 @@ export const ChessBoard = () => {
     }
   };
 
+  // useEffect 훅을 사용하지 않으면 여러 번 동작하면서 에러가 발생한다.
   const aiTurn = state.aiMode && state.turnColor === state.opponentColor;
   useEffect(() => {
     if (aiTurn) {
@@ -82,8 +83,9 @@ export const ChessBoard = () => {
   }, [movePiece, aiTurn, state.boardIndex, state.history]);
 
   let board = [];
-  const last = state.lastMove[state.boardIndex];
   const squareInfo = fenToSquareInfo(chess.fen());
+  const last = state.lastMove[state.boardIndex];
+
   let rows, cols;
   if (state.playerColor === "b") {
     rows = ["1", "2", "3", "4", "5", "6", "7", "8"];
@@ -92,6 +94,7 @@ export const ChessBoard = () => {
     rows = ["8", "7", "6", "5", "4", "3", "2", "1"];
     cols = ["a", "b", "c", "d", "e", "f", "g", "h"];
   }
+
   for (const row of rows) {
     for (const col of cols) {
       const squareId = col.concat(row);
