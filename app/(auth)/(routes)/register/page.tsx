@@ -12,49 +12,27 @@ import { SignError } from "@/components/auth/SignError";
 import {
   validateEmail,
   validatePW,
-  validateConfirmation,
+  validateConfirm,
   validateNickname,
 } from "@/lib/validate-input";
 import { useInput } from "@/hooks/use-input";
 
 const Register = () => {
-  const {
-    value: emailValue,
-    isValid: emailIsValid,
-    hasError: emailInputError,
-    changeHandler: emailChangeHandler,
-    blurHandler: emailBlurHandler,
-  } = useInput(validateEmail);
-  const {
-    value: nameValue,
-    isValid: nameIsValid,
-    hasError: nameInputError,
-    changeHandler: nameChangeHandler,
-    blurHandler: nameBlurHandler,
-  } = useInput(validateNickname);
-  const {
-    value: pwValue,
-    isValid: pwIsValid,
-    hasError: pwInputError,
-    changeHandler: pwChangeHandler,
-    blurHandler: pwBlurHandler,
-  } = useInput(validatePW);
-  const {
-    isValid: pwConfirmIsValid,
-    hasError: pwConfirmError,
-    changeHandler: pwConfirmChangeHandler,
-    blurHandler: pwConfirmBlurHandler,
-  } = useInput((value: string) => validateConfirmation(value, pwValue));
+  const email = useInput(validateEmail);
+  const name = useInput(validateNickname);
+  const pw = useInput(validatePW);
+  const confirm = useInput((value: string) => validateConfirm(value, pw.value));
   const [isValid, setIsValid] = useState(true);
 
   const submitHandler = async (event: any) => {
     event.preventDefault();
-    const valid = emailIsValid && pwIsValid && pwConfirmIsValid && nameIsValid;
+    const valid =
+      email.isValid && pw.isValid && confirm.isValid && name.isValid;
     setIsValid(valid);
 
     if (valid) {
       // 상태가 바로 업데이트 되지 않기 때문에 새로운 값을 선언한다.
-      const newValue = { email: emailValue, pw: pwValue, name: nameValue };
+      const newValue = { email: email.value, pw: pw.value, name: name.value };
 
       try {
         const response = await axios.post("/api/auth/signup", newValue);
@@ -79,36 +57,28 @@ const Register = () => {
       <SignInput
         type="text"
         placeholder="이메일 *"
-        onChange={emailChangeHandler}
-        onBlur={emailBlurHandler}
-        error={emailInputError}
+        inputState={email}
         errorMessage="이메일 형식이 올바르지 않습니다."
       />
       <SignInput
         type="password"
         placeholder="비밀번호 *"
-        onChange={pwChangeHandler}
-        onBlur={pwBlurHandler}
-        error={pwInputError}
+        inputState={pw}
         errorMessage="8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해 주세요."
       />
       <SignInput
         type="password"
         placeholder="비밀번호 확인 *"
-        onChange={pwConfirmChangeHandler}
-        onBlur={pwConfirmBlurHandler}
-        error={pwConfirmError}
+        inputState={confirm}
         errorMessage="비밀번호가 일치하지 않습니다."
       />
       <SignInput
         type="text"
         placeholder="닉네임 *"
-        onChange={nameChangeHandler}
-        onBlur={nameBlurHandler}
-        error={nameInputError}
+        inputState={name}
         errorMessage="2~16자의 영문 대/소문자, 숫자를 사용해 주세요."
       />
-      {!isValid && <SignError text="입력값을 다시 확인해주세요." />}
+      {!isValid && <SignError message="입력값을 다시 확인해주세요." />}
       <SignButton type="submit" text="회원가입" />
       <div className="mt-3 w-full flex justify-between">
         <SignLink text="아이디 찾기" />

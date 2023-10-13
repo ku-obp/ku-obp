@@ -7,13 +7,13 @@ export const SignInput = (props: any) => {
         id={props.id}
         name={props.name}
         label={props.label}
-        onChange={props.onChange}
+        onChange={props.inputState?.changeHandler}
         {...(props.value && { value: props.value })}
-        onBlur={props.onBlur}
+        onBlur={props.inputState?.blurHandler}
         placeholder={props.placeholder}
       />
-      {props.error && (
-        <p className="h-fit mt-2 mr-4 mb-0 pl-4 text-sm text-rose-500 font-medium">
+      {props.inputState?.hasError && (
+        <p className="h-fit mt-2 mr-4 mb-0 text-sm text-rose-500 opacity-90">
           {props.errorMessage}
         </p>
       )}

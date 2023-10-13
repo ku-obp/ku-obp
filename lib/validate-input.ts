@@ -19,7 +19,7 @@ export const validateID = (id: string) => {
 export const validatePW = (pw: string) => {
   return /^[a-zA-Z\d@!#$%^&*]{4,16}$/.test(pw);
 };
-export const validateConfirmation = (pw1: string, pw2: string) => {
+export const validateConfirm = (pw1: string, pw2: string) => {
   return pw1 === pw2;
 };
 export const isAdult = (birthDateString: string) => {
