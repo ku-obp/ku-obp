@@ -1,7 +1,6 @@
 // Typescript => PayLoadAction
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { startFen } from "@/lib/utils";
-import { Chess } from "chess.js";
 
 type LastMovePayload = {
   from: string;
@@ -25,8 +24,6 @@ type ChessState = {
   turnColor: "w" | "b";
   from: string;
   to: string[];
-  lastMoveFrom: string;
-  lastMoveTo: string;
 };
 
 const initialState = {
@@ -36,8 +33,6 @@ const initialState = {
   turnColor: "w",
   from: "",
   to: [] as string[],
-  lastMoveFrom: "",
-  lastMoveTo: "",
 } as ChessState;
 
 export const chessSlice = createSlice({

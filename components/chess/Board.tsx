@@ -1,5 +1,4 @@
 import { Chess } from "chess.js";
-import { useState, useEffect } from "react";
 import { fenToSquareInfo, playAudio } from "@/lib/utils";
 import { Square } from "./Square";
 import { move, select, deselect, lastMove } from "@/redux/features/chess-slice";
@@ -16,10 +15,6 @@ export const Board = () => {
       .moves({ square: squareId as any, verbose: true })
       .map((detail) => detail.to);
     dispatch(select({ from: squareId, possibleMoves }));
-  };
-
-  const deselectPiece = () => {
-    dispatch(deselect());
   };
 
   const movePiece = (squareId: string) => {
@@ -39,14 +34,14 @@ export const Board = () => {
 
   const handleSquareClick = (squareId: string) => {
     if (state.from === squareId) {
-      deselectPiece();
+      dispatch(deselect());
     } else if (squareInfo[squareId].color === state.turnColor) {
       selectPiece(squareId);
     } else if (
       squareInfo[squareId].color !== state.turnColor &&
       !state.to.some((str) => str.includes(squareId))
     ) {
-      deselectPiece();
+      dispatch(deselect());
     } else if (state.to.some((str) => str.includes(squareId))) {
       movePiece(squareId);
     }
@@ -79,8 +74,6 @@ export const Board = () => {
       );
     }
   }
-
-  console.log(state);
 
   return <div className="w-[800px] h-[800px] grid grid-cols-8">{board}</div>;
 };

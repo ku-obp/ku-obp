@@ -40,9 +40,8 @@ export const Square = ({
   lastMoveTo,
   onClick,
 }: CellProps) => {
-  const capturable = legalTo && type;
-  const reachable = legalTo;
   const pointer = legalTo || selectable;
+  const capturable = legalTo && type;
 
   return (
     <div
@@ -54,17 +53,20 @@ export const Square = ({
         !selected && (isDark ? "bg-chess-dark" : "bg-chess-light"),
         lastMoveFrom && (isDark ? "bg-last-move-dark" : "bg-last-move-light"),
         lastMoveTo && (isDark ? "bg-last-move-dark" : "bg-last-move-light"),
-        reachable && (isDark ? "hover:bg-hover-dark" : "hover:bg-hover-light"),
+        legalTo && (isDark ? "hover:bg-hover-dark" : "hover:bg-hover-light"),
         capturable && (isDark ? "bg-hover-dark" : "bg-hover-light")
       )}
       onClick={onClick}
     >
       {type && color && (
         <div
-          style={{ backgroundImage: `url(${svg[`${type}-${color}`]})` }}
+          style={{
+            backgroundImage: `url(${svg[`${type}-${color}`]})`,
+            backgroundSize: "80%",
+          }}
           className={cn(
-            "chess-piece h-[110px] w-[110px] bg-no-repeat bg-center bg-[length:90px_90px] rounded-full group-hover:bg-transparent",
-            legalTo && (isDark ? "bg-chess-dark" : "bg-chess-light")
+            "chess-piece h-[110px] w-[110px] bg-no-repeat bg-center rounded-full group-hover:bg-transparent",
+            capturable && (isDark ? "bg-chess-dark" : "bg-chess-light")
           )}
         />
       )}
