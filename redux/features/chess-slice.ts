@@ -43,7 +43,7 @@ const initialState = {
 } as ChessState;
 
 export const chessSlice = createSlice({
-  name: "auth",
+  name: "chess",
   initialState,
   reducers: {
     reset: () => {
@@ -55,13 +55,13 @@ export const chessSlice = createSlice({
         ...state.history.slice(0, state.boardIndex),
         action.payload.fen,
       ];
-      state.turnColor = state.turnColor === "w" ? "b" : "w";
-      state.from = "";
-      state.to = [];
       state.lastMove = [
         ...state.lastMove.slice(0, state.boardIndex),
         { from: action.payload.from, to: action.payload.to },
       ];
+      state.turnColor = state.turnColor === "w" ? "b" : "w";
+      state.from = "";
+      state.to = [];
     },
     select: (state, action: PayloadAction<SelectPayload>) => {
       state.from = action.payload.from;
