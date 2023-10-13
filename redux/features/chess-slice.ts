@@ -1,7 +1,7 @@
 // Typescript => PayLoadAction
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-const startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+import { startFen } from "@/lib/utils";
+import { Chess } from "chess.js";
 
 type LastMovePayload = {
   from: string;
@@ -13,9 +13,15 @@ type SelectPayload = {
   possibleMoves: string[];
 };
 
+type LastMove = {
+  from: string;
+  to: string;
+};
+
 type ChessState = {
   boardIndex: number;
   history: string[];
+  lastMove: LastMove[];
   turnColor: "w" | "b";
   from: string;
   to: string[];
@@ -26,6 +32,7 @@ type ChessState = {
 const initialState = {
   boardIndex: 0,
   history: [startFen],
+  lastMove: [{ from: "none", to: "none" }],
   turnColor: "w",
   from: "",
   to: [] as string[],
@@ -43,10 +50,20 @@ export const chessSlice = createSlice({
     move: (state, action: PayloadAction<string>) => {
       state.boardIndex = state.boardIndex + 1;
       state.history = [
-        ...state.history.slice(0, state.boardIndex + 1),
+        ...state.history.slice(0, state.boardIndex),
         action.payload,
       ];
       state.turnColor = state.turnColor === "w" ? "b" : "w";
+      state.from = "";
+      state.to = [];
+    },
+    select: (state, action: PayloadAction<SelectPayload>) => {
+      state.from = action.payload.from;
+      state.to = action.payload.possibleMoves;
+    },
+    deselect: (state) => {
+      state.from = "";
+      state.to = [];
     },
     gotoPrev: (state) => {
       state.boardIndex = state.boardIndex - 1;
@@ -55,27 +72,18 @@ export const chessSlice = createSlice({
     gotoNext: (state) => {
       state.boardIndex = state.boardIndex + 1;
       state.turnColor = state.turnColor === "w" ? "b" : "w";
-    },
-    selectPiece: (state, action: PayloadAction<SelectPayload>) => {
-      state.from = action.payload.from;
-      state.to = action.payload.possibleMoves;
-    },
-    deselectPiece: (state) => {
-      state.from = "";
-      state.to = [];
+      console.log(state.boardIndex);
     },
     lastMove: (state, action: PayloadAction<LastMovePayload>) => {
-      state.lastMoveFrom = action.payload.from;
-      state.lastMoveTo = action.payload.to;
-    },
-    newTurn: (state) => {
-      state.turnColor = state.turnColor === "w" ? "b" : "w";
-      state.from = "";
-      state.to = [];
+      state.lastMove = [
+        ...state.lastMove.slice(0, state.boardIndex),
+        action.payload,
+      ];
     },
   },
 });
 
-export const { reset, move } = chessSlice.actions;
+export const { reset, move, gotoPrev, gotoNext, select, deselect, lastMove } =
+  chessSlice.actions;
 
 export default chessSlice.reducer;
