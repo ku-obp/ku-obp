@@ -2,11 +2,11 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   theme: {
     container: {
       center: true,
@@ -50,6 +50,19 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "chessboard-green": "#779956",
+        "chessboard-white": "#ebecd0",
+        "chessboard-black": "#202020",
+        "chess-light": "#EED8B5",
+        "chess-dark": "#B58863",
+        "last-move-light": "#CDD26B",
+        "last-move-dark": "#AAA23A",
+        "selected-light": "#829769",
+        "selected-dark": "#828B65",
+        "legal-light": "#829769",
+        "legal-dark": "#646E40",
+        "hover-light": "#AEB187",
+        "hover-dark": "#84794E",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -73,4 +86,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};
