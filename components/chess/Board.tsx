@@ -1,7 +1,7 @@
 import { Chess } from "chess.js";
 import { fenToSquareInfo, playAudio } from "@/lib/utils";
 import { Square } from "./Square";
-import { move, select, deselect, lastMove } from "@/redux/features/chess-slice";
+import { move, select, deselect } from "@/redux/features/chess-slice";
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { useCallback, useEffect, useMemo } from "react";
@@ -25,20 +25,11 @@ export const Board = () => {
 
   const movePiece = useCallback(
     (from: string, to: string) => {
-      if (state.to.some((str) => str.includes("=Q"))) {
-        chess.move({ from, to, promotion: "q" });
-      } else {
-        chess.move({ from, to });
-      }
-      dispatch(move(chess.fen()));
+      chess.move({ from, to, promotion: "q" });
+      dispatch(move({ fen: chess.fen(), from, to }));
       playAudio(chess.history()[0]);
-
-      const last = chess.history({ verbose: true }).at(-1);
-      if (last) {
-        dispatch(lastMove({ from: last.from, to: last.to }));
-      }
     },
-    [chess, dispatch, state.to]
+    [chess, dispatch]
   );
 
   const handleSquareClick = (squareId: string) => {
@@ -56,28 +47,21 @@ export const Board = () => {
     }
   };
 
+  const aiTurn = state.aiMode && state.turnColor === state.opponentColor;
   useEffect(() => {
-    if (state.aiMode && state.turnColor === state.opponentColor) {
+    if (aiTurn) {
       stockfish.postMessage(`position fen ${state.history[state.boardIndex]}`);
       stockfish.postMessage("go depth 15");
-      stockfish.onmessage = function (event) {
+      stockfish.onmessage = (event) => {
         const receivedMessage = event.data.split(" ");
-        if (receivedMessage.includes("bestmove")) {
+        if (aiTurn && receivedMessage.includes("bestmove")) {
           const aiFrom = receivedMessage[1].slice(0, 2);
           const aiTo = receivedMessage[1].slice(2, 4);
           movePiece(aiFrom, aiTo);
         }
       };
     }
-  }, [
-    movePiece,
-    state.aiMode,
-    state.boardIndex,
-    state.history,
-    state.opponentColor,
-    state.turnColor,
-    stockfish,
-  ]);
+  }, [movePiece, aiTurn, state.boardIndex, state.history, stockfish]);
 
   let board = [];
   const last = state.lastMove[state.boardIndex];

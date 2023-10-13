@@ -2,7 +2,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { startFen } from "@/lib/utils";
 
-type LastMovePayload = {
+type MovePayload = {
+  fen: string;
   from: string;
   to: string;
 };
@@ -48,15 +49,19 @@ export const chessSlice = createSlice({
     reset: () => {
       return initialState;
     },
-    move: (state, action: PayloadAction<string>) => {
+    move: (state, action: PayloadAction<MovePayload>) => {
       state.boardIndex = state.boardIndex + 1;
       state.history = [
         ...state.history.slice(0, state.boardIndex),
-        action.payload,
+        action.payload.fen,
       ];
       state.turnColor = state.turnColor === "w" ? "b" : "w";
       state.from = "";
       state.to = [];
+      state.lastMove = [
+        ...state.lastMove.slice(0, state.boardIndex),
+        { from: action.payload.from, to: action.payload.to },
+      ];
     },
     select: (state, action: PayloadAction<SelectPayload>) => {
       state.from = action.payload.from;
@@ -67,18 +72,20 @@ export const chessSlice = createSlice({
       state.to = [];
     },
     gotoPrev: (state) => {
-      state.boardIndex = state.boardIndex - 1;
-      state.turnColor = state.turnColor === "w" ? "b" : "w";
+      if (state.aiMode && state.boardIndex > 1) {
+        state.boardIndex = state.boardIndex - 2;
+      } else {
+        state.boardIndex = state.boardIndex - 1;
+        state.turnColor = state.turnColor === "w" ? "b" : "w";
+      }
     },
     gotoNext: (state) => {
-      state.boardIndex = state.boardIndex + 1;
-      state.turnColor = state.turnColor === "w" ? "b" : "w";
-    },
-    lastMove: (state, action: PayloadAction<LastMovePayload>) => {
-      state.lastMove = [
-        ...state.lastMove.slice(0, state.boardIndex),
-        action.payload,
-      ];
+      if (state.aiMode && state.boardIndex < state.history.length - 2) {
+        state.boardIndex = state.boardIndex + 2;
+      } else if (state.boardIndex < state.history.length - 1) {
+        state.boardIndex = state.boardIndex + 1;
+        state.turnColor = state.turnColor === "w" ? "b" : "w";
+      }
     },
     changeColor: (state) => {
       if (state.boardIndex === 0) {
@@ -96,7 +103,6 @@ export const {
   gotoNext,
   select,
   deselect,
-  lastMove,
   changeColor,
 } = chessSlice.actions;
 
