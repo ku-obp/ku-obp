@@ -1,6 +1,6 @@
 const AuthLayout = (props: any) => {
   return (
-    <div className="flex flex-col justify-center items-center h-full">
+    <div className="flex justify-center items-center w-full h-full bg-slate-300">
       {props.children}
     </div>
   );

@@ -8,7 +8,7 @@ export default function Home() {
   );
 
   useEffect(() => {
-    fetch("api/test")
+    fetch("/api/test")
       .then((res) => res.json())
       .then((data) => setCurrentUser(data))
       .catch((error) => console.error("Error: ", error));
