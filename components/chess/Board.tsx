@@ -13,8 +13,6 @@ const startFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const initialState = {
   from: "",
   to: [] as string[],
-  kingCastling: false,
-  queenCastling: false,
   turnColor: "w",
   lastMoveFrom: "",
   lastMoveTo: "",
@@ -36,31 +34,21 @@ export const Board = ({ onMove, fen, turnColor }: BoardProps) => {
   const chess = new Chess(fen);
 
   const selectPiece = (squareId: string) => {
-    const possibleMoves = chess.moves({ square: squareId as any });
+    const possibleMoves = chess
+      .moves({ square: squareId as any, verbose: true })
+      .map((detail) => detail.to);
     setState((prevState) => ({
       ...prevState,
       from: squareId,
       to: possibleMoves,
-      kingCastling: possibleMoves.some((str) => str === "O-O"),
-      queenCastling: possibleMoves.some((str) => str === "O-O-O"),
     }));
-    console.log(chess.moves({ square: squareId as any, verbose: true }));
-    var legatTos = chess
-      .moves({ square: squareId as any, verbose: true })
-      .map((move) => {
-        return move.to;
-      });
-    console.log(legatTos);
   };
 
   const deselectPiece = () => {
-    console.log(state);
     setState((prevState) => ({
       ...prevState,
       from: "",
       to: [],
-      kingCastling: false,
-      queenCastling: false,
     }));
   };
 
@@ -91,32 +79,9 @@ export const Board = ({ onMove, fen, turnColor }: BoardProps) => {
     }));
   };
 
-  const isCastlingClick = (squareId: string) => {
-    return (
-      (state.turnColor === "w" &&
-        state.kingCastling &&
-        state.from === "e1" &&
-        squareId === "g1") ||
-      (state.turnColor === "w" &&
-        state.queenCastling &&
-        state.from === "e1" &&
-        squareId === "c1") ||
-      (state.turnColor === "b" &&
-        state.kingCastling &&
-        state.from === "e8" &&
-        squareId === "g8") ||
-      (state.turnColor === "b" &&
-        state.queenCastling &&
-        state.from === "e8" &&
-        squareId === "c8")
-    );
-  };
-
   const handleSquareClick = (squareId: string) => {
     if (state.from === squareId) {
       deselectPiece();
-    } else if (isCastlingClick(squareId)) {
-      movePiece(squareId);
     } else if (squareInfo[squareId].color === state.turnColor) {
       selectPiece(squareId);
     } else if (
@@ -129,15 +94,6 @@ export const Board = ({ onMove, fen, turnColor }: BoardProps) => {
     }
   };
 
-  const isCastlingSquare = (squareId: string) => {
-    return (
-      (state.turnColor === "w" && state.kingCastling && squareId === "g1") ||
-      (state.turnColor === "w" && state.queenCastling && squareId === "c1") ||
-      (state.turnColor === "b" && state.kingCastling && squareId === "g8") ||
-      (state.turnColor === "b" && state.queenCastling && squareId === "c8")
-    );
-  };
-
   let board = [];
   const squareInfo = fenToSquareInfo(fen);
   // const rows = ["1", "2", "3", "4", "5", "6", "7", "8"]; // 순서 변경
@@ -147,7 +103,6 @@ export const Board = ({ onMove, fen, turnColor }: BoardProps) => {
   for (const row of rows) {
     for (const col of cols) {
       const squareId = col.concat(row);
-      const castlingSquare = isCastlingSquare(squareId);
       board.push(
         <Square
           key={squareId}
@@ -160,7 +115,6 @@ export const Board = ({ onMove, fen, turnColor }: BoardProps) => {
           isDark={squareInfo[squareId].isEven}
           lastMoveFrom={state.lastMoveFrom === squareId}
           lastMoveTo={state.lastMoveTo === squareId}
-          canCastle={castlingSquare}
           onClick={() => handleSquareClick(squareId)}
         />
       );

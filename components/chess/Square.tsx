@@ -9,7 +9,6 @@ interface CellProps {
   legalTo: boolean;
   lastMoveFrom: boolean;
   lastMoveTo: boolean;
-  canCastle: boolean;
   isDark: boolean;
   onClick?: () => void;
 }
@@ -39,12 +38,11 @@ export const Square = ({
   legalTo,
   lastMoveFrom,
   lastMoveTo,
-  canCastle,
   onClick,
 }: CellProps) => {
   const capturable = legalTo && type;
-  const reachable = legalTo || canCastle;
-  const pointer = legalTo || selectable || canCastle;
+  const reachable = legalTo;
+  const pointer = legalTo || selectable;
 
   return (
     <div
@@ -70,7 +68,7 @@ export const Square = ({
           )}
         />
       )}
-      {!type && (legalTo || canCastle) && (
+      {!type && legalTo && (
         <div
           className={cn(
             "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full group-hover:hidden",
