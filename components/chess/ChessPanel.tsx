@@ -19,7 +19,7 @@ export const ChessPanel = () => {
   const chess = new Chess(state.history[state.boardIndex]);
 
   const requestStockfish = () => {
-    const stockfish = new Worker("stockfish.js");
+    const stockfish = new Worker("/worker/stockfish.js");
     stockfish.postMessage(`position fen ${state.history[state.boardIndex]}`);
     stockfish.postMessage("go depth 15");
     stockfish.onmessage = function (event) {
