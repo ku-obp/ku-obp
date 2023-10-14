@@ -1,11 +1,7 @@
-import { redirect } from "next/navigation";
-// import { UserButton } from "@clerk/nextjs";
-
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ModeToggle } from "@/components/mode-toggle";
-// import { currentProfile } from "@/lib/current-profile";
-// import { db } from "@/lib/db";
+import { SettingButton } from "@/components/auth/setting-button";
 
 import { NavigationAction } from "./navigation-action";
 import { NavigationItem } from "./navigation-item";
@@ -49,16 +45,10 @@ export const NavigationSidebar = async () => {
           </div>
         ))}
       </ScrollArea>
+      <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
       <div className="pb-3 mt-auto flex items-center flex-col gap-y-4">
         <ModeToggle />
-        {/* <UserButton
-          afterSignOutUrl="/"
-          appearance={{
-            elements: {
-              avatarBox: "h-[48px] w-[48px]",
-            },
-          }}
-        /> */}
+        <SettingButton />
       </div>
     </div>
   );
