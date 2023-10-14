@@ -1,6 +1,6 @@
 "use client";
 
-import { ChessGame } from "@/components/chess/ChessGame";
+import { ChessGame } from "@/components/chess/chess-game";
 
 const Chess = () => {
   return <ChessGame />;
