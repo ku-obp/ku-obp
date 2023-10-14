@@ -11,7 +11,7 @@ import {
   changeColor,
 } from "@/redux/features/chess-slice";
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { playAudio } from "@/lib/utils";
+import { playAudio } from "@/lib/chess-utils";
 
 export const ChessPanel = () => {
   const state = useAppSelector((state) => state.chessReducer);

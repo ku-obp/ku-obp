@@ -1,6 +1,6 @@
 // Typescript => PayLoadAction
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { startFen } from "@/lib/utils";
+import { startFen } from "@/lib/chess-utils";
 
 type MovePayload = {
   fen: string;
