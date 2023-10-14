@@ -2,7 +2,7 @@ export const SignInput = (props: any) => {
   return (
     <div className="w-full mb-5">
       <input
-        className="w-full h-12 rounded-lg border-none bg-[#fbfbfb] p-4 text-[#1f1f1f]"
+        className="w-full h-12 rounded-lg border-none bg-zinc-300/50 p-4 text-black focus:outline-none"
         type={props.type}
         id={props.id}
         name={props.name}

@@ -16,18 +16,18 @@ interface CellProps {
 }
 
 const svg: { [key: string]: string } = {
-  "k-b": "assets/images/king-dark.svg",
-  "k-w": "assets/images/king-light.svg",
-  "q-b": "assets/images/queen-dark.svg",
-  "q-w": "assets/images/queen-light.svg",
-  "r-b": "assets/images/rook-dark.svg",
-  "r-w": "assets/images/rook-light.svg",
-  "n-b": "assets/images/knight-dark.svg",
-  "n-w": "assets/images/knight-light.svg",
-  "b-b": "assets/images/bishop-dark.svg",
-  "b-w": "assets/images/bishop-light.svg",
-  "p-b": "assets/images/pawn-dark.svg",
-  "p-w": "assets/images/pawn-light.svg",
+  "k-b": "assets/chess-pieces/king-dark.svg",
+  "k-w": "assets/chess-pieces/king-light.svg",
+  "q-b": "assets/chess-pieces/queen-dark.svg",
+  "q-w": "assets/chess-pieces/queen-light.svg",
+  "r-b": "assets/chess-pieces/rook-dark.svg",
+  "r-w": "assets/chess-pieces/rook-light.svg",
+  "n-b": "assets/chess-pieces/knight-dark.svg",
+  "n-w": "assets/chess-pieces/knight-light.svg",
+  "b-b": "assets/chess-pieces/bishop-dark.svg",
+  "b-w": "assets/chess-pieces/bishop-light.svg",
+  "p-b": "assets/chess-pieces/pawn-dark.svg",
+  "p-w": "assets/chess-pieces/pawn-light.svg",
 };
 
 export const ChessSquare = ({
