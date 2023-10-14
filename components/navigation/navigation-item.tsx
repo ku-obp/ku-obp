@@ -17,7 +17,11 @@ export const NavigationItem = ({ id, imageUrl, name }: NavigationItemProps) => {
   const router = useRouter();
 
   const onClick = () => {
-    router.push(`/servers/${id}`);
+    if (name === "chess") {
+      router.push(`/${name}`);
+    } else {
+      alert("더미 메뉴입니다. 지금은 체스만 가능합니다.");
+    }
   };
 
   return (
