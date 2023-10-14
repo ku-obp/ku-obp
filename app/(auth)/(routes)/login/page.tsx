@@ -1,5 +1,7 @@
-const LoginPage = () => {
-  return <p className="text-5xl font-bold text-indigo-500">Login Page</p>;
+import { LoginForm } from "@/components/auth/login-form";
+
+const Login = async () => {
+  return <LoginForm />;
 };
 
-export default LoginPage;
+export default Login;

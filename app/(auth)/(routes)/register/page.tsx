@@ -1,5 +1,7 @@
-const RegisterPage = () => {
-  return <p className="text-5xl font-bold text-indigo-500">Register Page</p>;
+import { RegisterForm } from "@/components/auth/register-form";
+
+const Register = async () => {
+  return <RegisterForm />;
 };
 
-export default RegisterPage;
+export default Register;

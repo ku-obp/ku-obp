@@ -1,8 +1,9 @@
-import { ReduxProvider } from "@/redux/provider";
-import "./globals.css";
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
+
+import { ReduxProvider } from "@/redux/provider";
 import { ThemeProvider } from "@/components/provider/theme-provider";
+import "./globals.css";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -11,19 +12,19 @@ export const metadata: Metadata = {
   description: "This project is managed by oxboxx.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <body className={font.className}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem={false}
-          storageKey="discord-theme"
+          storageKey="ku-obp"
         >
           <ReduxProvider>{children}</ReduxProvider>
         </ThemeProvider>
