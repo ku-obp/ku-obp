@@ -2,6 +2,7 @@ import { ReduxProvider } from "@/redux/provider";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
+import { ThemeProvider } from "@/components/provider/theme-provider";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -18,7 +19,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={font.className}>
-        <ReduxProvider>{children}</ReduxProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          storageKey="discord-theme"
+        >
+          <ReduxProvider>{children}</ReduxProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

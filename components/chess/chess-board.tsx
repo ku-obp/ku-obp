@@ -6,9 +6,9 @@ import { Chess } from "chess.js";
 
 import { move, select, deselect } from "@/redux/features/chess-slice";
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { fenToSquareInfo, playAudio } from "@/lib/utils";
+import { fenToSquareInfo, playAudio } from "@/lib/chess-utils";
 
-import { ChessSquare } from "./ChessSquare";
+import { ChessSquare } from "./chess-square";
 
 let stockfish: any;
 
