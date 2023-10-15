@@ -43,10 +43,10 @@ export const LoginForm = () => {
   return (
     <form
       method="post"
-      className="flex flex-col items-center w-full mt-8 bg-white rounded-md max-w-[480px] h-fit shadow-md p-5 mx-4"
+      className="flex flex-col items-center w-full mt-8 bg-white text-black rounded-md max-w-[480px] h-fit shadow-md p-5 mx-4"
       onSubmit={submitHandler}
     >
-      <h1 className="flex justify-center text-black text-2xl sm:text-3xl font-semibold my-6">
+      <h1 className="flex justify-center text-2xl sm:text-3xl font-semibold my-6">
         Open Board Game
       </h1>
       <SignInput

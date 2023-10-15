@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
-import { NavigationSidebar } from "@/components/navigation/navigation-sidebar";
+import { GameSidebar } from "@/components/game-sidebar/game-sidebar";
 
 const MainLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await getServerSession();
@@ -10,9 +10,9 @@ const MainLayout = async ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="h-full">
+    <div className="h-full bg-zinc-950">
       <div className="hidden md:flex h-full w-[72px] z-30 flex-col fixed inset-y-0">
-        <NavigationSidebar />
+        <GameSidebar />
       </div>
       <main className="md:pl-[72px] h-full">{children}</main>
     </div>
