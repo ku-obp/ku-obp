@@ -7,7 +7,7 @@ import { GameSidebarAction } from "./game-sidebar-action";
 import { GameSidebarItem } from "./game-sidebar-item";
 
 export const GameSidebar = async () => {
-  const servers = await fetch(`${process.env.NEXTAUTH_URL}/api/game/list`)
+  const games = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/game/list`)
     .then((response) => response.json())
     .then((json) => json.data.rows);
 
@@ -16,12 +16,12 @@ export const GameSidebar = async () => {
       <GameSidebarAction />
       <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
       <ScrollArea className="flex-1 w-full">
-        {servers.map((server: any) => (
-          <div key={server.id} className="mb-4">
+        {games.map((game: any) => (
+          <div key={game.id} className="mb-4">
             <GameSidebarItem
-              id={server.id}
-              name={server.name}
-              imageUrl={server.image_url}
+              id={game.id}
+              name={game.name}
+              imageUrl={game.image_url}
             />
           </div>
         ))}

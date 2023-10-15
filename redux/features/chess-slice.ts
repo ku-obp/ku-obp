@@ -36,7 +36,7 @@ const initialState = {
   lastMove: [{ from: "none", to: "none" }],
   playerColor: "w",
   opponentColor: "b",
-  aiMode: true,
+  aiMode: false,
   turnColor: "w",
   from: "",
   to: [] as string[],
@@ -74,7 +74,7 @@ export const chessSlice = createSlice({
     gotoPrev: (state) => {
       if (state.aiMode && state.boardIndex > 1) {
         state.boardIndex = state.boardIndex - 2;
-      } else {
+      } else if (state.boardIndex > 0) {
         state.boardIndex = state.boardIndex - 1;
         state.turnColor = state.turnColor === "w" ? "b" : "w";
       }

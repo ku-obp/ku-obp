@@ -52,26 +52,26 @@ export const playAudio = (note: string | undefined) => {
   }
   // checkmate
   else if (note.includes("#")) {
-    new Audio("assets/sounds/game-end.mp3").play();
+    new Audio("/assets/sounds/game-end.mp3").play();
   }
   // check
   else if (note.includes("+")) {
-    new Audio("assets/sounds/move-check.mp3").play();
+    new Audio("/assets/sounds/move-check.mp3").play();
   }
   // capture
   else if (note.includes("x")) {
-    new Audio("assets/sounds/move-opponent.mp3").play();
+    new Audio("/assets/sounds/move-opponent.mp3").play();
   }
   // castling
   else if (note.includes("-")) {
-    new Audio("assets/sounds/castle.mp3").play();
+    new Audio("/assets/sounds/castle.mp3").play();
   }
   // promotion
   else if (note.includes("=Q")) {
-    new Audio("assets/sounds/promote.mp3").play();
+    new Audio("/assets/sounds/promote.mp3").play();
   }
   // move
   else {
-    new Audio("assets/sounds/move-self.mp3").play();
+    new Audio("/assets/sounds/move-self.mp3").play();
   }
 };

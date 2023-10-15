@@ -12,7 +12,7 @@ import { ChessSquare } from "./chess-square";
 
 let stockfish: any;
 
-export const ChessBoard = () => {
+export const ChessBoard = ({ receivedData, movePublisher }: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const state = useAppSelector((state) => state.chessReducer);
 
@@ -42,12 +42,13 @@ export const ChessBoard = () => {
   // AI 움직임을 담당하는 useEffect 훅의 의존성 배열에 movePiece가 들어가있다.
   // chess와 마찬가지의 이유로 useCallback을 통해 매번 변하지 않는 값임을 보장한다.
   const movePiece = useCallback(
-    (from: string, to: string) => {
+    (from: string, to: string, received = false) => {
       chess.move({ from, to, promotion: "q" });
       dispatch(move({ fen: chess.fen(), from, to }));
       playAudio(chess.history()[0]);
+      if (!received) movePublisher({ from, to });
     },
-    [chess, dispatch]
+    [chess, dispatch, movePublisher]
   );
 
   const handleSquareClick = (squareId: string) => {
@@ -68,7 +69,7 @@ export const ChessBoard = () => {
   // useEffect 훅을 사용하지 않으면 여러 번 동작하면서 에러가 발생한다.
   const aiTurn = state.aiMode && state.turnColor === state.opponentColor;
   useEffect(() => {
-    if (aiTurn) {
+    if (aiTurn && stockfish) {
       stockfish.postMessage(`position fen ${state.history[state.boardIndex]}`);
       stockfish.postMessage("go depth 15");
       stockfish.onmessage = (event: any) => {
@@ -81,6 +82,17 @@ export const ChessBoard = () => {
       };
     }
   }, [movePiece, aiTurn, state.boardIndex, state.history]);
+
+  useEffect(() => {
+    if (receivedData !== "" && receivedData !== undefined) {
+      const data = JSON.parse(receivedData);
+      console.log(data.from, data.to);
+      const move = { from: data.from, to: data.to, promotion: "q" };
+      try {
+        movePiece(data.from, data.to, true);
+      } catch {}
+    }
+  }, [receivedData, chess]);
 
   let board = [];
   const squareInfo = fenToSquareInfo(chess.fen());
@@ -116,5 +128,16 @@ export const ChessBoard = () => {
     }
   }
 
-  return <div className="w-[800px] h-[800px] grid grid-cols-8">{board}</div>;
+  return (
+    <div
+      style={{
+        width: "calc(100% - 2rem)",
+        marginLeft: "1rem",
+        marginRight: "1rem",
+      }}
+      className="chess-board grid grid-cols-8"
+    >
+      {board}
+    </div>
+  );
 };
