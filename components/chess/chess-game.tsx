@@ -7,7 +7,6 @@ export const ChessGame = () => {
   return (
     <div className="flex justify-center items-center h-screen bg-chessboard-black">
       <ChessBoard />
-      <ChessPanel />
     </div>
   );
 };

@@ -35,7 +35,7 @@ export const ChessPanel = () => {
   };
 
   return (
-    <div className="flex flex-col bg-slate-300 w-32 ml-4">
+    <div className="flex flex-col bg-slate-300 w-32">
       <button onClick={() => dispatch(changeColor())}>Change Color</button>
       <button onClick={() => dispatch(gotoPrev())}>Prev</button>
       <button onClick={() => dispatch(gotoNext())}>Next</button>

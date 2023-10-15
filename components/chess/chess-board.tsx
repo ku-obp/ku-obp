@@ -116,5 +116,9 @@ export const ChessBoard = () => {
     }
   }
 
-  return <div className="w-[800px] h-[800px] grid grid-cols-8">{board}</div>;
+  return (
+    <div className="grid grid-cols-8 h-[320px] w-[320px] min-[420px]:scale-125 min-[520px]:scale-150 sm:scale-175 md:scale-200 lg:scale-200 xl:scale-250 max-h-[90%] max-w-[90%]">
+      {board}
+    </div>
+  );
 };
