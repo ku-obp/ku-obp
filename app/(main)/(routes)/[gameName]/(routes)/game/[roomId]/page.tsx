@@ -10,10 +10,14 @@ interface gameRoomsProps {
 
 const ChatRoom = ({ params }: gameRoomsProps) => {
   return (
-    <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
-      <GameRoomHeader gameName={params.gameName} roomId={params.roomId} />
-      {params.gameName === "chess" && <ChessGame />}
-    </div>
+    <>
+      <div className="header bg-white dark:bg-[#313338]">
+        <GameRoomHeader gameName={params.gameName} roomId={params.roomId} />
+      </div>
+      <div className="game bg-white dark:bg-[#313338] flex flex-col h-full justify-center items-center">
+        {params.gameName === "chess" && <ChessGame />}
+      </div>
+    </>
   );
 };
 

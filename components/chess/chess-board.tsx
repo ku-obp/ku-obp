@@ -68,7 +68,7 @@ export const ChessBoard = () => {
   // useEffect 훅을 사용하지 않으면 여러 번 동작하면서 에러가 발생한다.
   const aiTurn = state.aiMode && state.turnColor === state.opponentColor;
   useEffect(() => {
-    if (aiTurn) {
+    if (aiTurn && stockfish) {
       stockfish.postMessage(`position fen ${state.history[state.boardIndex]}`);
       stockfish.postMessage("go depth 15");
       stockfish.onmessage = (event: any) => {
@@ -117,7 +117,14 @@ export const ChessBoard = () => {
   }
 
   return (
-    <div className="grid grid-cols-8 h-[320px] w-[320px] min-[420px]:scale-125 min-[520px]:scale-150 sm:scale-175 md:scale-200 lg:scale-200 xl:scale-250 max-h-[90%] max-w-[90%]">
+    <div
+      style={{
+        width: "calc(100% - 2rem)",
+        marginLeft: "1rem",
+        marginRight: "1rem",
+      }}
+      className="chess-board grid grid-cols-8"
+    >
       {board}
     </div>
   );

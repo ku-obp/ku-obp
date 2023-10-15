@@ -22,6 +22,8 @@
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
     "crypto-js": "^4.1.1",
+    "debounce": "^1.2.1",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.286.0",
     "next": "13.5.4",
     "next-auth": "^4.23.2",
@@ -35,6 +37,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
+    "@types/lodash": "^4.14.199",
     "@types/node": "^20",
     "@types/pg": "^8.10.5",
     "@types/react": "^18",

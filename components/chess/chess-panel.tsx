@@ -12,6 +12,15 @@ import {
 } from "@/redux/features/chess-slice";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { playAudio } from "@/lib/chess-utils";
+import {
+  ArrowLeft,
+  ArrowRight,
+  GitPullRequestDraft,
+  HelpCircle,
+  ListRestart,
+  Paintbrush,
+} from "lucide-react";
+import { ActionTooltip } from "../action-tooltip";
 
 export const ChessPanel = () => {
   const state = useAppSelector((state) => state.chessReducer);
@@ -35,12 +44,37 @@ export const ChessPanel = () => {
   };
 
   return (
-    <div className="flex flex-col bg-slate-300 w-32">
-      <button onClick={() => dispatch(changeColor())}>Change Color</button>
-      <button onClick={() => dispatch(gotoPrev())}>Prev</button>
-      <button onClick={() => dispatch(gotoNext())}>Next</button>
-      <button onClick={() => dispatch(reset())}>Reset</button>
-      <button onClick={requestStockfish}>AI Help</button>
+    <div className="flex gap-2 bottom-8 flex-row">
+      <ActionTooltip side="bottom" align="center" label="change color">
+        <button onClick={() => dispatch(changeColor())}>
+          <Paintbrush className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+        </button>
+      </ActionTooltip>
+      <ActionTooltip side="bottom" align="center" label="go to previous state">
+        <button onClick={() => dispatch(gotoPrev())}>
+          <ArrowLeft className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+        </button>
+      </ActionTooltip>
+      <ActionTooltip side="bottom" align="center" label="go to next state">
+        <button onClick={() => dispatch(gotoNext())}>
+          <ArrowRight className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+        </button>
+      </ActionTooltip>
+      <ActionTooltip side="bottom" align="center" label="reset">
+        <button onClick={() => dispatch(reset())}>
+          <ListRestart className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+        </button>
+      </ActionTooltip>
+      <ActionTooltip side="bottom" align="center" label="ai recommendation">
+        <button onClick={requestStockfish}>
+          <HelpCircle className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+        </button>
+      </ActionTooltip>
+      <ActionTooltip side="bottom" align="center" label="ai level control">
+        <button onClick={() => console.log("control")}>
+          <GitPullRequestDraft className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+        </button>
+      </ActionTooltip>
     </div>
   );
 };
