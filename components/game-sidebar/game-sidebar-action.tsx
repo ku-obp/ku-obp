@@ -6,13 +6,17 @@ import { useRouter } from "next/navigation"; // next/navigation
 import { ActionTooltip } from "@/components/action-tooltip";
 import { useState, useEffect } from "react";
 
-export const NavigationAction = () => {
+export const GameSidebarAction = () => {
   const [isClicked, setIsClicked] = useState(false);
   const router = useRouter();
 
+  // router.refresh();
+  // Next.js 라우터의 메소드로 현재 페이지를 강제로 다시 렌더링한다.
+  // 데이터가 변경되었을 때 최신 상태를 반영하기 위해 사용한다.
   useEffect(() => {
     if (isClicked) {
-      router.push("/chess");
+      router.push("/");
+      setIsClicked(false);
     }
   }, [isClicked, router]);
 

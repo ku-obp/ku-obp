@@ -12,16 +12,20 @@ interface NavigationItemProps {
   name: string;
 }
 
-export const NavigationItem = ({ id, imageUrl, name }: NavigationItemProps) => {
+export const GameSidebarItem = ({
+  id,
+  imageUrl,
+  name,
+}: NavigationItemProps) => {
   const params = useParams();
   const router = useRouter();
 
   const onClick = () => {
-    if (name === "chess") {
-      router.push(`/${name}`);
-    } else {
-      alert("더미 메뉴입니다. 지금은 체스만 가능합니다.");
-    }
+    // if (name === "chess") {
+    router.push(`/${name}`);
+    // } else {
+    //   alert("더미 메뉴입니다. 지금은 체스만 가능합니다.");
+    // }
   };
 
   return (
