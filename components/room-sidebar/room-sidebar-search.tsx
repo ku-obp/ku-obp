@@ -16,10 +16,11 @@ import {
 interface RoomSidebarSearchProps {
   data: {
     label: string;
-    type: "lobby" | "room";
+    type: "chat" | "game";
     data:
       | {
           id: string;
+          game: string;
           name: string;
         }[]
       | undefined;
@@ -47,13 +48,12 @@ export const RoomSidebarSearch = ({ data }: RoomSidebarSearchProps) => {
   }, []);
 
   // 검색 리스트 클릭
-  const onClick = ({ id, type }: { id: string; type: "lobby" | "room" }) => {
+  const onClick = ({ id, game, name, type }: any) => {
     setOpen(false);
-
-    if (type === "lobby") {
-      return router.push(`/${gameName}/lobby`);
+    if (type === "chat") {
+      router.push(`/${game}/chat/${name}`);
     } else {
-      return router.push(`/${gameName}/${id}`);
+      router.push(`/${game}/game/${id}`);
     }
   };
 
@@ -81,11 +81,11 @@ export const RoomSidebarSearch = ({ data }: RoomSidebarSearchProps) => {
 
             return (
               <CommandGroup key={label} heading={label}>
-                {data?.map(({ id, name }) => {
+                {data?.map(({ id, game, name }) => {
                   return (
                     <CommandItem
                       key={id}
-                      onSelect={() => onClick({ id, type })}
+                      onSelect={() => onClick({ id, game, name, type })}
                     >
                       <span>{name}</span>
                     </CommandItem>

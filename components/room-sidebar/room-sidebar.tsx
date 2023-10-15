@@ -27,10 +27,31 @@ export const RoomSidebar = async (props: any) => {
       <RoomSidebarHeader />
       <ScrollArea className="flex-1 px-3">
         <div className="mt-2">
-          <RoomSidebarSearch data={[]} />
+          <RoomSidebarSearch
+            data={[
+              {
+                label: "Chat Rooms",
+                type: "chat",
+                data: chatRooms?.map((room: any) => ({
+                  id: room.id,
+                  game: room.game,
+                  name: room.name,
+                })),
+              },
+              {
+                label: "Game Rooms",
+                type: "game",
+                data: gameRooms?.map((room: any) => ({
+                  id: room.id,
+                  game: room.game,
+                  name: room.name,
+                })),
+              },
+            ]}
+          />
         </div>
         <Separator className="bg-zinc-200 dark:bg-zinc-700 rounded-md my-2" />
-        <RoomSidebarSection label="lobby" rooms={chatRooms} />
+        <RoomSidebarSection label="chat" rooms={chatRooms} />
         <RoomSidebarSection label="game" rooms={gameRooms} />
       </ScrollArea>
     </div>
