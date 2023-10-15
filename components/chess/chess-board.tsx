@@ -12,7 +12,7 @@ import { ChessSquare } from "./chess-square";
 
 let stockfish: any;
 
-export const ChessBoard = () => {
+export const ChessBoard = ({ receivedData, movePublisher }: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const state = useAppSelector((state) => state.chessReducer);
 
@@ -42,12 +42,13 @@ export const ChessBoard = () => {
   // AI 움직임을 담당하는 useEffect 훅의 의존성 배열에 movePiece가 들어가있다.
   // chess와 마찬가지의 이유로 useCallback을 통해 매번 변하지 않는 값임을 보장한다.
   const movePiece = useCallback(
-    (from: string, to: string) => {
+    (from: string, to: string, received = false) => {
       chess.move({ from, to, promotion: "q" });
       dispatch(move({ fen: chess.fen(), from, to }));
       playAudio(chess.history()[0]);
+      if (!received) movePublisher({ from, to });
     },
-    [chess, dispatch]
+    [chess, dispatch, movePublisher]
   );
 
   const handleSquareClick = (squareId: string) => {
@@ -81,6 +82,17 @@ export const ChessBoard = () => {
       };
     }
   }, [movePiece, aiTurn, state.boardIndex, state.history]);
+
+  useEffect(() => {
+    if (receivedData !== "" && receivedData !== undefined) {
+      const data = JSON.parse(receivedData);
+      console.log(data.from, data.to);
+      const move = { from: data.from, to: data.to, promotion: "q" };
+      try {
+        movePiece(data.from, data.to, true);
+      } catch {}
+    }
+  }, [receivedData, chess]);
 
   let board = [];
   const squareInfo = fenToSquareInfo(chess.fen());

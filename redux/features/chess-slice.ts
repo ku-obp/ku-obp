@@ -36,7 +36,7 @@ const initialState = {
   lastMove: [{ from: "none", to: "none" }],
   playerColor: "w",
   opponentColor: "b",
-  aiMode: true,
+  aiMode: false,
   turnColor: "w",
   from: "",
   to: [] as string[],
