@@ -10,7 +10,7 @@ export const GameRoomHeader = ({ gameName, roomId }: any) => {
       <p className="font-semibold text-md text-black dark:text-white">
         {roomId}
       </p>
-      <div className="ml-auto flex items-center">Temp</div>
+      <div className="ml-auto flex items-center">KU-OBP</div>
     </div>
   );
 };

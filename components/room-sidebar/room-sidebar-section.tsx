@@ -7,7 +7,7 @@ export const RoomSidebarSection = (props: any) => {
         {props.label}
       </p>
       <div className="space-y-[4px]">
-        {props.rooms.map((room: any) => (
+        {props.rooms?.map((room: any) => (
           <RoomSidebarItem
             key={room.id}
             id={room.id}

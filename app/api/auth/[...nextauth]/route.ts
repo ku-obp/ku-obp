@@ -15,13 +15,15 @@ const handler = NextAuth({
         password: {},
       },
       async authorize(credentials, req) {
-        // skip validation
-        const response = sql`SELECT * FROM users WHERE email=${credentials?.email}`;
-        const user = (await response).rows[0];
+        const response =
+          await sql`SELECT * FROM users WHERE email=${credentials?.email}`;
+        const user = response.rows[0];
         const passwordCorrect = await compare(
           credentials?.password || "",
           user.password
         );
+
+        console.log({ passwordCorrect });
 
         if (passwordCorrect) {
           return {

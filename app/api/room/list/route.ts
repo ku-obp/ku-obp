@@ -5,7 +5,8 @@ export async function POST(request: Request) {
   try {
     const { gameName } = await request.json();
 
-    const rooms = await sql`SELECT * FROM rooms WHERE game = ${gameName}`;
+    const query = sql`SELECT * FROM rooms WHERE game = ${gameName}`;
+    const rooms = await query;
 
     return NextResponse.json({
       message: "success",

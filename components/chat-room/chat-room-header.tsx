@@ -10,7 +10,7 @@ export const ChatRoomHeader = ({ gameName, roomName }: any) => {
       <p className="font-semibold text-md text-black dark:text-white">
         {roomName}
       </p>
-      <div className="ml-auto flex items-center">Something</div>
+      <div className="ml-auto flex items-center">KU-OBP</div>
     </div>
   );
 };
