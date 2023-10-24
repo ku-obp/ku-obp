@@ -43,7 +43,11 @@ export const ChessBoard = ({ receivedData, movePublisher }: any) => {
   // chess와 마찬가지의 이유로 useCallback을 통해 매번 변하지 않는 값임을 보장한다.
   const movePiece = useCallback(
     (from: string, to: string, received = false) => {
-      chess.move({ from, to, promotion: "q" });
+      try {
+        chess.move({ from, to, promotion: "q" });
+      } catch {
+        return;
+      }
       dispatch(move({ fen: chess.fen(), from, to }));
       playAudio(chess.history()[0]);
       if (!received) movePublisher({ from, to });
@@ -88,11 +92,9 @@ export const ChessBoard = ({ receivedData, movePublisher }: any) => {
       const data = JSON.parse(receivedData);
       console.log(data.from, data.to);
       const move = { from: data.from, to: data.to, promotion: "q" };
-      try {
-        movePiece(data.from, data.to, true);
-      } catch {}
+      movePiece(data.from, data.to, true);
     }
-  }, [receivedData, chess]);
+  }, [receivedData]);
 
   let board = [];
   const squareInfo = fenToSquareInfo(chess.fen());
