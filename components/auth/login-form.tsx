@@ -11,6 +11,7 @@ import { SignError } from "@/components/auth/sign-error";
 
 import { validateEmail, validatePW } from "@/lib/validate-input";
 import { useInput } from "@/hooks/use-input";
+import { getServerSession } from "next-auth";
 
 export const LoginForm = () => {
   const email = useInput(validateEmail);
@@ -29,12 +30,13 @@ export const LoginForm = () => {
         password: pw.value,
         redirect: false,
       });
-      console.log("Login Failed.");
+      console.log(response);
 
       if (!response?.error) {
         router.push("/");
         router.refresh(); // refresh the cache
       } else {
+        console.log("Login Failed.");
         setIsValid(false);
       }
     }

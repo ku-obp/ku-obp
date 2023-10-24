@@ -1,13 +1,11 @@
+import { sql } from "@vercel/postgres";
 import { NextResponse } from "next/server";
-import { query } from "@/database/db";
 
 export async function POST(request: Request) {
   try {
     const { gameName } = await request.json();
 
-    const rooms = await query("SELECT * FROM rooms WHERE game = $1", [
-      gameName,
-    ]);
+    const rooms = await sql`SELECT * FROM rooms WHERE game = ${gameName}`;
 
     return NextResponse.json({
       message: "success",

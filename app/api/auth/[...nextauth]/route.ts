@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcrypt";
-import { query } from "@/database/db";
+import { sql } from "@vercel/postgres";
 
 const handler = NextAuth({
   session: {
@@ -16,16 +16,14 @@ const handler = NextAuth({
       },
       async authorize(credentials, req) {
         // skip validation
-        const response = await query("SELECT * FROM users WHERE email=$1", [
-          credentials?.email,
-        ]);
-        const user = response.rows[0];
-        const passwrodCorrect = await compare(
+        const response = sql`SELECT * FROM users WHERE email=${credentials?.email}`;
+        const user = (await response).rows[0];
+        const passwordCorrect = await compare(
           credentials?.password || "",
           user.password
         );
 
-        if (passwrodCorrect) {
+        if (passwordCorrect) {
           return {
             id: user.id,
             email: user.email,
