@@ -23,7 +23,7 @@ export default function Page() {
         console.error(e);
       }
     })();
-  }, []);
+  }, [name]);
 
   if (token === "") {
     return <div>Getting token...</div>;

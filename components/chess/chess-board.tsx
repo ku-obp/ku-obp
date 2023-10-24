@@ -94,7 +94,7 @@ export const ChessBoard = ({ receivedData, movePublisher }: any) => {
       const move = { from: data.from, to: data.to, promotion: "q" };
       movePiece(data.from, data.to, true);
     }
-  }, [receivedData]);
+  }, [receivedData, movePiece]);
 
   let board = [];
   const squareInfo = fenToSquareInfo(chess.fen());
