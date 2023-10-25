@@ -29,9 +29,9 @@ export async function POST(request: Request) {
 
     const response =
       await sql`INSERT INTO users (email, password, name) VALUES (${email}, ${hashedPassword}, ${name})`;
-    console.log(response);
+    // console.log(response);
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return NextResponse.json({ message: error });
   }
 

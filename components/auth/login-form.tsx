@@ -30,13 +30,13 @@ export const LoginForm = () => {
         password: pw.value,
         redirect: false,
       });
-      console.log(response);
+      // console.log(response);
 
       if (!response?.error) {
         router.push("/");
         router.refresh(); // refresh the cache
       } else {
-        console.log("Login Failed.");
+        // console.log("Login Failed.");
         setIsValid(false);
       }
     }

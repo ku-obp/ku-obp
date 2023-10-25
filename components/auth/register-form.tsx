@@ -47,7 +47,7 @@ export const RegisterForm = () => {
         setIsDuplicated(true);
         setIsValid(false);
       }
-      console.log(response.data.message);
+      // console.log(response.data.message);
     }
   };
 
