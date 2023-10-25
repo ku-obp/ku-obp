@@ -1,3 +1,5 @@
+"use client";
+
 import { Hash } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -7,17 +9,28 @@ import { RoomSidebarHeader } from "./room-sidebar-header";
 import { RoomSidebarSearch } from "./room-sidebar-search";
 import { RoomSidebarSection } from "./room-sidebar-section";
 import { RoomSidebarItem } from "./room-sidebar-item";
+import { useEffect, useState } from "react";
 
 // useParams는 Client Components에서만 작동한다.
 // Server Components로 작동하고 싶다면 props로 전달하자.
-export const RoomSidebar = async (props: any) => {
-  const rooms = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/room/list`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ gameName: props.gameName }),
-  })
-    .then((response) => response.json())
-    .then((json) => json.data?.rows);
+export const RoomSidebar = (props: any) => {
+  const [rooms, setRooms] = useState([]);
+  useEffect(() => {
+    (async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/room/list`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ gameName: props.gameName }),
+        }
+      );
+      const data = await response.json();
+      const roomData = data.data?.rows || []; // Make sure to handle potential null values.
+
+      setRooms(roomData); // Update the rooms state with the fetched data.
+    })();
+  }, [props.gameName]); // Add props.gameName as a dependency for the effect.
 
   // useMemo
   const chatRooms = rooms?.filter((room: any) => room.type === "chat");
