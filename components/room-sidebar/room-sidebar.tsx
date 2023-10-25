@@ -11,7 +11,7 @@ import { RoomSidebarItem } from "./room-sidebar-item";
 // useParams는 Client Components에서만 작동한다.
 // Server Components로 작동하고 싶다면 props로 전달하자.
 export const RoomSidebar = async (props: any) => {
-  const rooms = await fetch(`${process.env.NEXTAUTH_URL}/api/room/list`, {
+  const rooms = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/room/list`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ gameName: props.gameName }),
