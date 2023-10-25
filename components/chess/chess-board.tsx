@@ -89,7 +89,13 @@ export const ChessBoard = ({ receivedData, movePublisher }: any) => {
 
   useEffect(() => {
     if (receivedData !== "" && receivedData !== undefined) {
-      const data = JSON.parse(receivedData);
+      let data;
+      try {
+        data = JSON.parse(receivedData);
+      } catch (error) {
+        console.error("JSON parsing error:", error);
+        return; // JSON 파싱에 실패하면 함수를 종료합니다.
+      }
       console.log(data.from, data.to);
       const move = { from: data.from, to: data.to, promotion: "q" };
       movePiece(data.from, data.to, true);
