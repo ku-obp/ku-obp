@@ -109,9 +109,9 @@ export const ChessBoard = ({ receivedData, movePublisher }: any) => {
     cols = ["a", "b", "c", "d", "e", "f", "g", "h"];
   }
 
-  for (const row of rows) {
-    for (const col of cols) {
-      const squareId = col.concat(row);
+  for (let row = 0; row < 8; row++) {
+    for (let col = 0; col < 8; col++) {
+      const squareId = cols[col].concat(rows[row]);
       board.push(
         <ChessSquare
           key={squareId}
@@ -125,6 +125,8 @@ export const ChessBoard = ({ receivedData, movePublisher }: any) => {
           lastMoveFrom={last && last.from === squareId}
           lastMoveTo={last && last.to === squareId}
           onClick={() => handleSquareClick(squareId)}
+          y={row}
+          x={col}
         />
       );
     }
@@ -132,13 +134,10 @@ export const ChessBoard = ({ receivedData, movePublisher }: any) => {
 
   return (
     <div
-      style={{
-        width: "calc(100% - 2rem)",
-        marginLeft: "1rem",
-        marginRight: "1rem",
-      }}
-      className="chess-board grid grid-cols-8"
+      style={{ width: "min(75%, 70vh)", maxWidth: "800px" }}
+      className="relative"
     >
+      <div className="pb-[100%]"></div>
       {board}
     </div>
   );

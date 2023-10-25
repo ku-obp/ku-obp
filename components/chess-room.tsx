@@ -21,6 +21,9 @@ import {
   Chat,
   ControlBar,
   useDataChannel,
+  useParticipants,
+  ParticipantName,
+  ParticipantLoop,
 } from "@livekit/components-react";
 import { ChessGame } from "./chess/chess-game";
 
@@ -32,7 +35,7 @@ export interface VideoConferenceProps
   room?: any;
 }
 
-export const MyVideoConference = ({
+export const ChessRoom = ({
   chatMessageFormatter,
   chatMessageDecoder,
   chatMessageEncoder,
@@ -70,6 +73,9 @@ export const MyVideoConference = ({
   const carouselTracks = tracks.filter(
     (track) => !isEqualTrackRef(track, focusTrack)
   );
+
+  const participants = useParticipants();
+  console.log(participants.length);
 
   return (
     <div className="lk-video-conference" {...props}>

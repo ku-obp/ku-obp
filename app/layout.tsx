@@ -4,6 +4,7 @@ import { Open_Sans } from "next/font/google";
 import { ReduxProvider } from "@/redux/provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import "./globals.css";
+import AuthSession from "@/components/auth/auth-session";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -20,14 +21,16 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body className={font.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          storageKey="ku-obp"
-        >
-          <ReduxProvider>{children}</ReduxProvider>
-        </ThemeProvider>
+        <AuthSession>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+            storageKey="ku-obp"
+          >
+            <ReduxProvider>{children}</ReduxProvider>
+          </ThemeProvider>
+        </AuthSession>
       </body>
     </html>
   );

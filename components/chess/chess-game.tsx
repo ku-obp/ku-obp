@@ -5,10 +5,10 @@ import { ChessPanel } from "./chess-panel";
 
 export const ChessGame = ({ receivedData, movePublisher }: any) => {
   return (
-    <div className="flex justify-center items-center">
-      <div className="flex flex-col justify-center items-center gap-4">
+    <div className="flex justify-center items-center w-full">
+      <div className="flex flex-col justify-center items-center gap-4 w-full">
         <ChessBoard receivedData={receivedData} movePublisher={movePublisher} />
-        <ChessPanel />
+        {/* <ChessPanel /> */}
       </div>
     </div>
   );

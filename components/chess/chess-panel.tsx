@@ -44,7 +44,7 @@ export const ChessPanel = () => {
   };
 
   return (
-    <div className="flex gap-2 bottom-8 flex-row">
+    <div className="flex gap-2 bottom-8 flex-row w-1/4 justify-center">
       <ActionTooltip side="bottom" align="center" label="change color">
         <button onClick={() => dispatch(changeColor())}>
           <Paintbrush className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />

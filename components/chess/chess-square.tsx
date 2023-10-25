@@ -13,6 +13,8 @@ interface CellProps {
   lastMoveTo: boolean;
   isDark: boolean;
   onClick?: () => void;
+  y: number;
+  x: number;
 }
 
 const svg: { [key: string]: string } = {
@@ -41,6 +43,8 @@ export const ChessSquare = ({
   lastMoveFrom,
   lastMoveTo,
   onClick,
+  y,
+  x,
 }: CellProps) => {
   const pointer = legalTo || selectable;
   const capturable = legalTo && type;
@@ -48,8 +52,14 @@ export const ChessSquare = ({
   return (
     <div
       id={squareId}
+      style={{
+        top: `${12.5 * y}%`,
+        left: `${12.5 * x}%`,
+        height: `12.5%`,
+        width: `12.5%`,
+      }}
       className={cn(
-        "h-[40px] w-[40px] grid place-content-center group relative overflow-clip",
+        "absolute grid place-content-center group overflow-clip",
         pointer && "cursor-pointer",
         selected && (isDark ? "bg-selected-dark" : "bg-selected-light"),
         !selected && (isDark ? "bg-chess-dark" : "bg-chess-light"),
@@ -65,17 +75,23 @@ export const ChessSquare = ({
           style={{
             backgroundImage: `url(${svg[`${type}-${color}`]})`,
             backgroundSize: "80%",
+            height: "110%",
+            width: "110%",
           }}
           className={cn(
-            "chess-piece h-[44px] w-[44px] bg-no-repeat bg-center rounded-full group-hover:bg-transparent",
+            "chess-piece absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-no-repeat bg-center rounded-full group-hover:bg-transparent",
             capturable && (isDark ? "bg-chess-dark" : "bg-chess-light")
           )}
         />
       )}
       {!type && legalTo && (
         <div
+          style={{
+            height: "25%",
+            width: "25%",
+          }}
           className={cn(
-            "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full group-hover:hidden",
+            "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-full group-hover:hidden",
             isDark ? "bg-legal-dark" : "bg-legal-light"
           )}
         />
