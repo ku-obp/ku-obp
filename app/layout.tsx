@@ -5,6 +5,7 @@ import { ReduxProvider } from "@/redux/provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import "./globals.css";
 import AuthSession from "@/components/auth/auth-session";
+import { ModalProvider } from "@/components/providers/modal-provider";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -28,7 +29,10 @@ export default async function RootLayout({
             enableSystem={false}
             storageKey="ku-obp"
           >
-            <ReduxProvider>{children}</ReduxProvider>
+            <ReduxProvider>
+              <ModalProvider />
+              {children}
+            </ReduxProvider>
           </ThemeProvider>
         </AuthSession>
       </body>
