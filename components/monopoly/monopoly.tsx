@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 // import { Server, Socket } from "../../public/assets/sockets.ts";
 import { Player, PlayerJSON } from "../../public/assets/monopoly/player";
-import "../../monopoly.css";
+import "../../public/assets/monopoly/monopoly.css";
 import MonopolyNav, { MonopolyNavRef } from "./ingame/nav";
 import MonopolyGame, { MonopolyGameRef } from "./ingame/game";
 import NotifyElement, { NotificatorRef } from "./notificator";
