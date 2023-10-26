@@ -31,6 +31,7 @@
     "livekit-server-sdk": "^1.2.6",
     "lodash": "^4.17.21",
     "lucide-react": "^0.286.0",
+    "monopolygame": "^0.1.1",
     "next": "13.5.4",
     "next-auth": "^4.24.3",
     "next-themes": "^0.2.1",
@@ -44,6 +45,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/lodash": "^4.14.199",
+    "@types/monopolygame": "file:@types/monopolygame",
     "@types/node": "^20",
     "@types/pg": "^8.10.5",
     "@types/react": "^18",

@@ -1,0 +1,10 @@
+{
+    "name": "@types/monopolygame",
+    "private": true,
+    "main": "",
+    "types": "main.d.ts",
+    "dependencies": {
+        "monopolygame": "^0.1.1"
+    },
+    "typings": "main.d.ts"
+}
