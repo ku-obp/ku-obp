@@ -14,9 +14,8 @@ const OnlineRoom = (props: any) => {
   const user = useSession();
   const userEmail = user.data?.user?.email;
 
-  // 2번 렌더링 되는데 이유를 모르곘음.
   useEffect(() => {
-    if (!user) {
+    if (!userEmail) {
       return;
     }
     (async () => {
@@ -26,7 +25,7 @@ const OnlineRoom = (props: any) => {
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userEmail, roomId }),
+            body: JSON.stringify({ gameName, userEmail, roomId }),
           }
         );
 
@@ -40,7 +39,8 @@ const OnlineRoom = (props: any) => {
         console.log(error);
       }
     })();
-  }, [gameName, roomId, userEmail, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameName, roomId, user]);
 
   return (
     <div className="h-full w-full flex flex-col gap-8 justify-center items-center">
