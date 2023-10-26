@@ -11,11 +11,6 @@ export const GameSidebar = async () => {
     .then((response) => response.json())
     .then((json) => json.data.rows);
 
-  const testData = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/kv`)
-    .then((response) => response.json())
-    .then((json) => json.data);
-  console.log(testData);
-
   return (
     <div className="space-y-4 flex flex-col items-center h-full text-primary w-full dark:bg-[#1E1F22] bg-[#E3E5E8] py-3">
       <GameSidebarAction />

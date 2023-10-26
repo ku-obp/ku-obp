@@ -21,7 +21,7 @@ export const RoomSidebarItem = ({ id, game, name, type }: Props) => {
     if (type === "chat") {
       router.push(`/${game}/chat/${name}`);
     } else {
-      router.push(`/${game}/game/${id}`);
+      router.push(`/${game}/${id}`);
     }
   };
 
