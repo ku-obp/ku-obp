@@ -45,6 +45,7 @@ export async function POST(request: Request) {
     console.log(error);
     return NextResponse.json({ message: "Failed to Create Room" });
   }
+
   return NextResponse.json({
     message: "Room Created Successfully",
     roomStatus,

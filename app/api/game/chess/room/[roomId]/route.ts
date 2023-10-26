@@ -35,6 +35,9 @@ export async function POST(request: Request) {
   const { hostEmail, hostColor, opponentColor } = updatedRoomStatus;
   const myColor = userEmail === hostEmail ? hostColor : opponentColor;
 
+  const result = await kv.get(roomKey);
+  console.log(result);
+
   return NextResponse.json({
     status: "success",
     message: "Update Successful",
