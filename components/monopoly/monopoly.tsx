@@ -18,7 +18,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
     const [imReady, SetReady] = useState<boolean>(false);
     const [selectedMode, SetMode] = useState<MonopolyMode>(MonopolyModes[0]);
     const [globalSettings, SetSettings] = useState<MonopolySettings>();
-    const [mainTheme, SetTheme] = useState(new Audio("./main-theme.mp3"));
+    // const [mainTheme, SetTheme] = useState(new Audio("./main-theme.mp3"));
     const [startTIme, SetStartTime] = useState<Date>(new Date());
     const [histories, SetHistories] = useState<Array<historyAction>>([]);
 
@@ -27,6 +27,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
     useEffect(() => {
         if (!gameStartedDisplay) return;
         // Sound Effect
+        /*
         mainTheme.loop = true;
         mainTheme.play();
 
@@ -35,6 +36,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             mainTheme.volume = (globalSettings.audio[0] / 100) * (globalSettings.audio[2] / 100);
         }
         SetTheme(mainTheme);
+        */
         SetStartTime(new Date());
     }, [gameStartedDisplay]);
 
@@ -50,7 +52,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
 
     useEffect(() => {
         if (globalSettings !== undefined) {
-            mainTheme.volume = (globalSettings.audio[0] / 100) * (globalSettings.audio[2] / 100);
+            // mainTheme.volume = (globalSettings.audio[0] / 100) * (globalSettings.audio[2] / 100);
         }
     }, [globalSettings]);
 
@@ -264,7 +266,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                 const name = clients.get(args.id)?.username ?? "player";
                 notifyRef.current?.message(`${name} disconected`, "error");
             } else if (clients.has(args.id)) {
-                mainTheme.pause();
+                // mainTheme.pause();
                 notifyRef.current?.dialog(
                     (close_func, createButton) => ({
                         innerHTML: `<h3> YOU WON! </h3> <p> your the only left player with the balance of ${
@@ -306,7 +308,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         notifyRef.current?.message(`${name} lost`, "info");
                     } else {
                         if (clients.has(socket.id)) {
-                            mainTheme.pause();
+                            // mainTheme.pause();
                             notifyRef.current?.dialog(
                                 (close_func, createButton) => ({
                                     innerHTML: `<h3> YOU WON! </h3> <p> your the only left player with the balance of ${
@@ -324,7 +326,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         } else {
                             const xclient = Array.from(clients.values()).filter((v) => v.id !== args.pJson.id)[0];
                             const name = xclient.username ?? 0;
-                            mainTheme.pause();
+                            // mainTheme.pause();
                             notifyRef.current?.dialog(
                                 (close_func, createButton) => ({
                                     innerHTML: `<h3> ${name} WON! </h3> <p> ${name} won with the balance of ${
@@ -342,7 +344,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         }
                     }
                 } else {
-                    mainTheme.pause();
+                    // mainTheme.pause();
                     notifyRef.current?.dialog(
                         (close_func, createButton) => ({
                             innerHTML: `<h3> YOU LOST! </h3> <p> you lost your money and lost the monopol with a wanted balance of ${-(
@@ -397,7 +399,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                         }
                     }
                     if (x === 3) {
-                        mainTheme.pause();
+                        // mainTheme.pause();
                         if (p.id === socket.id) {
                             notifyRef.current?.dialog(
                                 (close_func, createButton) => ({
@@ -433,7 +435,7 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
                     for (const p of Array.from(clients.values())) {
                         const c = p.properties.filter((v) => v.group === "Railroad").length;
                         if (c === 4) {
-                            mainTheme.pause();
+                            // mainTheme.pause();
                             if (p.id === socket.id) {
                                 notifyRef.current?.dialog(
                                     (close_func, createButton) => ({
@@ -1297,7 +1299,7 @@ which is ${payment_ammount}
             clients.set(args.id, xplayer);
         }
         function socket_networkDisconnect() {
-            mainTheme.pause();
+            // mainTheme.pause();
             notifyRef.current?.dialog(
                 (close_func, createButton) => ({
                     innerHTML: `<h3> LOST CONNECTION </h3> <p> you were disconnected from the game </p>`,
