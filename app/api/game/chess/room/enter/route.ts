@@ -45,18 +45,9 @@ export async function POST(request: Request) {
   const { hostEmail, hostColor, opponentEmail, opponentColor }: any =
     roomStatus;
 
-  let myColor;
   const isHost = hostEmail === userEmail;
-  const isOpponent = opponentEmail === userEmail;
 
-  // 1. 호스트인 경우
-  if (isHost) {
-    myColor = hostColor;
-  }
-
-  // 2. 호스트가 아니면서 opponent가 비어있는 경우 opponent에 배정
-  else if (!isHost && !opponentEmail) {
-    myColor = opponentColor;
+  if (!isHost && !opponentEmail) {
     roomStatus = { ...roomStatus, opponentEmail: userEmail };
     try {
       await kv.set(roomKey, JSON.stringify(roomStatus));
@@ -64,17 +55,11 @@ export async function POST(request: Request) {
       console.log(error);
       return NextResponse.json({ status: "failed", message: "Entry Error" });
     }
-  }
-
-  // 3. 호스트가 아니면서 opponent가 존재하는데 user가 그 opponent인 경우
-  else if (isOpponent) {
-    myColor = opponentColor;
-  }
-
-  // 4. 호스트가 아니면서 opponent가 존재하는데 user가 그 opponent가 아닌 경우
-  else {
+  } else if (opponentEmail) {
     return NextResponse.json({ status: "failed", message: "Room Is Full" });
   }
+
+  const myColor = userEmail === hostEmail ? hostColor : opponentColor;
 
   return NextResponse.json({
     status: "success",

@@ -1,10 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useParams, useRouter } from "next/navigation";
 
 import { makeUpper } from "@/lib/utils";
+
+import "@livekit/components-styles";
+import { LiveKitRoom } from "@livekit/components-react";
+import { ChessRoom } from "@/components/chess/chess-room";
+import { AppDispatch } from "@/redux/store";
+import { useDispatch } from "react-redux";
+import { convertStatus } from "@/redux/features/chess-slice";
 
 const OnlineRoom = (props: any) => {
   const router = useRouter();
@@ -13,6 +20,31 @@ const OnlineRoom = (props: any) => {
   const roomId = params.roomId;
   const user = useSession();
   const userEmail = user.data?.user?.email;
+  const [token, setToken] = useState("");
+
+  const dispatch = useDispatch<AppDispatch>();
+
+  // userEmail이 없는 상태로 들어가면 상대방이 Disconnected 된다.
+  // 구체적인 매커니즘은 모르겠다.
+  useEffect(() => {
+    if (!userEmail) {
+      return;
+    }
+    const room = `${gameName}:${roomId}`;
+    const name = user.data?.user?.name;
+    (async () => {
+      try {
+        const resp = await fetch(
+          `/api/get-participant-token?room=${room}&username=${name}`
+        );
+        const data = await resp.json();
+        setToken(data.token);
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userEmail]);
 
   useEffect(() => {
     if (!userEmail) {
@@ -30,10 +62,13 @@ const OnlineRoom = (props: any) => {
         );
 
         const data = await response.json();
+        dispatch(
+          convertStatus({ status: data.roomStatus, myColor: data.myColor })
+        );
         console.log(data);
         if (data.status === "failed") {
           router.push(`/${gameName}`);
-          alert("2");
+          alert(data.me);
         }
       } catch (error) {
         console.log(error);
@@ -42,12 +77,21 @@ const OnlineRoom = (props: any) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameName, roomId, user]);
 
+  if (token === "") {
+    return <div>Getting token...</div>;
+  }
+
   return (
-    <div className="h-full w-full flex flex-col gap-8 justify-center items-center">
-      <p className="text-3xl lg:text-5xl font-bold text-rose-600">
-        Welcome to {makeUpper(props.params.gameName)} Online!
-      </p>
-    </div>
+    <LiveKitRoom
+      video={false}
+      audio={false}
+      token={token}
+      connectOptions={{ autoSubscribe: false }}
+      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+      data-lk-theme="default"
+    >
+      <ChessRoom />
+    </LiveKitRoom>
   );
 };
 

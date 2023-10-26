@@ -38,7 +38,7 @@ export async function POST(request: Request) {
 
   try {
     await kv.set(roomKey, JSON.stringify(roomStatus), {
-      ex: 100,
+      ex: 3600,
       nx: true,
     }); // 1시간 후 만료
   } catch (error) {

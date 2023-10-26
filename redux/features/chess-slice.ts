@@ -22,12 +22,27 @@ type ChessState = {
   boardIndex: number;
   history: string[];
   lastMove: LastMove[];
-  playerColor: "w" | "b";
-  opponentColor: "w" | "b";
+  playerColor: string;
+  opponentColor: string;
   aiMode: boolean;
-  turnColor: "w" | "b";
+  turnColor: string;
   from: string;
   to: string[];
+};
+
+type ServerState = {
+  roomId: string;
+  hostEmail: string;
+  hostColor: string;
+  opponentEmail: string;
+  opponentColor: string;
+  history: string[];
+  turnIndex: number;
+  turnColor: string;
+  lastMoveFrom: string;
+  lastMoveTo: string;
+  isStarted: boolean;
+  isEnd: boolean;
 };
 
 const initialState = {
@@ -46,6 +61,23 @@ export const chessSlice = createSlice({
   name: "chess",
   initialState,
   reducers: {
+    convertStatus: (
+      state,
+      action: PayloadAction<{ status: ServerState; myColor: string }>
+    ) => {
+      const status = action.payload.status;
+      const myColor = action.payload.myColor;
+
+      state.boardIndex = status.turnIndex;
+      state.history = status.history;
+      state.lastMove = [{ from: status.lastMoveFrom, to: status.lastMoveTo }];
+      state.playerColor = myColor;
+      state.opponentColor = status.opponentColor;
+      state.aiMode = false;
+      state.turnColor = status.turnColor;
+      state.from = "";
+      state.to = [] as string[];
+    },
     reset: () => {
       return initialState;
     },
@@ -97,6 +129,7 @@ export const chessSlice = createSlice({
 });
 
 export const {
+  convertStatus,
   reset,
   move,
   gotoPrev,
