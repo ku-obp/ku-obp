@@ -4,8 +4,14 @@ import type {
   WidgetState,
 } from "@livekit/components-core";
 import { isEqualTrackRef, isWeb, log } from "@livekit/components-core";
-import { DataPacket_Kind, RoomEvent, Track } from "livekit-client";
-import { useState } from "react";
+import {
+  ConnectionCheck,
+  DataPacket_Kind,
+  Room,
+  RoomEvent,
+  Track,
+} from "livekit-client";
+import { useEffect, useState } from "react";
 import type { MessageFormatter } from "@livekit/components-react";
 
 import {
@@ -21,8 +27,12 @@ import {
   Chat,
   ControlBar,
   useDataChannel,
+  DisconnectButton,
+  ConnectionState,
+  useConnectionState,
 } from "@livekit/components-react";
 import { ChessGame } from "./chess-game";
+import { useRouter } from "next/navigation";
 
 export interface VideoConferenceProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -44,6 +54,7 @@ export const ChessRoom = ({
     unreadMessages: 0,
   });
 
+  const router = useRouter();
   const { message, send } = useDataChannel("update");
   const updatePlease = () => {
     const encoder = new TextEncoder();
@@ -68,6 +79,24 @@ export const ChessRoom = ({
   const carouselTracks = tracks.filter(
     (track) => !isEqualTrackRef(track, focusTrack)
   );
+
+  const connectionState = useConnectionState();
+  const [initialConnected, setInitialConnected] = useState(false);
+  useEffect(() => {
+    if (connectionState === "connected") {
+      setInitialConnected(true);
+    }
+  }, [connectionState]);
+
+  useEffect(() => {
+    if (!initialConnected) {
+      return;
+    }
+    if (connectionState === "disconnected") {
+      router.push(`/chess`);
+      console.log(connectionState);
+    }
+  }, [connectionState, initialConnected, router]);
 
   return (
     <div className="lk-video-conference" {...props}>
