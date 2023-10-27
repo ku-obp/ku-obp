@@ -50,6 +50,7 @@ const OnlineRoom = (props: any) => {
     if (!userEmail) {
       return;
     }
+
     (async () => {
       try {
         const response = await fetch(
@@ -60,8 +61,9 @@ const OnlineRoom = (props: any) => {
             body: JSON.stringify({ gameName, userEmail, roomId }),
           }
         );
-
         const data = await response.json();
+
+        // console.log(data);
         dispatch(
           convertStatus({ status: data.roomStatus, myColor: data.myColor })
         );
@@ -74,6 +76,7 @@ const OnlineRoom = (props: any) => {
         console.log(error);
       }
     })();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userEmail]);
 

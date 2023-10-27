@@ -31,8 +31,10 @@ export async function POST(request: Request) {
     roomStatus;
 
   const isHost = hostEmail === userEmail;
+  const isOpponent = opponentEmail === userEmail;
 
-  if (!isHost && !opponentEmail) {
+  if (isHost || isOpponent) {
+  } else if (!opponentEmail) {
     roomStatus = { ...roomStatus, opponentEmail: userEmail };
     try {
       await kv.set(roomKey, JSON.stringify(roomStatus));
