@@ -17,10 +17,9 @@ export type MonopolyState = {
     getoutCards: number;
     history: string[];
     aiMode: boolean;
-}
-
-export type MonopolyAllState = {
-    players: MonopolyState[]
+    order: number;
+    prev: number;
+    next: number;
 }
 
 export type MonopolyModeState = {
@@ -59,43 +58,40 @@ export const COLORDIC = [
     "#fae102",
 ]
 
-export function initialize(players_count: number): MonopolyAllState {
-    let result = range(0,players_count).map((value) => {
-        return {
-            color: COLORDIC[value],
-            boardIndex: 0,
-            position: 0,
-            balance: 1000000,
-            properties: [] as MonopolyProprety[],
-            isInJail: false,
-            jailTurnsRemaining: 0,
-            getoutCards: 0,
-            history: [] as string[],
-            aiMode: true
-        }
-    })
-    return { players: result }
-    
+export const initialState = {
+    color: "",
+    boardIndex: 0,
+    position: 0,
+    balance: 1000000,
+    properties: [] as MonopolyProprety[],
+    isInJail: false,
+    jailTurnsRemaining: 0,
+    getoutCards: 0,
+    history: [] as string[],
+    aiMode: true
 }
 
 export const monopolySlice = createSlice({
     name: "monopoly",
-    initialState: initialize(4),
+    initialState: initialState,
     reducers: {
         convertStatus: (
-            state: MonopolyAllState,
+            state,
             action: PayloadAction<{ status: ServerState }>
         ) => {
             const status = action.payload.status;
-            state.players[status.orderIndex].boardIndex = status.turnIndex;
-            state.players[status.orderIndex].history = status.history[status.orderIndex];
-            state.players[status.orderIndex].color = COLORDIC[status.orderIndex];
-            state.players[status.orderIndex].aiMode = false;
+            state.boardIndex = status.turnIndex;
+            state.history = status.history[status.orderIndex];
+            state.color = COLORDIC[status.orderIndex];
+            state.aiMode = false;
+            state.order = status.orderIndex;
+            state.prev = (status.orderIndex - 1) % 4;
+            state.next = (status.orderIndex + 1) % 4;
         },
         reset: () => {
-            return initialize(4);
+            return initialState;
         },
-        command: (state: MonopolyAllState, _action: PayloadAction<MonopolyCommandPayload>) => {
+        command: (state: MonopolyState, _action: PayloadAction<MonopolyCommandPayload>) => {
             // 주사위, 카드, 거래 등에 대한 로직 수행
         }
     },

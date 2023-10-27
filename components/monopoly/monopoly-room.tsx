@@ -27,7 +27,7 @@ import {
 } from "@livekit/components-react";
 
 
-import Monopoly from "./monopoly/monopoly"
+import Monopoly from "./monopoly"
 
 export interface VideoConferenceProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -50,7 +50,7 @@ export const MonopolyRoom = ({
   });
 
   const { message, send } = useDataChannel("monopoly");
-  const movePublisher = (move: { from: string; to: string }) => {
+  const movePublisher = (command: { from: string; to: string }) => {
     const moveJson = JSON.stringify(move);
     const encoder = new TextEncoder();
     const data = encoder.encode(moveJson);
