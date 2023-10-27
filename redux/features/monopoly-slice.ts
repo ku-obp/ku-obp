@@ -57,7 +57,7 @@ export const COLORDIC = [
     "#fae102",
 ]
 
-export const initialState = {
+export const initialState: MonopolyState = {
     color: "",
     boardIndex: 0,
     position: 0,
@@ -67,7 +67,10 @@ export const initialState = {
     jailTurnsRemaining: 0,
     getoutCards: 0,
     history: [] as string[],
-    aiMode: true
+    aiMode: true,
+    order: 0,
+    prev: -1,
+    next: 1
 }
 
 
@@ -76,7 +79,7 @@ export const monopolySlice = createSlice({
     initialState: initialState,
     reducers: {
         convertStatus: (
-            state,
+            state: MonopolyState,
             action: PayloadAction<{ status: ServerState }>
         ) => {
             const status = action.payload.status;
