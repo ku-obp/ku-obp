@@ -3,15 +3,16 @@
 import { useDispatch } from "react-redux";
 import { Chess } from "chess.js";
 
-import { select, deselect } from "@/redux/features/chess-slice";
+import { select, deselect, convertStatus } from "@/redux/features/chess-slice";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { fenToSquareInfo, playAudio } from "@/lib/chess-utils";
 
 import { ChessSquare } from "./chess-square";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
-export const ChessBoard = () => {
+export const ChessBoard = ({ updatePlease, receivedData }: any) => {
   const params = useParams();
   const gameName = params.gameName;
   const roomId = params.roomId;
@@ -19,7 +20,7 @@ export const ChessBoard = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const state = useAppSelector((state) => state.chessReducer);
-  console.log(state);
+  // console.log(state);
 
   const chess = new Chess(state.history[state.boardIndex]);
 
@@ -37,7 +38,7 @@ export const ChessBoard = () => {
       return;
     }
 
-    await fetch(
+    const response = await fetch(
       `${process.env.NEXT_PUBLIC_URL}/api/game/${gameName}/room/${roomId}`,
       {
         method: "POST",
@@ -52,8 +53,38 @@ export const ChessBoard = () => {
         }),
       }
     );
+    const data = await response.json();
+    dispatch(convertStatus({ status: data.roomStatus, myColor: data.myColor }));
+    updatePlease();
     playAudio(chess.history()[0]);
   };
+
+  useEffect(() => {
+    if (!receivedData) {
+      return;
+    }
+
+    (async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_URL}/api/game/${gameName}/room/${roomId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameName,
+            roomId,
+            userEmail: user.data?.user?.email,
+          }),
+        }
+      );
+      const data = await response.json();
+      dispatch(
+        convertStatus({ status: data.roomStatus, myColor: data.myColor })
+      );
+      playAudio(chess.history()[0]);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [receivedData]);
 
   const handleSquareClick = (squareId: string) => {
     if (state.from === squareId) {

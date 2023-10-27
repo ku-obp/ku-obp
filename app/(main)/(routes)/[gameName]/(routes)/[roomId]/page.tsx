@@ -75,7 +75,7 @@ const OnlineRoom = (props: any) => {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameName, roomId, user]);
+  }, [userEmail]);
 
   if (token === "") {
     return <div>Getting token...</div>;

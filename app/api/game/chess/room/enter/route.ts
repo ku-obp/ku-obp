@@ -1,21 +1,6 @@
 import { kv } from "@vercel/kv";
 import { NextResponse } from "next/server";
 
-// const roomStatus = {
-//   roomId,
-//   hostEmail,
-//   hostColor,
-//   opponentEmail: "",
-//   opponentColor,
-//   history: [startFen],
-//   turnIndex: 0,
-//   turnColor: "w",
-//   lastMoveFrom: "",
-//   lastMoveTo: "",
-//   isStarted: false,
-//   isEnd: false,
-// };
-
 export async function POST(request: Request) {
   const body = await request.text();
 

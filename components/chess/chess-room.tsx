@@ -4,7 +4,7 @@ import type {
   WidgetState,
 } from "@livekit/components-core";
 import { isEqualTrackRef, isWeb, log } from "@livekit/components-core";
-import { RoomEvent, Track } from "livekit-client";
+import { DataPacket_Kind, RoomEvent, Track } from "livekit-client";
 import { useState } from "react";
 import type { MessageFormatter } from "@livekit/components-react";
 
@@ -20,6 +20,7 @@ import {
   useTracks,
   Chat,
   ControlBar,
+  useDataChannel,
 } from "@livekit/components-react";
 import { ChessGame } from "./chess-game";
 
@@ -42,6 +43,14 @@ export const ChessRoom = ({
     showChat: false,
     unreadMessages: 0,
   });
+
+  const { message, send } = useDataChannel("update");
+  const updatePlease = () => {
+    const encoder = new TextEncoder();
+    const data = encoder.encode("updatePlease" + Math.random().toString());
+    send(data, { kind: DataPacket_Kind.RELIABLE });
+  };
+  let receivedData = new TextDecoder().decode(message?.payload);
 
   const tracks = useTracks(
     [{ source: Track.Source.Camera, withPlaceholder: true }],
@@ -74,7 +83,10 @@ export const ChessRoom = ({
                 <CarouselLayout tracks={carouselTracks}>
                   <ParticipantTile />
                 </CarouselLayout>
-                <ChessGame />
+                <ChessGame
+                  updatePlease={updatePlease}
+                  receivedData={receivedData}
+                />
               </FocusLayoutContainer>
             </div>
             <ControlBar controls={{ chat: true, screenShare: false }} />

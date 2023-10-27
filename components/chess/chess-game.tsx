@@ -3,11 +3,11 @@
 import { ChessBoard } from "./chess-board";
 import { ChessPanel } from "./chess-panel";
 
-export const ChessGame = () => {
+export const ChessGame = ({ updatePlease, receivedData }: any) => {
   return (
     <div className="flex justify-center items-center w-full">
       <div className="flex flex-col justify-center items-center gap-4 w-full">
-        <ChessBoard />
+        <ChessBoard updatePlease={updatePlease} receivedData={receivedData} />
         {/* <ChessPanel /> */}
       </div>
     </div>

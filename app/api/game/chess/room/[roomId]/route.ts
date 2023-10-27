@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
   const updatedRoomStatus = {
     ...roomStatus,
-    history: [roomStatus.history, fen],
+    history: [...roomStatus.history, fen],
     turnIndex: roomStatus.turnIndex + 1,
     turnColor: roomStatus.turnColor === "w" ? "b" : "w",
     lastMoveFrom: from,
@@ -42,6 +42,38 @@ export async function POST(request: Request) {
     status: "success",
     message: "Update Successful",
     roomStatus: updatedRoomStatus,
+    myColor,
+  });
+}
+
+export async function PATCH(request: Request) {
+  const body = await request.text();
+
+  let gameName, roomId, userEmail;
+  try {
+    const json = JSON.parse(body);
+    gameName = json.gameName;
+    roomId = json.roomId;
+    userEmail = json.userEmail;
+  } catch (error) {
+    console.error("Invalid JSON:", error);
+    return NextResponse.json({ message: "Invalid JSON format" });
+  }
+
+  const roomKey = `${gameName}:${roomId}`;
+
+  const roomStatus: any = await kv.get(roomKey);
+
+  const { hostEmail, hostColor, opponentColor } = roomStatus;
+  const myColor = userEmail === hostEmail ? hostColor : opponentColor;
+
+  const result = await kv.get(roomKey);
+  console.log(result);
+
+  return NextResponse.json({
+    status: "success",
+    message: "Update Successful",
+    roomStatus,
     myColor,
   });
 }
