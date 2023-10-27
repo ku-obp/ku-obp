@@ -21,11 +21,8 @@ import {
   Chat,
   ControlBar,
   useDataChannel,
-  useParticipants,
-  ParticipantName,
-  ParticipantLoop,
 } from "@livekit/components-react";
-import { ChessGame } from "./chess/chess-game";
+import { ChessGame } from "./chess-game";
 
 export interface VideoConferenceProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -47,14 +44,12 @@ export const ChessRoom = ({
     unreadMessages: 0,
   });
 
-  const { message, send } = useDataChannel("chess");
-  const movePublisher = (move: { from: string; to: string }) => {
-    const moveJson = JSON.stringify(move);
+  const { message, send } = useDataChannel("update");
+  const updatePlease = () => {
     const encoder = new TextEncoder();
-    const data = encoder.encode(moveJson);
+    const data = encoder.encode("updatePlease" + Math.random().toString());
     send(data, { kind: DataPacket_Kind.RELIABLE });
   };
-
   let receivedData = new TextDecoder().decode(message?.payload);
 
   const tracks = useTracks(
@@ -74,9 +69,6 @@ export const ChessRoom = ({
     (track) => !isEqualTrackRef(track, focusTrack)
   );
 
-  const participants = useParticipants();
-  console.log(participants.length);
-
   return (
     <div className="lk-video-conference" {...props}>
       {isWeb() && (
@@ -92,8 +84,8 @@ export const ChessRoom = ({
                   <ParticipantTile />
                 </CarouselLayout>
                 <ChessGame
+                  updatePlease={updatePlease}
                   receivedData={receivedData}
-                  movePublisher={movePublisher}
                 />
               </FocusLayoutContainer>
             </div>
@@ -112,15 +104,3 @@ export const ChessRoom = ({
     </div>
   );
 };
-
-{
-  /* <button onClick={() => movePublisher({ from: "e2", to: "e4" })}>
-Button
-</button>
-{message && (
-<div>
-  Received message:
-  {new TextDecoder().decode(message.payload)}
-</div>
-)} */
-}
