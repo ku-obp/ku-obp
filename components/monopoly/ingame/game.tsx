@@ -7,7 +7,8 @@ import ChacneCard, { ChanceDisplayInfo } from "./specialCards";
 import { MonopolyCookie, MonopolySettings, GameTrading, MonopolyMode } from "../../../public/assets/monopoly/types";
 import Slider from "../utils/slider";
 import { CookieManager } from "../../../public/assets/monopoly/cookieManager";
-import Image from "next/image"
+
+import { convertStatus, reset, command } from "@/redux/features/monopoly-slice";
 
 interface MonopolyGameProps {
     players: Array<Player>;
@@ -511,7 +512,7 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
         var animate = () => {
             for (const x of prop.players.filter((v) => v.balance >= 0)) {
                 const location = x.position;
-                const icon = x.icon + 1;
+                const indicator = x.indicator + 1;
                 const injail = x.isInJail;
 
                 const elementSearch = document.querySelector(`div.player[player-id="${x.id}"]`);
@@ -546,7 +547,7 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                         const secondDiv = document.createElement("div");
                         secondDiv.setAttribute("data-tooltip-hover", x.username);
                         const image = document.createElement("img");
-                        image.src = `./p${icon}.png`;
+                        image.src = `./p${indicator}.png`;
                         secondDiv.appendChild(image);
 
                         const jimage = document.createElement("img");
@@ -564,7 +565,7 @@ const MonopolyGame = forwardRef<MonopolyGameRef, MonopolyGameProps>((prop, ref) 
                     const secondDiv = document.createElement("div");
                     secondDiv.setAttribute("data-tooltip-hover", x.username);
                     const image = document.createElement("img");
-                    image.src = `./p${icon}.png`;
+                    image.src = `./p${indicator}.png`;
                     secondDiv.appendChild(image);
                     element.appendChild(secondDiv);
                     if (injail) {

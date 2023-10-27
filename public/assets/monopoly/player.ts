@@ -3,7 +3,7 @@ import { PlayerProprety } from "./types";
 export class Player {
     public id: string;
     public username: string;
-    public icon: number;
+    public indicator: number;
 
     public position: number;
     public balance: number;
@@ -16,7 +16,7 @@ export class Player {
     constructor(_id: string, _name: string) {
         this.id = _id;
         this.username = _name;
-        this.icon = -1;
+        this.indicator = -1;
         this.position = 0;
         this.balance = 1500;
         this.properties = [];
@@ -29,7 +29,7 @@ export class Player {
     recieveJson(json: PlayerJSON) {
         this.username = json.username;
         this.position = json.position;
-        this.icon = json.icon;
+        this.indicator = json.indicator;
         this.balance = json.balance;
         this.properties = json.properties;
         this.isInJail = json.isInJail;
@@ -41,7 +41,7 @@ export class Player {
     public toJson() {
         return {
             balance: this.balance,
-            icon: this.icon,
+            indicator: this.indicator,
             id: this.id,
             isInJail: this.isInJail,
             jailTurnsRemaining: this.jailTurnsRemaining,
@@ -53,7 +53,7 @@ export class Player {
     }
 
     get color() {
-        switch (this.icon) {
+        switch (this.indicator) {
             case 0:
                 return "#E0115F";
             case 1:
@@ -73,7 +73,7 @@ export class Player {
 export type PlayerJSON = {
     id: string;
     username: string;
-    icon: number;
+    indicator: number;
     position: number;
     balance: number;
     properties: Array<any>;
