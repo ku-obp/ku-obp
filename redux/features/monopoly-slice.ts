@@ -44,7 +44,6 @@ type ServerState = {
     hostEmail: string;
     guestsEmail: string[];
     turnOrder: string[];
-    orderIndex: number;
     turnIndex: number;
     history: Array<string[]>;
     isStarted: boolean;
@@ -71,6 +70,7 @@ export const initialState = {
     aiMode: true
 }
 
+
 export const monopolySlice = createSlice({
     name: "monopoly",
     initialState: initialState,
@@ -80,13 +80,14 @@ export const monopolySlice = createSlice({
             action: PayloadAction<{ status: ServerState }>
         ) => {
             const status = action.payload.status;
-            state.boardIndex = status.turnIndex;
-            state.history = status.history[status.orderIndex];
-            state.color = COLORDIC[status.orderIndex];
+            state.boardIndex = Math.floor(status.turnIndex / 4);
+            let orderIndex: number = status.turnIndex % 4
+            state.history = status.history[orderIndex];
+            state.color = COLORDIC[status.turnIndex % 4];
             state.aiMode = false;
-            state.order = status.orderIndex;
-            state.prev = (status.orderIndex - 1) % 4;
-            state.next = (status.orderIndex + 1) % 4;
+            state.order = orderIndex;
+            state.prev = (orderIndex - 1) % 4;
+            state.next = (orderIndex + 1) % 4;
         },
         reset: () => {
             return initialState;
