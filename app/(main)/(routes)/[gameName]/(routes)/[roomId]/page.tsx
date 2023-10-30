@@ -63,15 +63,14 @@ const OnlineRoom = (props: any) => {
         );
         const data = await response.json();
 
-        // console.log(data);
-        dispatch(
-          convertStatus({ status: data.roomStatus, myColor: data.myColor })
-        );
         console.log(data);
         if (data.status === "failed") {
           router.push(`/${gameName}`);
-          alert(data.me);
+          alert(data.message);
         }
+        dispatch(
+          convertStatus({ status: data.roomStatus, myColor: data.myColor })
+        );
       } catch (error) {
         console.log(error);
       }

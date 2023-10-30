@@ -13,21 +13,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 
-interface RoomSidebarSearchProps {
-  data: {
-    label: string;
-    type: "chat" | "game";
-    data:
-      | {
-          id: string;
-          game: string;
-          name: string;
-        }[]
-      | undefined;
-  }[];
-}
-
-export const RoomSidebarSearch = ({ data }: RoomSidebarSearchProps) => {
+export const RoomSidebarSearch = ({ rooms }: any) => {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const params = useParams();
@@ -48,13 +34,10 @@ export const RoomSidebarSearch = ({ data }: RoomSidebarSearchProps) => {
   }, []);
 
   // 검색 리스트 클릭
-  const onClick = ({ id, game, name, type }: any) => {
+  const onClick = ({ roomId }: any) => {
     setOpen(false);
-    if (type === "chat") {
-      router.push(`/${game}/chat/${name}`);
-    } else {
-      router.push(`/${game}/game/${id}`);
-    }
+    // router.push(`/${gameName}/chat/${name}`);
+    router.push(`/${gameName}/game/${roomId}`);
   };
 
   return (
@@ -76,18 +59,18 @@ export const RoomSidebarSearch = ({ data }: RoomSidebarSearchProps) => {
         <CommandInput placeholder={`Search all ${gameName} rooms`} />
         <CommandList>
           <CommandEmpty>No Results found</CommandEmpty>
-          {data.map(({ label, type, data }) => {
-            if (!data?.length) return null;
+          {rooms?.map(({ label, status }: any) => {
+            if (!status?.length) return null;
 
             return (
               <CommandGroup key={label} heading={label}>
-                {data?.map(({ id, game, name }) => {
+                {status?.map(({ roomId, hostEmail }: any) => {
                   return (
                     <CommandItem
-                      key={id}
-                      onSelect={() => onClick({ id, game, name, type })}
+                      key={roomId}
+                      onSelect={() => onClick({ roomId })}
                     >
-                      <span>{name}</span>
+                      <span>{hostEmail}</span>
                     </CommandItem>
                   );
                 })}

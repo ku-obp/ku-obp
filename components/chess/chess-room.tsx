@@ -80,6 +80,7 @@ export const ChessRoom = ({
     (track) => !isEqualTrackRef(track, focusTrack)
   );
 
+  // disconnected => /chess 라우팅
   const connectionState = useConnectionState();
   const [initialConnected, setInitialConnected] = useState(false);
   useEffect(() => {
