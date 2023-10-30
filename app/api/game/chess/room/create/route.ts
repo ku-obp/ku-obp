@@ -38,9 +38,9 @@ export async function POST(request: Request) {
 
   try {
     await kv.set(roomKey, JSON.stringify(roomStatus), {
-      ex: 3600,
+      ex: 600,
       nx: true,
-    }); // 1시간 후 만료
+    }); // 20분 후 만료
   } catch (error) {
     console.log(error);
     return NextResponse.json({ message: "Failed to Create Room" });

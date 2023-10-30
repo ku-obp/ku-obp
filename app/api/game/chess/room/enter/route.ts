@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   let roomStatus;
   try {
     roomStatus = await kv.get(roomKey);
-    if (!roomStatus) {
+    if (roomStatus === null) {
       return NextResponse.json({ status: "failed", message: "Room Not Found" });
     }
   } catch (error) {

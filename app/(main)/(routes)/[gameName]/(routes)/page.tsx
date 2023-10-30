@@ -9,6 +9,8 @@ import { openModal } from "@/redux/features/modal-slice";
 
 import { Button } from "@/components/ui/button";
 import { makeUpper } from "@/lib/utils";
+import { MobileToggle } from "@/components/mobile-toggle";
+import { GameRoomHeader } from "@/components/game-room/game-room-header";
 
 const GameServer = (props: any) => {
   const dispatch = useDispatch<AppDispatch>();
@@ -19,6 +21,7 @@ const GameServer = (props: any) => {
 
   return (
     <div className="h-full w-full flex flex-col gap-8 justify-center items-center">
+      {/* <MobileToggle gameName={gameName} /> */}
       <p className="text-3xl lg:text-5xl font-bold text-rose-600">
         Welcome to {makeUpper(props.params.gameName)} Online!
       </p>

@@ -10,62 +10,46 @@ import { RoomSidebarSearch } from "./room-sidebar-search";
 import { RoomSidebarSection } from "./room-sidebar-section";
 import { RoomSidebarItem } from "./room-sidebar-item";
 import { useEffect, useState } from "react";
+import { postApi } from "@/apis/api";
+import { useParams } from "next/navigation";
 
 // useParams는 Client Components에서만 작동한다.
 // Server Components로 작동하고 싶다면 props로 전달하자.
 export const RoomSidebar = (props: any) => {
   const [rooms, setRooms] = useState([]);
+  const params = useParams();
+  const gameName = params.gameName;
+
   useEffect(() => {
     (async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/room/list`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ gameName: props.gameName }),
-        }
-      );
-      const data = await response.json();
-      const roomData = data.data?.rows || []; // Make sure to handle potential null values.
-
-      setRooms(roomData); // Update the rooms state with the fetched data.
+      const data = await postApi(`/api/game/${gameName}/room/list`, {
+        gameName,
+      });
+      setRooms(data.rooms);
     })();
-  }, [props.gameName]); // Add props.gameName as a dependency for the effect.
+  }, [gameName]);
 
-  // useMemo
-  const chatRooms = rooms?.filter((room: any) => room.type === "chat");
-  const gameRooms = rooms?.filter((room: any) => room.type === "game");
   return (
     <div className="flex flex-col h-full text-primary w-full dark:bg-[#2B2D31] bg-[#F2F3F5]">
       <RoomSidebarHeader />
       <ScrollArea className="flex-1 px-3">
         <div className="mt-2">
           <RoomSidebarSearch
-            data={[
-              {
-                label: "Chat Rooms",
-                type: "chat",
-                data: chatRooms?.map((room: any) => ({
-                  id: room.id,
-                  game: room.game,
-                  name: room.name,
-                })),
+            rooms={rooms?.map(({ hostEmail, roomId }) => ({
+              label: "game",
+              status: {
+                hostEmail,
+                roomId,
               },
-              {
-                label: "Game Rooms",
-                type: "game",
-                data: gameRooms?.map((room: any) => ({
-                  id: room.id,
-                  game: room.game,
-                  name: room.name,
-                })),
-              },
-            ]}
+            }))}
           />
         </div>
         <Separator className="bg-zinc-200 dark:bg-zinc-700 rounded-md my-2" />
-        <RoomSidebarSection label="chat" rooms={chatRooms} />
-        <RoomSidebarSection label="game" rooms={gameRooms} />
+        <RoomSidebarSection
+          label="menu"
+          rooms={[{ roomId: "1", type: "home", name: "home" }]}
+        />
+        <RoomSidebarSection label="game" rooms={rooms} />
       </ScrollArea>
     </div>
   );
