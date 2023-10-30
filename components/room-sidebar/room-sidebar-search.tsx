@@ -34,11 +34,13 @@ export const RoomSidebarSearch = ({ rooms }: any) => {
   }, []);
 
   // 검색 리스트 클릭
-  const onClick = ({ roomId }: any) => {
+  const onClick = (roomId: any) => {
     setOpen(false);
     // router.push(`/${gameName}/chat/${name}`);
-    router.push(`/${gameName}/game/${roomId}`);
+    router.push(`/${gameName}/${roomId}`);
   };
+  // console.log(rooms);
+  // rooms?.map(({ label, status }: any) => {});
 
   return (
     <>
@@ -59,24 +61,20 @@ export const RoomSidebarSearch = ({ rooms }: any) => {
         <CommandInput placeholder={`Search all ${gameName} rooms`} />
         <CommandList>
           <CommandEmpty>No Results found</CommandEmpty>
-          {rooms?.map(({ label, status }: any) => {
-            if (!status?.length) return null;
+          <CommandGroup key={"game"}>
+            {rooms?.map(({ label, status }: any) => {
+              if (!status) return null;
 
-            return (
-              <CommandGroup key={label} heading={label}>
-                {status?.map(({ roomId, hostEmail }: any) => {
-                  return (
-                    <CommandItem
-                      key={roomId}
-                      onSelect={() => onClick({ roomId })}
-                    >
-                      <span>{hostEmail}</span>
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
-            );
-          })}
+              return (
+                <CommandItem
+                  key={status.roomId}
+                  onSelect={() => onClick(status.roomId)}
+                >
+                  <span>{status.hostEmail}</span>
+                </CommandItem>
+              );
+            })}
+          </CommandGroup>
         </CommandList>
       </CommandDialog>
     </>

@@ -33,6 +33,8 @@ import {
 } from "@livekit/components-react";
 import { ChessGame } from "./chess-game";
 import { useRouter } from "next/navigation";
+import { MobileToggle } from "../mobile-toggle";
+import { ArrowLeft, ChevronLeft, ChevronLeftCircle } from "lucide-react";
 
 export interface VideoConferenceProps
   extends React.HTMLAttributes<HTMLDivElement> {
@@ -117,6 +119,15 @@ export const ChessRoom = ({
                   updatePlease={updatePlease}
                   receivedData={receivedData}
                 />
+                <div className="fixed right-4 top-4 z-1">
+                  {/* <MobileToggle gameName="chess" /> */}
+                  {/* <ArrowLeft
+                    className="flex-shrink-0 w-10 h-10 text-zinc-500 dark:text-zinc-400"
+                    onClick={() => {
+                      router.push(`/chess`);
+                    }}
+                  /> */}
+                </div>
               </FocusLayoutContainer>
             </div>
             <ControlBar controls={{ chat: true, screenShare: false }} />
