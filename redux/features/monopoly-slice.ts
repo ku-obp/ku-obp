@@ -2,8 +2,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { range } from "lodash";
 
 export type MonopolyCommandPayload = {
-    actor: number;
-    serializedCommand: string;
+    commandType: string;
+    args: any;
 }
 
 export type MonopolyState = {

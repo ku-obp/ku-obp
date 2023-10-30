@@ -26,6 +26,8 @@ import {
   ParticipantLoop,
 } from "@livekit/components-react";
 
+import { useRouter } from "next/navigation";
+
 
 import Monopoly from "./monopoly"
 
@@ -49,14 +51,13 @@ export const MonopolyRoom = ({
     unreadMessages: 0,
   });
 
-  const { message, send } = useDataChannel("monopoly");
-  const movePublisher = (command: { from: string; to: string }) => {
-    const moveJson = JSON.stringify(move);
+  const router = useRouter();
+  const { message, send } = useDataChannel("update-monopoly");
+  const updatePlease = () => {
     const encoder = new TextEncoder();
-    const data = encoder.encode(moveJson);
+    const data = encoder.encode("updatePlease" + Math.random().toString());
     send(data, { kind: DataPacket_Kind.RELIABLE });
   };
-
   let receivedData = new TextDecoder().decode(message?.payload);
 
   const tracks = useTracks(
@@ -93,7 +94,7 @@ export const MonopolyRoom = ({
                 <CarouselLayout tracks={carouselTracks}>
                   <ParticipantTile />
                 </CarouselLayout>
-                <Monopoly/>
+                <Monopoly />
               </FocusLayoutContainer>
             </div>
             <ControlBar controls={{ chat: true, screenShare: false }} />

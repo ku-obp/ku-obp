@@ -8,6 +8,15 @@ import NotifyElement, { NotificatorRef } from "./notificator";
 import monopolyJSON from "../../public/assets/monopoly/monopoly.json";
 import { MonopolySettings, MonopolyModes, historyAction, history, GameTrading, MonopolyMode } from "../../public/assets/monopoly/types";
 import { CookieManager } from "../../public/assets/monopoly/cookieManager";
+
+import { useDispatch } from "react-redux";
+import { AppDispatch, useAppSelector } from "@/redux/store";
+
+import { useSession } from "next-auth/react";
+import { useParams } from "next/navigation";
+
+import { convertStatus, reset, command } from "@/redux/features/monopoly-slice"
+
 function App({ socket, name, server }: { socket: Socket; name: string; server: Server | undefined }) {
     const [clients, SetClients] = useState<Map<string, Player>>(new Map());
     const players = Array.from(clients.values());
@@ -23,6 +32,17 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
     const [histories, SetHistories] = useState<Array<historyAction>>([]);
 
     const [currentTrade, setTrade] = useState<GameTrading | boolean | undefined>(undefined);
+
+    const params = useParams();
+    const gameName = params.gameName;
+    const roomId = params.roomId;
+    const user = useSession();
+
+    const dispatch = useDispatch<AppDispatch>();
+    const state = useAppSelector((state) => state.monopolyReducer);
+
+
+
 
     useEffect(() => {
         if (!gameStartedDisplay) return;
@@ -76,6 +96,8 @@ function App({ socket, name, server }: { socket: Socket; name: string; server: S
             } catch {}
         });
     }
+
+
     useEffect(() => {
         let settings: MonopolySettings | undefined = undefined;
 
@@ -1324,6 +1346,10 @@ which is ${payment_ammount}
             x.recieveJson(args.pJson);
         }
         document.addEventListener("mousemove", mouseMove);
+        
+        
+        
+        // redux + HTTP POST 기반으로 이식해야 할 부분들
         socket.on("initials", socket_Initials);
         socket.on("new-player", socket_NewPlayer);
         socket.on("ready", socket_Ready);
@@ -1380,7 +1406,7 @@ which is ${payment_ammount}
     useEffect(() => {
         navRef.current?.reRenderPlayerList();
     }, [clients]);
-
+    
     return gameStartedDisplay ? (
         <>
             {globalSettings !== undefined && globalSettings.accessibility[3] ? (
