@@ -49,7 +49,7 @@ export const ChessSocketProvider = ({
 
     const name = user.data?.user?.name;
 
-    const socket = io("http://localhost:4000");
+    const socket = io(process.env.SOCKET_URL || "http://localhost:4000");
     socket.emit("joinRoom", { roomKeyInstance, name });
     socket.on("color", (data) => {
       setColor(data);
