@@ -57,14 +57,6 @@ export const ChessRoom = ({
   });
 
   const router = useRouter();
-  const { message, send } = useDataChannel("update");
-  const updatePlease = () => {
-    const encoder = new TextEncoder();
-    const data = encoder.encode("updatePlease" + Math.random().toString());
-    send(data, { kind: DataPacket_Kind.RELIABLE });
-  };
-  let receivedData = new TextDecoder().decode(message?.payload);
-
   const tracks = useTracks(
     [{ source: Track.Source.Camera, withPlaceholder: true }],
     { updateOnlyOn: [RoomEvent.ActiveSpeakersChanged], onlySubscribed: false }
@@ -115,19 +107,8 @@ export const ChessRoom = ({
                 <CarouselLayout tracks={carouselTracks}>
                   <ParticipantTile />
                 </CarouselLayout>
-                <ChessGame
-                  updatePlease={updatePlease}
-                  receivedData={receivedData}
-                />
-                <div className="fixed right-4 top-4 z-1">
-                  {/* <MobileToggle gameName="chess" /> */}
-                  {/* <ArrowLeft
-                    className="flex-shrink-0 w-10 h-10 text-zinc-500 dark:text-zinc-400"
-                    onClick={() => {
-                      router.push(`/chess`);
-                    }}
-                  /> */}
-                </div>
+                <ChessGame />
+                <div className="fixed right-4 top-4 z-1"></div>
               </FocusLayoutContainer>
             </div>
             <ControlBar controls={{ chat: true, screenShare: false }} />

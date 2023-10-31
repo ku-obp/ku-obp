@@ -61,23 +61,6 @@ export const chessSlice = createSlice({
   name: "chess",
   initialState,
   reducers: {
-    convertStatus: (
-      state,
-      action: PayloadAction<{ status: ServerState; myColor: string }>
-    ) => {
-      const status = action.payload.status;
-      const myColor = action.payload.myColor;
-
-      state.boardIndex = status.turnIndex;
-      state.history = status.history;
-      state.lastMove = [{ from: status.lastMoveFrom, to: status.lastMoveTo }];
-      state.playerColor = myColor;
-      state.opponentColor = status.opponentColor;
-      state.aiMode = false;
-      state.turnColor = status.turnColor;
-      state.from = "";
-      state.to = [] as string[];
-    },
     reset: () => {
       return initialState;
     },
@@ -120,16 +103,13 @@ export const chessSlice = createSlice({
       }
     },
     changeColor: (state) => {
-      if (state.boardIndex === 0) {
-        state.playerColor = state.playerColor === "w" ? "b" : "w";
-        state.opponentColor = state.opponentColor === "w" ? "b" : "w";
-      }
+      state.playerColor = state.playerColor === "w" ? "b" : "w";
+      state.opponentColor = state.opponentColor === "w" ? "b" : "w";
     },
   },
 });
 
 export const {
-  convertStatus,
   reset,
   move,
   gotoPrev,
