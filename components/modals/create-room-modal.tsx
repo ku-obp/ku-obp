@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 
 import { closeModal } from "@/redux/features/modal-slice";
 import { AppDispatch, useAppSelector } from "@/redux/store";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   Dialog,
@@ -32,23 +33,13 @@ export const CreateRoomModal = () => {
     dispatch(closeModal());
   };
 
-  const onlineMode = async () => {
+  const onlineMode = () => {
+    const gameName = params.gameName;
+    const roomId = uuidv4();
+    const roomKey = `${gameName}:${roomId}`;
+
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_URL}/api/game/${gameName}/room/create`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ gameName, hostEmail }),
-        }
-      );
-      const data = await response.json();
-      if (data.message === "Room Created Successfully") {
-        router.push(`/${gameName}/${data.roomStatus.roomId}`);
-      } else {
-        alert("Failed to Create Room");
-      }
-      console.log(data);
+      router.push(`/${gameName}/${roomId}`);
     } catch (error) {
       console.log(error);
     } finally {

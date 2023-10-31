@@ -11,7 +11,6 @@ import { LiveKitRoom } from "@livekit/components-react";
 import { ChessRoom } from "@/components/chess/chess-room";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
-import { convertStatus } from "@/redux/features/chess-slice";
 
 const OnlineRoom = (props: any) => {
   const router = useRouter();
@@ -43,39 +42,6 @@ const OnlineRoom = (props: any) => {
         console.error(e);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userEmail]);
-
-  useEffect(() => {
-    if (!userEmail) {
-      return;
-    }
-
-    (async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_URL}/api/game/${gameName}/room/enter`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ gameName, userEmail, roomId }),
-          }
-        );
-        const data = await response.json();
-
-        // console.log(data);
-        if (data.status === "failed") {
-          router.push(`/${gameName}`);
-          alert(data.message);
-        }
-        dispatch(
-          convertStatus({ status: data.roomStatus, myColor: data.myColor })
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userEmail]);
 
