@@ -17,6 +17,7 @@ import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useSocket } from "@/components/providers/chess-socket-provider";
+import { openModal } from "@/redux/features/modal-slice";
 
 interface ActionType {
   fen: string;
@@ -25,10 +26,28 @@ interface ActionType {
 }
 
 export const ChessBoard = () => {
-  const { socket, roomKey, color } = useSocket();
+  const { socket, roomKey } = useSocket();
   const dispatch = useDispatch<AppDispatch>();
   const state = useAppSelector((state) => state.chessReducer);
   const chess = new Chess(state.history[state.boardIndex]);
+
+  if (chess.isGameOver()) {
+    let result;
+    if (chess.isDraw()) {
+      result = "draw";
+    } else if (chess.turn() === state.opponentColor) {
+      result = "win";
+    } else if (chess.turn() === state.playerColor) {
+      result = "lose";
+    }
+
+    dispatch(
+      openModal({
+        type: "gameResult",
+        data: { result },
+      })
+    );
+  }
 
   useEffect(() => {
     if (socket) {

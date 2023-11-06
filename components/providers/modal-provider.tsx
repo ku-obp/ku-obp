@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-import { CreateRoomModal } from "../modals/create-room-modal";
+import { CreateRoomModal } from "@/components/modals/create-room-modal";
+import { GameResultModal } from "@/components/modals/game-result-modal";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -18,6 +19,7 @@ export const ModalProvider = () => {
   return (
     <>
       <CreateRoomModal />
+      <GameResultModal />
     </>
   );
 };

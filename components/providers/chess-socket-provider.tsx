@@ -1,13 +1,14 @@
 "use client";
 
-import { useParams } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
-import io, { Socket } from "socket.io-client";
-import { useDispatch } from "react-redux";
-import { AppDispatch, useAppSelector } from "@/redux/store";
-import { changeColor } from "@/redux/features/chess-slice";
+import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useDispatch } from "react-redux";
+import io from "socket.io-client";
+
+import { AppDispatch, useAppSelector } from "@/redux/store";
+import { changeColor, reset } from "@/redux/features/chess-slice";
+import { openModal } from "@/redux/features/modal-slice";
 
 type SocketContextType = {
   socket: any | null;
@@ -37,6 +38,7 @@ export const ChessSocketProvider = ({
   const [roomKey, setRoomKey] = useState("");
   const [color, setColor] = useState("");
   const params = useParams();
+  const router = useRouter();
   const user = useSession();
   const dispatch = useDispatch<AppDispatch>();
   const state = useAppSelector((state) => state.chessReducer);
@@ -44,10 +46,10 @@ export const ChessSocketProvider = ({
   useEffect(() => {
     const gameName = params.gameName;
     const roomId = params.roomId;
-    const roomKeyInstance = `${gameName}:${roomId}`;
-    setRoomKey(roomKeyInstance);
+    const roomKey = `${gameName}:${roomId}`;
+    setRoomKey(roomKey);
 
-    const name = user.data?.user?.name;
+    const playerName = user.data?.user?.name;
 
     const socket = io(
       process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000",
@@ -55,20 +57,39 @@ export const ChessSocketProvider = ({
         withCredentials: true,
       }
     );
-    socket.emit("joinRoom", { roomKeyInstance, name });
     socket.on("color", (data) => {
+      dispatch(reset());
       setColor(data);
       if (data === "b") {
         dispatch(changeColor());
       }
     });
 
+    socket.emit("joinFailed", () => {
+      console.log("Room is full now");
+      router.push("/chess");
+    });
+
     socket.on("connect", () => {
       console.log("Connected to Socket.io server");
+      socket.emit("joinRoom", { playerName, roomKey });
     });
 
     socket.on("disconnect", () => {
       console.log("Disconnected from Socket.io server");
+      dispatch(reset());
+    });
+
+    socket.on("explosion", () => {
+      console.log("You win.");
+      router.push("/chess");
+      dispatch(reset());
+      dispatch(
+        openModal({
+          type: "gameResult",
+          data: { result: "win" },
+        })
+      );
     });
 
     setSocket(socket);
