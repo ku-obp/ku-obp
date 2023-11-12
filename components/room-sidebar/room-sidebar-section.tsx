@@ -1,19 +1,20 @@
 import { RoomSidebarItem } from "./room-sidebar-item";
 
 export const RoomSidebarSection = (props: any) => {
+  const rooms = props.rooms;
   return (
     <div className="flex flex-col justify-between mb-2">
       <p className="text-xs uppercase font-semibold text-zinc-500 dark:text-zinc-400 my-2">
         {props.label}
       </p>
       <div className="space-y-[4px]">
-        {props.rooms?.map((room: any) => (
+        {rooms?.map(({ roomId, hostEmail, type, name }: any) => (
           <RoomSidebarItem
-            key={room.id}
-            id={room.id}
-            game={room.game}
-            name={room.name}
-            type={room.type}
+            key={roomId}
+            roomId={roomId}
+            hostEmail={hostEmail}
+            type={type}
+            name={name}
           />
         ))}
       </div>

@@ -22,12 +22,27 @@ type ChessState = {
   boardIndex: number;
   history: string[];
   lastMove: LastMove[];
-  playerColor: "w" | "b";
-  opponentColor: "w" | "b";
+  playerColor: string;
+  opponentColor: string;
   aiMode: boolean;
-  turnColor: "w" | "b";
+  turnColor: string;
   from: string;
   to: string[];
+};
+
+type ServerState = {
+  roomId: string;
+  hostEmail: string;
+  hostColor: string;
+  opponentEmail: string;
+  opponentColor: string;
+  history: string[];
+  turnIndex: number;
+  turnColor: string;
+  lastMoveFrom: string;
+  lastMoveTo: string;
+  isStarted: boolean;
+  isEnd: boolean;
 };
 
 const initialState = {
@@ -88,10 +103,8 @@ export const chessSlice = createSlice({
       }
     },
     changeColor: (state) => {
-      if (state.boardIndex === 0) {
-        state.playerColor = state.playerColor === "w" ? "b" : "w";
-        state.opponentColor = state.opponentColor === "w" ? "b" : "w";
-      }
+      state.playerColor = state.playerColor === "w" ? "b" : "w";
+      state.opponentColor = state.opponentColor === "w" ? "b" : "w";
     },
   },
 });
