@@ -461,6 +461,8 @@ export const PlayersLocationsOverlay = ({players, nowPlaying}: {players: {email:
             }
         }
     }, [playerLocation, playerDisplayLocation])
+
+    // 렌더링 구현 예정
 }
 
 export const PlayerCellDisplay = ({players, playerDisplayLocations, cellId}: { players: {email: string, ord: number}[], playerDisplayLocations: Map<String, number>, cellId: number}) => {
