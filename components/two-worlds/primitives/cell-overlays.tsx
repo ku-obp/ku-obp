@@ -469,4 +469,7 @@ export const PlayerCellDisplay = ({players, playerDisplayLocations, cellId}: { p
     const sorted = players.sort((a, b) => a.ord - b.ord);
     const here = Array.from(playerDisplayLocations.entries()).filter(([_, location]) => location === cellId).map(([playerId, _]) => playerId)
     const filtered = sorted.filter(({email}) => email in here).map(({ord}) => ord)
+    // filtered에는 이 셀에 위치한 플레이어들의 턴 순서 정보가 정렬되어 담긴다.
+
+    
 }

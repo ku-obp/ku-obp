@@ -1,6 +1,6 @@
 import { PaymentType } from "./utils";
 
-export type CellType = "infrastructure" | "land" | "lotto" | "charity" | "chance" | "transportation" | "hospital" | "university" | "jail" | "start";
+export type CellType = "infrastructure" | "land" | "lotto" | "charity" | "chance" | "transportation" | "hospital" | "park" | "concert" | "university" | "jail" | "start";
 
 export const INFRASTRUCTURE_NAMES={
     "water": "수자원",
@@ -135,6 +135,22 @@ export class Hospital implements ICellData {
     public get name() { return "병원" }
 
     public static readonly HospitalCell = new Hospital()    
+}
+
+export class Park implements ICellData {
+    public get type(): CellType {
+        return "park"
+    }
+    public get paymentInfo(): PaymentType[] {
+        return []
+    }
+    private constructor() {
+
+    }
+    public get isBuildable() {return false}
+    public get name() {return "공원"}
+
+    public static readonly ParkCell = new Park()
 }
 
 export class University implements ICellData {
