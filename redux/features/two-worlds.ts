@@ -1,9 +1,11 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, compose } from "@reduxjs/toolkit";
+import {range} from "lodash"
 
 type PlayerType = {
     email: string,
     order: number,
     location: number,
+    displayLocation: number,
     cash: number
 }
 
@@ -13,7 +15,7 @@ type PropertyType = {
     cellId: number
 }
 
-type GoForwardPayload = {
+type GoPayload = {
     order: number
 }
 
@@ -22,88 +24,97 @@ type SetPlayerLocationPayload = {
     dest: number
 }
 
-type MovePayload = {
-    order: number,
-    dest: number,
-    type: "forward" | "backward" | "warp"
-}
-
 type LocationType = number | null
 
 type StateType = {
     players: PlayerType[],
-    properties: PropertyType[],
-    displayLocations: {
-        order: number,
-        displayLocation: number
-    }[]
-}
-
-const _initialState = {
-    players: [],
-    properties: []
+    properties?: PropertyType[],
+    dummy_properties: PropertyType[]
 }
 
 const initialState: StateType = {
-    ..._initialState,
-    displayLocations: []
+    players: [
+        {
+            email: "yeun0908@gmail.com",
+            order: 0,
+            location: 0,
+            displayLocation: 0,
+            cash: 4000000
+        },
+        {
+            email: "newsniper@protonmail.com",
+            order: 1,
+            location: 0,
+            displayLocation: 0,
+            cash: 4000000
+        },
+        {
+            email: "by_yeun@daum.net",
+            order: 2,
+            location: 0,
+            displayLocation: 0,
+            cash: 4000000
+        },
+        {
+            email: "by_yeun@korea.ac.kr",
+            order: 3,
+            location: 0,
+            displayLocation: 0,
+            cash: 4000000
+        }
+    ],
+    dummy_properties: [
+        {
+            ownerEmail: "by_yeun@daum.net",
+            count: 3,
+            cellId: 2
+        },
+        {
+            ownerEmail: "newsniper@protonmail.com",
+            count: 2,
+            cellId: 4
+        }
+    ]
 }
 
-export const twoWorldsSlice = createSlice({
+compose()
+
+
+export const twoWorldsDummySlice = createSlice({
     name: "two-worlds",
     initialState,
     reducers: {
-        goForward: (state, action: PayloadAction<GoForwardPayload>) => {
+        goForward: (state, action: PayloadAction<GoPayload>) => {
             for(let player of state.players) {
                 if(player.order === action.payload.order) {
-                    player.location = (player.location+1) % 54
+                    player.displayLocation = (player.displayLocation+1) % 54
                 }
             }
         },
-        setPlayerLocation: (state, action: PayloadAction<SetPlayerLocationPayload>) => {
+        goBackward: (state, action: PayloadAction<GoPayload>) => {
             for(let player of state.players) {
                 if(player.order === action.payload.order) {
-                    player.location = action.payload.dest
+                    player.displayLocation = (player.displayLocation-1) % 54
                 }
             }
         },
-        movePlayer: (state, action: PayloadAction<MovePayload>) => {
-            for(let dlinfo of state.displayLocations) {
-                if(dlinfo.order === action.payload.order) {
-                    switch(action.payload.type) {
-                        case "forward":
-                            do {
-                                setTimeout(() => {
-                                    dlinfo.displayLocation = (dlinfo.displayLocation + 1) % 54
-                                }, 600)
-                            } while (dlinfo.displayLocation !== action.payload.dest)
-                            break;
-                        case "backward":
-                            do {
-                                setTimeout(() => {
-                                    dlinfo.displayLocation = (dlinfo.displayLocation - 1) % 54
-                                }, 600)
-                            } while (dlinfo.displayLocation !== action.payload.dest)
-                            break;
-                        case "warp":
-                            setTimeout(() => {
-                                dlinfo.displayLocation = action.payload.dest
-                            }, 600)
-                            break;
-                    }
-                }
-            }
+        setPlayerDisplayLocation: (state, action: PayloadAction<SetPlayerLocationPayload>) => {
             for(let player of state.players) {
                 if(player.order === action.payload.order) {
-                    player.location = action.payload.dest
+                    player.displayLocation = action.payload.dest
                 }
             }
         },
+        syncPlayerLocation: (state) => {
+            for(let player of state.players) {
+                player.location = player.displayLocation
+            }
+        }
     }
 });
 
 export const {
-    goForward, setPlayerLocation, movePlayer
-} = twoWorldsSlice.actions;
+    goForward, goBackward, syncPlayerLocation, setPlayerDisplayLocation
+} = twoWorldsDummySlice.actions;
 
-export default twoWorldsSlice.reducer;
+export default twoWorldsDummySlice.reducer;
