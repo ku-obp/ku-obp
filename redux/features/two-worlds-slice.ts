@@ -48,29 +48,18 @@ export type GameStateType = {
 
 export type AllStateType = {
   gameState: GameStateType,
-  chanceCardAcquistionDisplay: {
-    whoEmail: string,
+  queues: QueuesType,
+  latestChance: {
     displayCardName: string,
     cardDescription: string
-  }[],
-  paymentsNotificationsDisplay: {
-    whoEmail: string,
+  } | null,
+  latestPayments: {
     type: string,
+    name: string,
     mandatory: PaymentTransaction | null,
     optional: PaymentTransaction | null
-  }[]
-}
-
-export type UpdateGameStatePayload = {
-  roomKey: string,
-  players: PlayerType[],
-  properties: PropertyType[],
-  nowInTurn: number,
-  govIncome: number,
-  charityIncome: number,
-  sidecars: {
-    limitRents: number
-  }
+  } | null,
+  frozen: boolean
 }
 
 const INITIAL_CASH = 6000000
@@ -96,56 +85,169 @@ const initialState: AllStateType = {
       limitRents: 0
     }
   },
-  chanceCardAcquistionDisplay : [],
-  paymentsNotificationsDisplay: []
+  queues: {
+    chances: {
+      queue: [],
+      processed: 0
+    },
+    payments: {
+      queue: [],
+      processed: 0
+    }
+  },
+  latestChance: null,
+  latestPayments: null,
+  frozen: false
 }
 
-export type NotifyPaymentsPayload = {
-  playerEmail: string,
-  type: string,
-  mandatory: PaymentTransaction | null,
-  optional: PaymentTransaction | null
+export type QueuesType = {
+  chances: {
+    queue: {
+      displayCardName: string,
+      cardDescription: string
+    }[],
+    processed: number
+  },
+  payments: {
+    queue: {
+      cellId: number,
+      mandatory: PaymentTransactionJSON | null,
+      optional: PaymentTransactionJSON | null
+    }[],
+    processed: number
+  }
 }
 
 export type NotifyChanceCardAcquistionPayload = {
-  playerEmail: string, displayName: string, description: string
+  queues: QueuesType,
+  payload: {
+    description: string,
+    displayName: string
+  }
 }
-
+export type NotifyPaymentsPayload = {
+  queues: {
+    chances: {
+      queue: {
+        displayCardName: string,
+        cardDescription: string
+      }[],
+      processed: number
+    },
+    payments: {
+      queue: {
+        cellId: number,
+        mandatory: PaymentTransactionJSON | null,
+        optional: PaymentTransactionJSON | null
+      }[],
+      processed: number
+    }
+  },
+  payload: {
+    type: string,
+    name: string,
+    invoices: {
+      mandatory: PaymentTransactionJSON | null,
+      optional: PaymentTransactionJSON | null
+    }
+  }
+} 
 
 export const twoWorldsSlice = createSlice({
   name: "two-worlds",
   initialState,
   reducers: {
-    updateGameState: (state, action: PayloadAction<UpdateGameStatePayload>) => {
-        state.gameState = action.payload
+    updateGameState: (state, action: PayloadAction<GameStateType>) => {
+      if(!state.frozen) { state.gameState = action.payload }
     },
     notifyChanceCardAcquistion: (state, action: PayloadAction<NotifyChanceCardAcquistionPayload>) => {
-      state.chanceCardAcquistionDisplay.push({
-        whoEmail: action.payload.playerEmail,
-        displayCardName: action.payload.displayName,
-        cardDescription: action.payload.description
-      })
+      if(!state.frozen) {
+        state.latestChance = {
+          displayCardName: action.payload.payload.description,
+          cardDescription: action.payload.payload.description
+        }
+        state.queues = action.payload.queues
+      }
     },
     notifyPayments: (state, action: PayloadAction<NotifyPaymentsPayload>) => {
-      const {
-        type, mandatory, optional
-      } = action.payload
-      state.paymentsNotificationsDisplay.push({
-        whoEmail: action.payload.playerEmail,
-        type, mandatory, optional
-      })
+      if(!state.frozen) {
+        const {
+          type, name, invoices
+        } = action.payload.payload
+        const [mandatory, optional] = ((_invoices) => [
+          (_invoices.mandatory === null) ? null : PaymentTransaction.fromJSON(_invoices.mandatory),
+          (_invoices.optional === null) ? null : PaymentTransaction.fromJSON(_invoices.optional)
+        ])(invoices)
+        state.latestPayments = {type,name,mandatory,optional}
+        state.queues = action.payload.queues
+      }
     },
-    clearChanceCardNotifications: (state) => {
-      state.chanceCardAcquistionDisplay = []
+    flushChances: (state, action: PayloadAction<QueuesType>) => {
+      state.queues.payments = action.payload.payments
+      state.queues.chances = {
+        queue: [],
+        processed: 0
+      }
+      state.latestChance = null
     },
-    clearPaymentsNotifications: (state) => {
-      state.paymentsNotificationsDisplay = []
+    flushPayments: (state, action: PayloadAction<QueuesType>) => {
+      state.queues.chances = action.payload.chances
+      state.queues.payments = {
+        queue: [],
+        processed: 0
+      }
+      state.latestPayments = null
+    },
+    freeze: (state) => {
+      state.frozen = true
+    },
+    refreshRQ: (state, action: PayloadAction<{
+      chances: {
+        queue: string[];
+        processed: number;
+      };
+      payments: {
+        queue: {
+          cellId: number;
+          mandatory: PaymentTransactionJSON | null;
+          optional: PaymentTransactionJSON | null;
+        }[];
+        processed: number;
+      }
+    }>) => {
+      const converted: QueuesType = {
+        payments: action.payload.payments,
+        chances: {
+          queue: action.payload.chances.queue.map((value) => {
+            return {
+              displayCardName: CHANCE_CARDS[value].displayName,
+              cardDescription: CHANCE_CARDS[value].description
+            }
+          }),
+          processed: action.payload.chances.processed
+        }
+      }
+      state.queues = converted
+
+      state.latestChance = (converted.chances.queue.length > 0) ? converted.chances.queue[converted.chances.queue.length - 1] : null
+
+      state.latestPayments = (converted.payments.queue.length > 0) ? ((last) => {
+        const cell = PREDEFINED_CELLS[last.cellId]
+        const mandatory = (last.mandatory === null) ? null : PaymentTransaction.fromJSON(last.mandatory)
+        const optional = (last.optional === null) ? null : PaymentTransaction.fromJSON(last.optional)
+        return {
+          name: cell.name,
+          type: cell.type,
+          mandatory,
+          optional
+        }
+      })(converted.payments.queue[converted.payments.queue.length - 1]) : null
     }
   }
 });
 
 export const {
-    updateGameState, notifyChanceCardAcquistion, clearChanceCardNotifications, notifyPayments, clearPaymentsNotifications
+    updateGameState, notifyChanceCardAcquistion, notifyPayments, flushChances, flushPayments, freeze, refreshRQ
 } = twoWorldsSlice.actions;
 
 export default twoWorldsSlice.reducer;
@@ -153,23 +255,57 @@ export default twoWorldsSlice.reducer;
 import * as TwoWorlds from "@/lib/two-worlds"
 
 export class PaymentTransaction {
-  public readonly player0: number
-  public readonly player1: number
-  public readonly player2: number
-  public readonly player3: number
-  public readonly government: number
-  public readonly charity: number
+  private _player0: number
+  public get player0(): number {
+    return this._player0
+  }
+  private _player1: number
+  public get player1(): number {
+    return this._player1
+  }
+  private _player2: number
+  public get player2(): number {
+    return this._player2
+  }
+  private _player3: number
+  public get player3(): number  {
+    return this._player3
+  }
+  private _government: number
+  public get government(): number {
+    return this._government
+  }
+  private _charity: number
+  public get charity(): number {
+    return this._charity
+  }
   public constructor({player0, player1, player2, player3, government, charity}: {
     player0?: number, player1?: number, player2?: number, player3?: number, government?: number, charity?: number
   }) {
-    this.player0 = player0 ?? 0;
-    this.player1 = player1 ?? 0;
-    this.player2 = player2 ?? 0;
-    this.player3 = player3 ?? 0;
-    this.government = government ?? 0;
-    this.charity = charity ?? 0;
+    this._player0 = player0 ?? 0;
+    this._player1 = player1 ?? 0;
+    this._player2 = player2 ?? 0;
+    this._player3 = player3 ?? 0;
+    this._government = government ?? 0;
+    this._charity = charity ?? 0;
+  }
+  public static toJSON(transaction: PaymentTransaction): PaymentTransactionJSON {
+    const {
+      player0, player1, player2, player3, government, charity
+    }: {player0: number, player1: number, player2: number, player3: number, government: number, charity: number} = transaction
+    return {
+      player0,
+      player1,
+      player2,
+      player3,
+      government,
+      charity
+    }
   }
 
+  public static fromJSON(transactionJSON: PaymentTransactionJSON): PaymentTransaction {
+    return new PaymentTransaction(transactionJSON)
+  }
   public merge(other: PaymentTransaction): PaymentTransaction {
     return new PaymentTransaction({
       player0: this.player0 + other.player0,
@@ -292,8 +428,17 @@ export class PaymentTransaction {
   }
 }
 
-import { PaymentType, generateNormalPaymentInfo, generateP2DPaymentInfo, generateG2MPaymentInfo } from "@/lib/two-worlds.parts/utils";
+export type PaymentTransactionJSON = {
+  player0: number;
+  player1: number;
+  player2: number;
+  player3: number;
+  government: number;
+  charity: number;
+}
 
+import { PaymentType, generateNormalPaymentInfo, generateP2DPaymentInfo, generateG2MPaymentInfo } from "@/lib/two-worlds.parts/utils";
+import { CHANCE_CARDS } from "@/components/providers/two-worlds-socket-provider";
 export type CellType = "infrastructure" | "industrial" | "land" | "lotto" | "charity" | "chance" | "transportation" | "hospital" | "park" | "concert" | "university" | "jail" | "start";
 
 type CellDic = {
@@ -628,7 +773,111 @@ export class Industrial implements ICellData {
     }
 }
 
+const parsePredefined: {
+  generators: {
+      land: (cellId: number, name: string, groupId: number) => Land,
+      transportation: (cellId: number) => Transportation,
+      chance: (cellId: number) => Chance
+  },
+  fixed: {
+      [type: string]: ICellData
+  }
+} = {
+  generators: {
+      land: (cellId: number, name: string, groupId: number) => new Land(cellId, name, groupId),
+      transportation: (cellId: number) => Transportation.Transportations[cellId],
+      chance: (cellId) => Chance.ChanceCells[cellId]
+  },
+  fixed: {
+      "water": Infrastructure.Infrastructures("water"),
+      "electricity": Infrastructure.Infrastructures("electricity"),
+      "lotto": Lotto.LottoCell,
+      "charity": Charity.CharityCell,
+      "hospital": Hospital.HospitalCell,
+      "university": University.UniversityCell,
+      "jail": Jail.JailCell,
+      "start": Start.StartCell,
+      "gas": Infrastructure.Infrastructures("gas"),
+      "concert": Concert.ConcertCell,
+      "agriculture": Industrial.Industrials("agriculture"),
+      "park": Park.ParkCell,
+      "factory": Industrial.Industrials("factory"),
+      "digital-complex": Industrial.Industrials("digital-complex")
+  }
+}
 
 
+import PredefinedCells from "./predefined_cells.json"
+
+
+
+
+function gatherPredefined(): ICellData[] {
+  const sorted = PredefinedCells.toSorted((a,b) => a.cellId - b.cellId)
+  const output: Array<ICellData> = []
+  for(const c of sorted) {
+      if (c.type === "chance") {
+          const {cellId} = c as {
+              cellId: number,
+              type: string
+          }
+          output.push(parsePredefined.generators.chance(cellId))
+      } else if (c.type === "land") {
+          const {cellId, name, groupId} = c as {
+              cellId: number,
+              type: string,
+              name: string,
+              groupId: number
+          };
+          output.push(parsePredefined.generators.land(cellId, name, groupId))
+      } else if (c.type === "transportation") {
+          const {
+              cellId
+          } = c as {
+              cellId: number,
+              type: string
+          };
+          output.push(parsePredefined.generators.transportation(cellId))
+      } else {
+          output.push(parsePredefined.fixed[c.type])
+      }
+  }
+  return output.toSorted((a,b) => a.cellId - b.cellId);
+}
 
 const GROUP_PRICES = [1, 2, 3, 4, 5, 6, 7, 8].reduce((accumulator: {[key: number]: number}, target: number) => ({...accumulator, [target]: (target * 100000)}),{} as {[key: number]: number})
+
+
+import { Socket } from "socket.io-client";
+
+export const PREDEFINED_CELLS: ICellData[] = gatherPredefined();
+
+type ChanceCard = {
+    description: string,
+    displayName: string,
+    action: (socket: Socket, state: GameStateType, playerEmail: string) => Promise<GameStateType | null>
+}
+
+export const CHANCE_IDS = [
+    "free-lotto",
+    "scholarship",
+    "discountRent",
+    "bonus",
+    "doubleLotto",
+    "limitRents",
+]
+
+export type ChanceActionCallback = ({chances, payments}: {chances: {queue: string[], processed: number}, payments: {queue: {
+    cellId: number,
+    mandatory: PaymentTransactionJSON | null,
+    optional: PaymentTransactionJSON | null
+  }[], processed: number}}, {description, displayName}: {description: string, displayName: string}) => void
+
+export type PaymentsActionCallback = ({chances, payments}: {chances: {queue: string[], processed: number}, payments: {queue: {
+    cellId: number,
+    mandatory: PaymentTransactionJSON | null,
+    optional: PaymentTransactionJSON | null
+  }[], processed: number}}, {mandatory, optional}:{
+    mandatory: PaymentTransactionJSON | null,
+    optional: PaymentTransactionJSON | null
+}) => void
