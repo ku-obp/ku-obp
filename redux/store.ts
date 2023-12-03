@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 import chessReducer from "./features/chess-slice";
 import modalReducer from "./features/modal-slice";
-import twoWorldsReducer from "./features/two-worlds"
+import twoWorldsReducer from "./features/two-worlds-slice"
 
 export const store = configureStore({
   reducer: {
