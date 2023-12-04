@@ -828,7 +828,7 @@ import PredefinedCells from "./predefined_cells.json"
 
 
 function gatherPredefined(): ICellData[] {
-  const sorted = PredefinedCells.toSorted((a,b) => a.cellId - b.cellId)
+  const sorted = Array.from(PredefinedCells).sort((a,b) => a.cellId - b.cellId)
   const output: Array<ICellData> = []
   for(const c of sorted) {
       if (c.type === "chance") {
@@ -857,7 +857,7 @@ function gatherPredefined(): ICellData[] {
           output.push(parsePredefined.fixed[c.type])
       }
   }
-  return output.toSorted((a,b) => a.cellId - b.cellId);
+  return Array.from(output).sort((a,b) => a.cellId - b.cellId);
 }
 
 const GROUP_PRICES = [1, 2, 3, 4, 5, 6, 7, 8].reduce((accumulator: {[key: number]: number}, target: number) => ({...accumulator, [target]: (target * 100000)}),{} as {[key: number]: number})
