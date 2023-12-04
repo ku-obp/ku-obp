@@ -55,6 +55,7 @@ export type AllStateType = {
   } | null,
   latestPayments: {
     type: string,
+    cellId: number
     name: string,
     mandatory: PaymentTransaction | null,
     optional: PaymentTransaction | null
@@ -146,6 +147,7 @@ export type NotifyPaymentsPayload = {
   payload: {
     type: string,
     name: string,
+    cellId: number,
     invoices: {
       mandatory: PaymentTransactionJSON | null,
       optional: PaymentTransactionJSON | null
@@ -172,13 +174,13 @@ export const twoWorldsSlice = createSlice({
     notifyPayments: (state, action: PayloadAction<NotifyPaymentsPayload>) => {
       if(!state.frozen) {
         const {
-          type, name, invoices
+          type, name, invoices, cellId
         } = action.payload.payload
         const [mandatory, optional] = ((_invoices) => [
           (_invoices.mandatory === null) ? null : PaymentTransaction.fromJSON(_invoices.mandatory),
           (_invoices.optional === null) ? null : PaymentTransaction.fromJSON(_invoices.optional)
         ])(invoices)
-        state.latestPayments = {type,name,mandatory,optional}
+        state.latestPayments = {type,name, cellId,mandatory,optional}
         state.queues = action.payload.queues
       }
     },
@@ -238,6 +240,7 @@ export const twoWorldsSlice = createSlice({
         return {
           name: cell.name,
           type: cell.type,
+          cellId: cell.cellId,
           mandatory,
           optional
         }
@@ -425,6 +428,18 @@ export class PaymentTransaction {
     },{
       mapNullIsGenerator: false, constant: new PaymentTransaction({})
     })
+  }
+
+  public pickByIcon(icon: PlayerIconType) {
+    if(icon === 0) {
+      return this.player0
+    } else if(icon === 1) {
+      return this.player1
+    } else if(icon === 2) {
+      return this.player2
+    } else {
+      return this.player3
+    }
   }
 }
 
@@ -846,7 +861,6 @@ function gatherPredefined(): ICellData[] {
 }
 
 const GROUP_PRICES = [1, 2, 3, 4, 5, 6, 7, 8].reduce((accumulator: {[key: number]: number}, target: number) => ({...accumulator, [target]: (target * 100000)}),{} as {[key: number]: number})
-
 
 import { Socket } from "socket.io-client";
 

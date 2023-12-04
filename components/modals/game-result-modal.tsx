@@ -47,7 +47,7 @@ export const GameResultModal = () => {
             <Button
               onClick={() => {
                 dispatch(closeModal());
-                router.push("/chess");
+                router.push("/");
               }}
               variant={result === "win" ? "primary" : "warning"}
               size={"lg"}
