@@ -242,7 +242,7 @@ export const TwoWorldsProvider = ({
     setPlayerEmail((playerEmail ?? null)?.toString() ?? "")
 
     const socket = io(
-      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:11000",
+      process.env.NEXT_PUBLIC_TWO_WORLDS_SOCKET_URL || "http://localhost:11000",
       {
         withCredentials: true,
       }
