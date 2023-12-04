@@ -14,3 +14,9 @@ export const makeUpper = (string: string) => {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join("-");
 };
+
+export const arrayRange = (start: number, stop: number, step: number = 1) =>
+    Array.from(
+        { length: (stop - start) / step + 1 },
+        (value, index) => start + index * step
+);

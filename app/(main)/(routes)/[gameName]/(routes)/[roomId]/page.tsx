@@ -6,6 +6,8 @@ import { useParams, useRouter } from "next/navigation";
 
 import { makeUpper } from "@/lib/utils";
 
+import { TwoWorldsRoom } from "@/components/two-worlds/two-worlds-room";
+
 import "@livekit/components-styles";
 import { LiveKitRoom } from "@livekit/components-react";
 import { ChessRoom } from "@/components/chess/chess-room";
@@ -58,7 +60,7 @@ const OnlineRoom = (props: any) => {
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       data-lk-theme="default"
     >
-      <ChessRoom />
+      {(gameName === "chess") ? (<ChessRoom />) : (gameName === "two-worlds") ? (<TwoWorldsRoom />) : (<></>)}
     </LiveKitRoom>
   );
 };
