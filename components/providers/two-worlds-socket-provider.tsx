@@ -264,8 +264,9 @@ export const TwoWorldsProvider = ({
     socket.on("endGame", (overall_finances: {
       playerEmail: string,
       value: number
-    }[]) => {      
-      const result = getResult(user.data?.user?.email,overall_finances.toSorted((a,b) => a.value - b.value).map(({playerEmail,value},index) => ({playerEmail,value,rank: (index + 1)})))
+    }[]) => {
+      
+      const result = getResult(user.data?.user?.email,Array.from(overall_finances).sort((a,b) => a.value - b.value).map(({playerEmail,value},index) => ({playerEmail,value,rank: (index + 1)})))
 
       console.log("game ended.");
       router.push("/two-worlds");
