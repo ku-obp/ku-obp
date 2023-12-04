@@ -38,8 +38,15 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
         tryJailbreakByDice,
         normallyRollDice,
         requestBasicIncome,
-        playerEmail
+        playerEmail,
+        construct,
+        isTurnBegin,
+        sell
    } = useSocket()
+
+   const [controllable, setControllble] = useState<boolean>(false)
+
+   const [myLocation, setMyLocation] = useState(0)
 
    const [abilities, setAbilities] = useState<Ability>({
       ableToRequestBasicIncome: false,
@@ -49,6 +56,23 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
       construct: false,
       sell: false
    })
+
+   const [now, setNow] = useState("")
+
+   useEffect(() => {
+      setMyLocation(gameState.players.find((player) => player.email === playerEmail)?.location ?? 0)
+   }, [gameState, playerEmail])
+
+   useEffect(() => {
+      const nowInTurnPlayer = gameState.players.find(({icon}) => icon === gameState.nowInTurn)
+      if(nowInTurnPlayer === undefined) {
+         setControllble(false)
+         setNow("")
+      } else {
+         setControllble((nowInTurnPlayer.email === playerEmail) && !frozen && isTurnBegin)
+         setNow(nowInTurnPlayer.email)
+      }
+   }, [gameState, playerEmail, frozen, isTurnBegin])
 
    useEffect(() => {
       const ab: Ability = (() => {
@@ -107,8 +131,6 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
       })()
       setAbilities(ab)
    },[gameState, playerEmail, latestPayments])
-
-
     
 
     return (
@@ -151,14 +173,14 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
      y="0" />
   <text
      xmlSpace={"preserve"}
-     style={{fontWeight:"bold", fontSize:"21.3333px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", fill:"#ffffff", fillOpacity:1,strokeWidth:1.33333,strokeLinejoin:"round",strokeDasharray: "2.66667, 2.66667" }}
+     style={{fontWeight:"bold", fontSize:"15px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", fill:"#ffffff", fillOpacity:1,strokeWidth:1,strokeLinejoin:"round",strokeDasharray: "2, 2" }}
      x="207.27319"
      y="38.482819"
      id="text6245"><tspan
        id="tspan6243"
        x="207.27319"
        y="38.482819"
-       style={{textAlign:"center",textAnchor:"middle"}}>변화카드</tspan></text>
+       style={{textAlign:"center",textAnchor:"middle"}}>{(now === "") ? "변화카드" : `${now}의 변화카드`}</tspan></text>
   <text
      xmlSpace={"preserve"}
      style={{fontWeight:"bold", fontSize:"21.3333px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", fill:"#ffffff",fillOpacity:1,strokeWidth:1.33333,strokeLinejoin:"round",strokeDasharray:"2.66667, 2.66667"}}
@@ -179,27 +201,26 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
        x="207.27319"
        y="562.58203"
        style={{textAlign:"center",textAnchor:"middle"}}>기본 동작</tspan></text>
-  {(!abilities.inJail) ? (<><g id="normalRollDice"
-     transform="translate(0,-87.216517)">
-    <rect
-       style={{fill:"#7bce7d",fillOpacity:1,strokeWidth:0.31216,strokeLinejoin:"round",strokeDasharray:"0.624324, 0.624324"}}
-       id="rect6414"
-       width="178.21074"
-       height="113.51444"
-       x="29.787781"
-       y="669.95636" />
-    <text
-       xmlSpace={"preserve"}
-       style={{fontWeight:"bold", fontSize:"35.6238px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", textAlign:"center",textAnchor:"middle",fill:"#3a9c3c",fillOpacity:1,strokeWidth:2.22649,strokeLinejoin:"round",strokeDasharray:"4.45299, 4.45299"}}
-       x="120.53186"
-       y="742.11401"
-       id="text6528"><tspan
-         id="tspan6526"
-         x="120.53186"
-         y="742.11401"
-         style={{strokeWidth:2.22649}}>주사위</tspan></text>
-  </g>
-  <g id="NotInJail"
+   
+   {(abilities.inJail && controllable) ? (<g id="inJail" transform="translate(0,74.791133)" onClick={(e) => {tryJailbreakByDice()}}>
+ <rect
+    style={{fill:"#ce7b7b",fillOpacity:1,strokeWidth:0.298809,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
+    id="rect6866"
+    width="178.21074"
+    height="104.01198"
+    x="29.787781"
+    y="674.70758" />
+ <text
+    xmlSpace={"preserve"}
+    style={{fontWeight:"bold", fontSize:"35.6238px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", textAlign:"center",textAnchor:"middle",fill:"#9c3a3a",fillOpacity:1,strokeWidth:2.22649,strokeLinejoin:"round",strokeDasharray:"4.45299, 4.45299"}}
+    x="120.53186"
+    y="742.11401"
+    id="text6870"><tspan
+      id="tspan6868"
+      x="120.53186"
+      y="742.11401"
+      style={{fill:"#9c3a3a",fillOpacity:1,strokeWidth:2.22649}}>주사위</tspan></text>
+</g>) : (<g id="NotInJail"
   transform="translate(0,74.791133)">
  <rect
     style={{fill:"#a4a4a4",fillOpacity:1,strokeWidth:0.298809,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
@@ -218,7 +239,31 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
       x="120.53186"
       y="742.11401"
       style={{fill:"#6b6b6b",fillOpacity:1,strokeWidth:2.22649}}>주사위</tspan></text>
-</g></>) : (<><g id="unableNormalRollDice"
+</g>)}
+   
+   {(controllable && !abilities.inJail) ? (<><g id="normalRollDice"
+     transform="translate(0,-87.216517)" onClick={(e) => {
+      normallyRollDice()
+     }}>
+    <rect
+       style={{fill:"#7bce7d",fillOpacity:1,strokeWidth:0.31216,strokeLinejoin:"round",strokeDasharray:"0.624324, 0.624324"}}
+       id="rect6414"
+       width="178.21074"
+       height="113.51444"
+       x="29.787781"
+       y="669.95636" />
+    <text
+       xmlSpace={"preserve"}
+       style={{fontWeight:"bold", fontSize:"35.6238px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", textAlign:"center",textAnchor:"middle",fill:"#3a9c3c",fillOpacity:1,strokeWidth:2.22649,strokeLinejoin:"round",strokeDasharray:"4.45299, 4.45299"}}
+       x="120.53186"
+       y="742.11401"
+       id="text6528"><tspan
+         id="tspan6526"
+         x="120.53186"
+         y="742.11401"
+         style={{strokeWidth:2.22649}}>주사위</tspan></text>
+  </g>
+  </>) : (<><g id="unableNormalRollDice"
      transform="translate(0,-87.216517)">
     <rect
        style={{fill:"#a4a4a4",fillOpacity:1,strokeWidth:0.31216,strokeLinejoin:"round",strokeDasharray:"0.624324, 0.624324"}}
@@ -238,29 +283,10 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          y="742.11401"
          style={{strokeWidth:2.22649}}>주사위</tspan></text>
   </g>
-  <g id="inJail"
-  transform="translate(0,74.791133)">
- <rect
-    style={{fill:"#ce7b7b",fillOpacity:1,strokeWidth:0.298809,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
-    id="rect6866"
-    width="178.21074"
-    height="104.01198"
-    x="29.787781"
-    y="674.70758" />
- <text
-    xmlSpace={"preserve"}
-    style={{fontWeight:"bold", fontSize:"35.6238px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", textAlign:"center",textAnchor:"middle",fill:"#9c3a3a",fillOpacity:1,strokeWidth:2.22649,strokeLinejoin:"round",strokeDasharray:"4.45299, 4.45299"}}
-    x="120.53186"
-    y="742.11401"
-    id="text6870"><tspan
-      id="tspan6868"
-      x="120.53186"
-      y="742.11401"
-      style={{fill:"#9c3a3a",fillOpacity:1,strokeWidth:2.22649}}>주사위</tspan></text>
-</g></>)}
+  </>)}
 
-  {(abilities.ableToRequestBasicIncome) ? (<g id="ableToRequestBasicIncome"
-     transform="translate(0,-87.216517)">
+  {(abilities.ableToRequestBasicIncome && controllable) ? (<g id="ableToRequestBasicIncome"
+     transform="translate(0,-87.216517)" onClick={(e) => {requestBasicIncome()}}>
     <rect
        style={{fill:"#3a9c3c",fillOpacity:1,strokeWidth:0.312161,strokeLinejoin:"round",strokeDasharray:"0.624324, 0.624324"}}
        id="rect6416"
@@ -307,8 +333,8 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          id="tspan6860">소득</tspan></text>
   </g>)}
   
-  {(abilities.jailbreakByMoney) ? (<g id="emoughMoneyToJailbreak"
-     transform="translate(0,74.791133)">
+  {(abilities.jailbreakByMoney && controllable) ? (<g id="emoughMoneyToJailbreak"
+     transform="translate(0,74.791133)" onClick={(e) => {jailbreakByMoney()}}>
     <rect
        style={{fill:"#9c3a3a",fillOpacity:1,strokeWidth:0.29881,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
        id="rect6874"
@@ -356,8 +382,12 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
   </g>)}
   
   
-  {(abilities.purchase) ? (<g id="EnoughMoneyToBuy"
-     transform="translate(0,-18.325151)">
+  {(abilities.purchase && controllable) ? (<g id="EnoughMoneyToBuy"
+     transform="translate(0,-18.325151)" onClick={(e) => {
+      if(latestPayments !== null) {
+         construct(myLocation)
+      }
+     }}>
     <rect
        style={{fill:"#8228b1",fillOpacity:1,strokeWidth:0.299178,strokeLinejoin:"round",strokeDasharray:"0.59836, 0.59836"}}
        id="rect12553"
@@ -397,7 +427,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
   </g>)}
   
   
-  {(abilities.construct) ? (<g id="skip"
+  {(abilities.construct && controllable) ? (<g id="skip"
      transform="translate(0,-18.325151)">
     <rect
        style={{fill:"#bf47a1",fillOpacity:1,strokeWidth:0.299178,strokeLinejoin:"round",strokeDasharray:"0.59836, 0.59836"}}
@@ -437,7 +467,9 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          style={{textAlign:"center",textAnchor:"middle"}}>사지 않는다</tspan></text>
   </g>)}
 
-  {(abilities.sell) ? (<g id="ableToSell">
+  {(abilities.sell && controllable) ? (<g id="ableToSell" onClick={(e) => {
+   
+  }}>
     <rect
        style={{fill:"#1651be",fillOpacity:1,strokeWidth:0.423102,strokeLinejoin:"round",strokeDasharray:"0.846209, 0.846209"}}
        id="rect12551"
