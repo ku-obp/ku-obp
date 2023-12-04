@@ -98,7 +98,7 @@ const initialState: AllStateType = {
   },
   latestChance: null,
   latestPayments: null,
-  frozen: false
+  frozen: true
 }
 
 export type QueuesType = {
@@ -203,7 +203,7 @@ export const twoWorldsSlice = createSlice({
     freeze: (state) => {
       state.frozen = true
     },
-    refreshRQ: (state, action: PayloadAction<{
+    refresh: (state, action: PayloadAction<{
       chances: {
         queue: string[];
         processed: number;
@@ -245,12 +245,14 @@ export const twoWorldsSlice = createSlice({
           optional
         }
       })(converted.payments.queue[converted.payments.queue.length - 1]) : null
+      
+      state.frozen = false
     }
   }
 });
 
 export const {
-    updateGameState, notifyChanceCardAcquistion, notifyPayments, flushChances, flushPayments, freeze, refreshRQ
+    updateGameState, notifyChanceCardAcquistion, notifyPayments, flushChances, flushPayments, freeze, refresh
 } = twoWorldsSlice.actions;
 
 export default twoWorldsSlice.reducer;

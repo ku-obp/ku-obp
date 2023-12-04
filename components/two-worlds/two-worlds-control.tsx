@@ -13,15 +13,6 @@ import {useSocket} from "@/components/providers/two-worlds-socket-provider"
 
 import {arrayRange} from "@/lib/utils"
 
-type Ability = {
-   ableToRequestBasicIncome: boolean,
-   inJail: boolean,
-   jailbreakByMoney: boolean,
-   construct: boolean,
-   purchase: boolean,
-   sell: boolean
-}
-
 export const TwoWorldsControlPanel = ({height}: {height: number}) => {
 
    
@@ -38,78 +29,29 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
         tryJailbreakByDice,
         normallyRollDice,
         requestBasicIncome,
-        playerEmail
+        playerEmail,
+        construct,
+        isTurnBegin,
+        sell
    } = useSocket()
 
-   const [abilities, setAbilities] = useState<Ability>({
-      ableToRequestBasicIncome: false,
-      inJail: false,
-      jailbreakByMoney: false,
-      purchase: false,
-      construct: false,
-      sell: false
-   })
+   const sellables = gameState.properties.filter(p => p.ownerEmail === playerEmail && p.count > 0)
+   const myPlayer = gameState.players.find((player) => player.email === playerEmail)
+   const isInTurn = myPlayer?.icon === gameState.nowInTurn
+   const now = gameState.players.find(p => p.icon === gameState.nowInTurn)?.email ?? ""
 
-   useEffect(() => {
-      const ab: Ability = (() => {
-         const inJail = ((player) => {
-            return (player !== undefined) && PREDEFINED_CELLS[player.location].type === "jail"
-         })(gameState.players.find((player) => player.email === playerEmail))
-         const jailbreakByMoney = ((player) => {
-            return (player !== undefined) && player.cash >= 400000
-         })(gameState.players.find((player) => player.email === playerEmail)) && inJail
-         const ableToRequestBasicIncome = (!inJail) && (gameState.govIncome > 0)
+   const myLocation = myPlayer?.location ?? 0
+   const props_here = sellables.filter(s => s.cellId === myLocation)
+   const skippable = (PREDEFINED_CELLS[myLocation % 54].isBuildable !== 0) &&
+   ((props_here.length > 0 && props_here[0].ownerEmail === playerEmail) || props_here.length === 0) 
+   const enoughMoneyToConstruct = skippable && (myPlayer !== undefined) && (myPlayer.cash >= 300000)
+   
+   const inJail = (myPlayer?.location === 9)
+   const ableToJailbreakByDice = inJail
+   const ableToJailbreakByMoney = inJail && (myPlayer !== undefined) && (myPlayer.cash >= 400000)
+   const requestableForBasicIncome = (gameState.govIncome > 0) && (!inJail)
+   const normallyRollable = (!inJail)
 
-         if(latestPayments !== null) {
-            return (() => {
-               if(latestPayments.type === "industrial" || latestPayments.type === "land") {
-               const construct = (gameState.properties.find((p) => (
-                  (p.cellId === latestPayments.cellId) &&
-                  (p.ownerEmail === playerEmail) &&
-                  (p.count < PREDEFINED_CELLS[latestPayments.cellId].isBuildable)
-               )) !== undefined) || (gameState.properties.find((p) => p.cellId === latestPayments.cellId) === undefined)
-               const purchase = ((player) => {
-                  return (player !== undefined) && (latestPayments.optional !== null) && (player.cash >= latestPayments.optional.pickByIcon(player.icon))
-               })(gameState.players.find((player) => player.email === playerEmail)) && construct
-               const sell = (gameState.properties.find((p) => (
-                  (p.cellId === latestPayments.cellId) &&
-                  (p.ownerEmail === playerEmail)
-               )) !== undefined)
-               return {
-                  construct,
-                  purchase,
-                  sell,
-                  inJail,
-                  jailbreakByMoney,
-                  ableToRequestBasicIncome
-               }
-               } else {
-                  return {
-                     construct: false,
-                     purchase: false,
-                     sell: false,
-                     inJail,
-                     jailbreakByMoney,
-                     ableToRequestBasicIncome
-                  }
-               }
-            })()
-         } else {
-            return {
-               construct: false,
-               purchase: false,
-               sell: false,
-               inJail,
-               jailbreakByMoney,
-               ableToRequestBasicIncome
-            }
-         }
-      })()
-      setAbilities(ab)
-   },[gameState, playerEmail, latestPayments])
-
-
-    
 
     return (
         <svg
@@ -151,14 +93,14 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
      y="0" />
   <text
      xmlSpace={"preserve"}
-     style={{fontWeight:"bold", fontSize:"21.3333px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", fill:"#ffffff", fillOpacity:1,strokeWidth:1.33333,strokeLinejoin:"round",strokeDasharray: "2.66667, 2.66667" }}
+     style={{fontWeight:"bold", fontSize:"15px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", fill:"#ffffff", fillOpacity:1,strokeWidth:1,strokeLinejoin:"round",strokeDasharray: "2, 2" }}
      x="207.27319"
      y="38.482819"
      id="text6245"><tspan
        id="tspan6243"
        x="207.27319"
        y="38.482819"
-       style={{textAlign:"center",textAnchor:"middle"}}>변화카드</tspan></text>
+       style={{textAlign:"center",textAnchor:"middle"}}>{(now === "") ? "변화카드" : `${now}의 변화카드`}</tspan></text>
   <text
      xmlSpace={"preserve"}
      style={{fontWeight:"bold", fontSize:"21.3333px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", fill:"#ffffff",fillOpacity:1,strokeWidth:1.33333,strokeLinejoin:"round",strokeDasharray:"2.66667, 2.66667"}}
@@ -179,27 +121,26 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
        x="207.27319"
        y="562.58203"
        style={{textAlign:"center",textAnchor:"middle"}}>기본 동작</tspan></text>
-  {(!abilities.inJail) ? (<><g id="normalRollDice"
-     transform="translate(0,-87.216517)">
-    <rect
-       style={{fill:"#7bce7d",fillOpacity:1,strokeWidth:0.31216,strokeLinejoin:"round",strokeDasharray:"0.624324, 0.624324"}}
-       id="rect6414"
-       width="178.21074"
-       height="113.51444"
-       x="29.787781"
-       y="669.95636" />
-    <text
-       xmlSpace={"preserve"}
-       style={{fontWeight:"bold", fontSize:"35.6238px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", textAlign:"center",textAnchor:"middle",fill:"#3a9c3c",fillOpacity:1,strokeWidth:2.22649,strokeLinejoin:"round",strokeDasharray:"4.45299, 4.45299"}}
-       x="120.53186"
-       y="742.11401"
-       id="text6528"><tspan
-         id="tspan6526"
-         x="120.53186"
-         y="742.11401"
-         style={{strokeWidth:2.22649}}>주사위</tspan></text>
-  </g>
-  <g id="NotInJail"
+   
+   {(ableToJailbreakByDice && isInTurn) ? (<g id="inJail" transform="translate(0,74.791133)" onClick={(e) => {tryJailbreakByDice()}}>
+ <rect
+    style={{fill:"#ce7b7b",fillOpacity:1,strokeWidth:0.298809,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
+    id="rect6866"
+    width="178.21074"
+    height="104.01198"
+    x="29.787781"
+    y="674.70758" />
+ <text
+    xmlSpace={"preserve"}
+    style={{fontWeight:"bold", fontSize:"35.6238px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", textAlign:"center",textAnchor:"middle",fill:"#9c3a3a",fillOpacity:1,strokeWidth:2.22649,strokeLinejoin:"round",strokeDasharray:"4.45299, 4.45299"}}
+    x="120.53186"
+    y="742.11401"
+    id="text6870"><tspan
+      id="tspan6868"
+      x="120.53186"
+      y="742.11401"
+      style={{fill:"#9c3a3a",fillOpacity:1,strokeWidth:2.22649}}>주사위</tspan></text>
+</g>) : (<g id="NotInJail"
   transform="translate(0,74.791133)">
  <rect
     style={{fill:"#a4a4a4",fillOpacity:1,strokeWidth:0.298809,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
@@ -218,7 +159,30 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
       x="120.53186"
       y="742.11401"
       style={{fill:"#6b6b6b",fillOpacity:1,strokeWidth:2.22649}}>주사위</tspan></text>
-</g></>) : (<><g id="unableNormalRollDice"
+</g>)}
+   
+   {(normallyRollable && isInTurn) ? (<g id="normalRollDice"
+     transform="translate(0,-87.216517)" onClick={(e) => {
+      normallyRollDice()
+     }}>
+    <rect
+       style={{fill:"#7bce7d",fillOpacity:1,strokeWidth:0.31216,strokeLinejoin:"round",strokeDasharray:"0.624324, 0.624324"}}
+       id="rect6414"
+       width="178.21074"
+       height="113.51444"
+       x="29.787781"
+       y="669.95636" />
+    <text
+       xmlSpace={"preserve"}
+       style={{fontWeight:"bold", fontSize:"35.6238px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", textAlign:"center",textAnchor:"middle",fill:"#3a9c3c",fillOpacity:1,strokeWidth:2.22649,strokeLinejoin:"round",strokeDasharray:"4.45299, 4.45299"}}
+       x="120.53186"
+       y="742.11401"
+       id="text6528"><tspan
+         id="tspan6526"
+         x="120.53186"
+         y="742.11401"
+         style={{strokeWidth:2.22649}}>주사위</tspan></text>
+  </g>) : (<g id="unableNormalRollDice"
      transform="translate(0,-87.216517)">
     <rect
        style={{fill:"#a4a4a4",fillOpacity:1,strokeWidth:0.31216,strokeLinejoin:"round",strokeDasharray:"0.624324, 0.624324"}}
@@ -237,30 +201,10 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          x="120.53186"
          y="742.11401"
          style={{strokeWidth:2.22649}}>주사위</tspan></text>
-  </g>
-  <g id="inJail"
-  transform="translate(0,74.791133)">
- <rect
-    style={{fill:"#ce7b7b",fillOpacity:1,strokeWidth:0.298809,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
-    id="rect6866"
-    width="178.21074"
-    height="104.01198"
-    x="29.787781"
-    y="674.70758" />
- <text
-    xmlSpace={"preserve"}
-    style={{fontWeight:"bold", fontSize:"35.6238px", fontFamily:"KoPubDotumPB-KSCpc-EUC-H, KoPubDotum_Pro", textAlign:"center",textAnchor:"middle",fill:"#9c3a3a",fillOpacity:1,strokeWidth:2.22649,strokeLinejoin:"round",strokeDasharray:"4.45299, 4.45299"}}
-    x="120.53186"
-    y="742.11401"
-    id="text6870"><tspan
-      id="tspan6868"
-      x="120.53186"
-      y="742.11401"
-      style={{fill:"#9c3a3a",fillOpacity:1,strokeWidth:2.22649}}>주사위</tspan></text>
-</g></>)}
+  </g>)}
 
-  {(abilities.ableToRequestBasicIncome) ? (<g id="ableToRequestBasicIncome"
-     transform="translate(0,-87.216517)">
+  {(requestableForBasicIncome && isInTurn) ? (<g id="ableToRequestBasicIncome"
+     transform="translate(0,-87.216517)" onClick={(e) => {requestBasicIncome()}}>
     <rect
        style={{fill:"#3a9c3c",fillOpacity:1,strokeWidth:0.312161,strokeLinejoin:"round",strokeDasharray:"0.624324, 0.624324"}}
        id="rect6416"
@@ -307,8 +251,8 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          id="tspan6860">소득</tspan></text>
   </g>)}
   
-  {(abilities.jailbreakByMoney) ? (<g id="emoughMoneyToJailbreak"
-     transform="translate(0,74.791133)">
+  {(ableToJailbreakByMoney && isInTurn) ? (<g id="emoughMoneyToJailbreak"
+     transform="translate(0,74.791133)" onClick={(e) => {jailbreakByMoney()}}>
     <rect
        style={{fill:"#9c3a3a",fillOpacity:1,strokeWidth:0.29881,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
        id="rect6874"
@@ -356,8 +300,12 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
   </g>)}
   
   
-  {(abilities.purchase) ? (<g id="EnoughMoneyToBuy"
-     transform="translate(0,-18.325151)">
+  {(enoughMoneyToConstruct && isInTurn) ? (<g id="EnoughMoneyToBuy"
+     transform="translate(0,-18.325151)" onClick={(e) => {
+      if(latestPayments !== null) {
+         construct(myLocation)
+      }
+     }}>
     <rect
        style={{fill:"#8228b1",fillOpacity:1,strokeWidth:0.299178,strokeLinejoin:"round",strokeDasharray:"0.59836, 0.59836"}}
        id="rect12553"
@@ -397,7 +345,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
   </g>)}
   
   
-  {(abilities.construct) ? (<g id="skip"
+  {(skippable && isInTurn) ? (<g id="skip"
      transform="translate(0,-18.325151)">
     <rect
        style={{fill:"#bf47a1",fillOpacity:1,strokeWidth:0.299178,strokeLinejoin:"round",strokeDasharray:"0.59836, 0.59836"}}
@@ -437,7 +385,9 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          style={{textAlign:"center",textAnchor:"middle"}}>사지 않는다</tspan></text>
   </g>)}
 
-  {(abilities.sell) ? (<g id="ableToSell">
+  {(sellables.length > 0 && isInTurn) ? (<g id="ableToSell" onClick={(e) => {
+
+  }}>
     <rect
        style={{fill:"#1651be",fillOpacity:1,strokeWidth:0.423102,strokeLinejoin:"round",strokeDasharray:"0.846209, 0.846209"}}
        id="rect12551"

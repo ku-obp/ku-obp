@@ -7,7 +7,7 @@ import { useDispatch, connect } from "react-redux";
 import io from "socket.io-client";
 
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { PaymentTransactionJSON, PlayerIconType, freeze, flushChances, flushPayments, notifyChanceCardAcquistion, notifyPayments, QueuesType, GameStateType, updateGameState, refreshRQ, AllStateType } from "@/redux/features/two-worlds-slice";
+import { PaymentTransactionJSON, PlayerIconType, refresh, freeze, flushChances, flushPayments, notifyChanceCardAcquistion, notifyPayments, QueuesType, GameStateType, updateGameState, AllStateType } from "@/redux/features/two-worlds-slice";
 import { openModal } from "@/redux/features/modal-slice";
 
 type TwoWorldsContextType = {
@@ -20,6 +20,9 @@ type TwoWorldsContextType = {
   normallyRollDice: () => void;
   requestBasicIncome: () => void;
   playerEmail: string;
+  construct: (cellId: number) => void;
+  isTurnBegin: boolean;
+  sell: (cellId: number, amount: 1 | 2 | 3) => void
 }
 
 const TwoWorldsContext = createContext<TwoWorldsContextType>({
@@ -32,7 +35,10 @@ const TwoWorldsContext = createContext<TwoWorldsContextType>({
   normallyRollDice: () => {},
   requestBasicIncome: () => {},
   playerEmail: "",
-});
+  construct: (cellId) => {},
+  isTurnBegin: false,
+  sell: (cellId: number, amount: 1 | 2 | 3) => {},
+})
 
 export const useSocket = () => {
   return useContext(TwoWorldsContext);
@@ -196,7 +202,7 @@ export const CHANCE_CARDS: {
     }
 }
 
-function rollDice() {
+export function rollDice() {
   const dice1 = sample([1,2,3,4,5,6])
   const dice2 = sample([1,2,3,4,5,6])
 
@@ -223,11 +229,18 @@ export const TwoWorldsProvider = ({
   const dispatch = useDispatch<AppDispatch>();
   const [playerEmail, setPlayerEmail] = useState("")
 
+  const [sell, setSell] = useState<(cellId: number, amount: 1 | 2 | 3) => void>((cellId: number, amount: 1 | 2 | 3) => {})
+
+  const [isTurnBegin, setIsTurnBegin] = useState<boolean>(false)
+
   const [jailbreakByMoney, setJailbreakByMoney] = useState<() => void>(() => {})
   const [tryJailbreakByDice, setTryJailbreakByDice] = useState<() => void>(() => {})
   const [normallyRollDice, setNormallyRollDice] = useState<() => void>(() => {})
   const [command, setCommand] = useState("")
   const [doubles, setDoubles] = useState(0)
+  const [construct, setConstruct] = useState<(cellId: number) => void>((cellId: number) => {})
+
+  const [isDoubleNow, setIsDoubleNow] = useState<boolean>(false)
 
   const [requestBasicIncome, setRequestBasicIncome] = useState<() => void>(() => {})
 
@@ -261,6 +274,7 @@ export const TwoWorldsProvider = ({
       console.log("Disconnected from Socket.io server");
     });
 
+
     socket.on("endGame", (overall_finances: {
       playerEmail: string,
       value: number
@@ -279,7 +293,9 @@ export const TwoWorldsProvider = ({
       );
     });
 
-    socket.on("updateGameState", ({rejoined, gameState, rq}: {rejoined: false, gameState: GameStateType, rq: undefined} | {rejoined: true, gameState: GameStateType, rq: {
+    
+
+    socket.on("updateGameState", ({fresh, gameState, rq}: {fresh: false, gameState: GameStateType, rq: undefined} | {fresh: true, gameState: GameStateType, rq: {
       chances: {
         queue: string[];
         processed: number;
@@ -293,9 +309,9 @@ export const TwoWorldsProvider = ({
         processed: number;
       }
     }}) => {
-      updateGameState(gameState)
-      if(rejoined) {
-        dispatch(refreshRQ(rq))
+      dispatch(updateGameState(gameState))
+      if(fresh) {
+        dispatch(refresh(rq))
       }
     })
 
@@ -328,17 +344,25 @@ export const TwoWorldsProvider = ({
     
 
     socket.on("turnBegin", ({playerNowEmail, doubles_count, askJailbrak}: {playerNowEmail: string, doubles_count: number, askJailbrak: boolean}) => {
-      if(askJailbrak) {
-        setCommand("askJailbreak")
+      if(playerNowEmail === playerEmail) {
+        if(askJailbrak) {
+          setCommand("askJailbreak")
+        } else {
+          setCommand("normal")
+        }
+        setDoubles(doubles_count)
+        setIsTurnBegin(true)
       } else {
-        setCommand("normal")
+        setIsTurnBegin(false)
+        setDoubles(0)
       }
-      setDoubles(doubles_count)
     })
 
     socket.on("turnEnd", () => {
       socket.emit("nextTurn", roomKey)
     })
+
+    
 
     setSocket(socket);
 
@@ -361,15 +385,26 @@ export const TwoWorldsProvider = ({
   useEffect(() => {
     if(socket !== null){
       setJailbreakByMoney(() => {
-        socket.emit("jailbreakByMoney", playerEmail)
+        socket.emit("jailbreakByMoney", {roomKey, playerEmail})
+        setIsTurnBegin(false)
       })
       setTryJailbreakByDice(() => {
         const {dice1, dice2} = rollDice()
         socket.emit("reportRollDiceResult", {roomKey, playerEmail, dice1, dice2, doubles_count: 0, flag_jailbreak: true})
+        setIsTurnBegin(false)
+      })
+      setConstruct((cellId: number) => {
+        socket.emit("reportTransaction", {type: "constsruct", roomKey,playerEmail, cellId, is_douoble: isDoubleNow, douobles_count: doubles, amount: 1})
+        setIsTurnBegin(false)
+      })
+      setSell((cellId, amount) => {
+        socket.emit("reportTransaction", {type: "sell", roomKey,playerEmail, cellId, is_douoble: isDoubleNow, douobles_count: doubles, amount})
       })
     } else {
       setJailbreakByMoney(() => {})
       setTryJailbreakByDice(() => {})
+      setConstruct((cellId: number) => {})
+      setSell((cellId, amount) => {})
     }
   }, [socket, playerEmail, roomKey])
 
@@ -378,6 +413,7 @@ export const TwoWorldsProvider = ({
       setNormallyRollDice(() => {
         const {dice1, dice2} = rollDice()
         socket.emit("reportRollDiceResult", {roomKey, playerEmail, dice1, dice2, doubles_count: doubles, flag_jailbreak: false})
+        setIsTurnBegin(false)
       })
     } else {
       setNormallyRollDice(() => {})
@@ -387,8 +423,8 @@ export const TwoWorldsProvider = ({
 
   return (
     <TwoWorldsContext.Provider value={{
-      socket, isConnected, roomKey, icon, playerEmail,
-      jailbreakByMoney, tryJailbreakByDice, normallyRollDice, requestBasicIncome
+      socket, isConnected, roomKey, icon, playerEmail, isTurnBegin,
+      jailbreakByMoney, tryJailbreakByDice, normallyRollDice, requestBasicIncome, construct, sell
     }}>
       {children}
     </TwoWorldsContext.Provider>
