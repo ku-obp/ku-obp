@@ -13,15 +13,6 @@ import {useSocket} from "@/components/providers/two-worlds-socket-provider"
 
 import {arrayRange} from "@/lib/utils"
 
-type Ability = {
-   ableToRequestBasicIncome: boolean,
-   inJail: boolean,
-   jailbreakByMoney: boolean,
-   construct: boolean,
-   purchase: boolean,
-   sell: boolean
-}
-
 export const TwoWorldsControlPanel = ({height}: {height: number}) => {
 
    
@@ -44,94 +35,23 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
         sell
    } = useSocket()
 
-   const [controllable, setControllble] = useState<boolean>(false)
+   const sellables = gameState.properties.filter(p => p.ownerEmail === playerEmail && p.count > 0)
+   const myPlayer = gameState.players.find((player) => player.email === playerEmail)
+   const isInTurn = myPlayer?.icon === gameState.nowInTurn
+   const now = gameState.players.find(p => p.icon === gameState.nowInTurn)?.email ?? ""
 
-   const [myLocation, setMyLocation] = useState(0)
+   const myLocation = myPlayer?.location ?? 0
+   const props_here = sellables.filter(s => s.cellId === myLocation)
+   const skippable = (PREDEFINED_CELLS[myLocation % 54].isBuildable !== 0) &&
+   ((props_here.length > 0 && props_here[0].ownerEmail === playerEmail) || props_here.length === 0) 
+   const enoughMoneyToConstruct = skippable && (myPlayer !== undefined) && (myPlayer.cash >= 300000)
+   
+   const inJail = (myPlayer?.location === 9)
+   const ableToJailbreakByDice = inJail
+   const ableToJailbreakByMoney = inJail && (myPlayer !== undefined) && (myPlayer.cash >= 400000)
+   const requestableForBasicIncome = (gameState.govIncome > 0) && (!inJail)
+   const normallyRollable = (!inJail)
 
-   const [abilities, setAbilities] = useState<Ability>({
-      ableToRequestBasicIncome: false,
-      inJail: false,
-      jailbreakByMoney: false,
-      purchase: false,
-      construct: false,
-      sell: false
-   })
-
-   const [now, setNow] = useState("")
-
-   useEffect(() => {
-      setMyLocation(gameState.players.find((player) => player.email === playerEmail)?.location ?? 0)
-   }, [gameState, playerEmail])
-
-   useEffect(() => {
-      const nowInTurnPlayer = gameState.players.find(({icon}) => icon === gameState.nowInTurn)
-      if(nowInTurnPlayer === undefined) {
-         setControllble(false)
-         setNow("")
-      } else {
-         setControllble((nowInTurnPlayer.email === playerEmail) && !frozen && isTurnBegin)
-         setNow(nowInTurnPlayer.email)
-      }
-   }, [gameState, playerEmail, frozen, isTurnBegin])
-
-   useEffect(() => {
-      const ab: Ability = (() => {
-         const inJail = ((player) => {
-            return (player !== undefined) && PREDEFINED_CELLS[player.location].type === "jail"
-         })(gameState.players.find((player) => player.email === playerEmail))
-         const jailbreakByMoney = ((player) => {
-            return (player !== undefined) && player.cash >= 400000
-         })(gameState.players.find((player) => player.email === playerEmail)) && inJail
-         const ableToRequestBasicIncome = (!inJail) && (gameState.govIncome > 0)
-
-         if(latestPayments !== null) {
-            return (() => {
-               if(latestPayments.type === "industrial" || latestPayments.type === "land") {
-               const construct = (gameState.properties.find((p) => (
-                  (p.cellId === latestPayments.cellId) &&
-                  (p.ownerEmail === playerEmail) &&
-                  (p.count < PREDEFINED_CELLS[latestPayments.cellId].isBuildable)
-               )) !== undefined) || (gameState.properties.find((p) => p.cellId === latestPayments.cellId) === undefined)
-               const purchase = ((player) => {
-                  return (player !== undefined) && (latestPayments.optional !== null) && (player.cash >= latestPayments.optional.pickByIcon(player.icon))
-               })(gameState.players.find((player) => player.email === playerEmail)) && construct
-               const sell = (gameState.properties.find((p) => (
-                  (p.cellId === latestPayments.cellId) &&
-                  (p.ownerEmail === playerEmail)
-               )) !== undefined)
-               return {
-                  construct,
-                  purchase,
-                  sell,
-                  inJail,
-                  jailbreakByMoney,
-                  ableToRequestBasicIncome
-               }
-               } else {
-                  return {
-                     construct: false,
-                     purchase: false,
-                     sell: false,
-                     inJail,
-                     jailbreakByMoney,
-                     ableToRequestBasicIncome
-                  }
-               }
-            })()
-         } else {
-            return {
-               construct: false,
-               purchase: false,
-               sell: false,
-               inJail,
-               jailbreakByMoney,
-               ableToRequestBasicIncome
-            }
-         }
-      })()
-      setAbilities(ab)
-   },[gameState, playerEmail, latestPayments])
-    
 
     return (
         <svg
@@ -202,7 +122,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
        y="562.58203"
        style={{textAlign:"center",textAnchor:"middle"}}>기본 동작</tspan></text>
    
-   {(abilities.inJail && controllable) ? (<g id="inJail" transform="translate(0,74.791133)" onClick={(e) => {tryJailbreakByDice()}}>
+   {(ableToJailbreakByDice && isInTurn) ? (<g id="inJail" transform="translate(0,74.791133)" onClick={(e) => {tryJailbreakByDice()}}>
  <rect
     style={{fill:"#ce7b7b",fillOpacity:1,strokeWidth:0.298809,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
     id="rect6866"
@@ -241,7 +161,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
       style={{fill:"#6b6b6b",fillOpacity:1,strokeWidth:2.22649}}>주사위</tspan></text>
 </g>)}
    
-   {(controllable && !abilities.inJail) ? (<><g id="normalRollDice"
+   {(normallyRollable && isInTurn) ? (<g id="normalRollDice"
      transform="translate(0,-87.216517)" onClick={(e) => {
       normallyRollDice()
      }}>
@@ -262,8 +182,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          x="120.53186"
          y="742.11401"
          style={{strokeWidth:2.22649}}>주사위</tspan></text>
-  </g>
-  </>) : (<><g id="unableNormalRollDice"
+  </g>) : (<g id="unableNormalRollDice"
      transform="translate(0,-87.216517)">
     <rect
        style={{fill:"#a4a4a4",fillOpacity:1,strokeWidth:0.31216,strokeLinejoin:"round",strokeDasharray:"0.624324, 0.624324"}}
@@ -282,10 +201,9 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          x="120.53186"
          y="742.11401"
          style={{strokeWidth:2.22649}}>주사위</tspan></text>
-  </g>
-  </>)}
+  </g>)}
 
-  {(abilities.ableToRequestBasicIncome && controllable) ? (<g id="ableToRequestBasicIncome"
+  {(requestableForBasicIncome && isInTurn) ? (<g id="ableToRequestBasicIncome"
      transform="translate(0,-87.216517)" onClick={(e) => {requestBasicIncome()}}>
     <rect
        style={{fill:"#3a9c3c",fillOpacity:1,strokeWidth:0.312161,strokeLinejoin:"round",strokeDasharray:"0.624324, 0.624324"}}
@@ -333,7 +251,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          id="tspan6860">소득</tspan></text>
   </g>)}
   
-  {(abilities.jailbreakByMoney && controllable) ? (<g id="emoughMoneyToJailbreak"
+  {(ableToJailbreakByMoney && isInTurn) ? (<g id="emoughMoneyToJailbreak"
      transform="translate(0,74.791133)" onClick={(e) => {jailbreakByMoney()}}>
     <rect
        style={{fill:"#9c3a3a",fillOpacity:1,strokeWidth:0.29881,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
@@ -382,7 +300,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
   </g>)}
   
   
-  {(abilities.purchase && controllable) ? (<g id="EnoughMoneyToBuy"
+  {(enoughMoneyToConstruct && isInTurn) ? (<g id="EnoughMoneyToBuy"
      transform="translate(0,-18.325151)" onClick={(e) => {
       if(latestPayments !== null) {
          construct(myLocation)
@@ -427,7 +345,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
   </g>)}
   
   
-  {(abilities.construct && controllable) ? (<g id="skip"
+  {(skippable && isInTurn) ? (<g id="skip"
      transform="translate(0,-18.325151)">
     <rect
        style={{fill:"#bf47a1",fillOpacity:1,strokeWidth:0.299178,strokeLinejoin:"round",strokeDasharray:"0.59836, 0.59836"}}
@@ -467,8 +385,8 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          style={{textAlign:"center",textAnchor:"middle"}}>사지 않는다</tspan></text>
   </g>)}
 
-  {(abilities.sell && controllable) ? (<g id="ableToSell" onClick={(e) => {
-   
+  {(sellables.length > 0 && isInTurn) ? (<g id="ableToSell" onClick={(e) => {
+
   }}>
     <rect
        style={{fill:"#1651be",fillOpacity:1,strokeWidth:0.423102,strokeLinejoin:"round",strokeDasharray:"0.846209, 0.846209"}}
