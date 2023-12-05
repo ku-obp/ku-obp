@@ -14,6 +14,41 @@ import { ChessRoom } from "@/components/chess/chess-room";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
 
+import { MonopolyRoom } from "@/components/monopoly/monopoly-room";
+
+const MONOPOLY_MODE_KEYS: {
+  [key: string]: string
+} = {
+  "classic": "Classic",
+  "monopol": "Monopol",
+  "rundown": "Run-Down",
+}
+
+
+function getMonopolyMode(gn: string) {
+  if(gn.match(/monopoly(\-(\w)+)?/g)) {
+    const splitGN = gn.split("-")
+    if(splitGN.length < 2) {
+      return {
+        isMonopoly: true,
+        modeKey: "Classic"
+      }
+    }
+    else{
+      return {
+        isMonopoly: true,
+        modeKey: MONOPOLY_MODE_KEYS[splitGN[1]]
+      }
+    }
+  } else {
+    return {
+      isMonopoly: false,
+      modeKey: ""
+    }
+  }
+}
+
+
 const OnlineRoom = (props: any) => {
   const router = useRouter();
   const params = useParams();
@@ -22,17 +57,25 @@ const OnlineRoom = (props: any) => {
   const user = useSession();
   const userEmail = user.data?.user?.email;
   const [token, setToken] = useState("");
+  const [username, setUsername] = useState("")
 
   const dispatch = useDispatch<AppDispatch>();
 
   // userEmail이 없는 상태로 들어가면 상대방이 Disconnected 된다.
   // 구체적인 매커니즘은 모르겠다.
   useEffect(() => {
-    if (!userEmail) {
+    if(userEmail === undefined) {
+      return
+    } else if (userEmail === null) {
       return;
     }
     const room = `${gameName}:${roomId}`;
     const name = user.data?.user?.name;
+    
+    if(name !== undefined && name !== null) {
+      setUsername(name);
+    }
+
     (async () => {
       try {
         const resp = await fetch(
@@ -51,7 +94,8 @@ const OnlineRoom = (props: any) => {
     return <div>Getting token...</div>;
   }
 
-  return (
+  return (gameName === "chess") ? (
+    
     <LiveKitRoom
       video={false}
       audio={false}
@@ -62,6 +106,23 @@ const OnlineRoom = (props: any) => {
     >
       {(gameName === "chess") ? (<ChessRoom />) : (gameName === "two-worlds") ? (<TwoWorldsRoom />) : (<></>)}
     </LiveKitRoom>
+  ) : (gameName === "monopoly") ? (
+    <LiveKitRoom
+      video={false}
+      audio={false}
+      token={token}
+      connectOptions={{ autoSubscribe: false }}
+      serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
+      data-lk-theme="default"
+    >
+      <MonopolyRoom
+        username={username}
+      />
+    </LiveKitRoom>
+  ) : (
+    <>
+      NOT IMPLEMENTED YET
+    </>
   );
 };
 
