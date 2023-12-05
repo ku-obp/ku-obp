@@ -14,7 +14,6 @@ import { ChessRoom } from "@/components/chess/chess-room";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
 
-
 const OnlineRoom = (props: any) => {
   const router = useRouter();
   const params = useParams();
