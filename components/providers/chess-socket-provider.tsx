@@ -52,7 +52,7 @@ export const ChessSocketProvider = ({
     const playerName = user.data?.user?.name;
 
     const socket = io(
-      process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:4000",
+      process.env.NEXT_PUBLIC_CHESS_SOCKET_URL || "http://localhost:4000",
       {
         withCredentials: true,
       }
@@ -65,7 +65,7 @@ export const ChessSocketProvider = ({
       }
     });
 
-    socket.emit("joinFailed", () => {
+    socket.on("joinFailed", () => {
       console.log("Room is full now");
       router.push("/chess");
     });
