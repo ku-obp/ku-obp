@@ -14,8 +14,6 @@ import { ChessRoom } from "@/components/chess/chess-room";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
 
-import { MonopolyRoom } from "@/components/monopoly/monopoly-room";
-
 const MONOPOLY_MODE_KEYS: {
   [key: string]: string
 } = {
@@ -106,7 +104,7 @@ const OnlineRoom = (props: any) => {
     >
       {(gameName === "chess") ? (<ChessRoom />) : (gameName === "two-worlds") ? (<TwoWorldsRoom />) : (<></>)}
     </LiveKitRoom>
-  ) : (gameName === "monopoly") ? (
+  ) : (gameName === "two-worlds") ? (
     <LiveKitRoom
       video={false}
       audio={false}
@@ -115,9 +113,7 @@ const OnlineRoom = (props: any) => {
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       data-lk-theme="default"
     >
-      <MonopolyRoom
-        username={username}
-      />
+      <TwoWorldsRoom/>  
     </LiveKitRoom>
   ) : (
     <>
