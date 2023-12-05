@@ -121,8 +121,8 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
        x="207.27319"
        y="562.58203"
        style={{textAlign:"center",textAnchor:"middle"}}>기본 동작</tspan></text>
-   
-   {/*(ableToJailbreakByDice && isInTurn)*/ true ? (<g id="inJail" transform="translate(0,74.791133)" onClick={(e) => {tryJailbreakByDice()}}>
+
+   {/*(ableToJailbreakByDice && isInTurn)*/ true ? (<g id="inJail" transform="translate(0,74.791133)" onClick={(e) => {tryJailbreakByDice()}}>   
  <rect
     style={{fill:"#ce7b7b",fillOpacity:1,strokeWidth:0.298809,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
     id="rect6866"
@@ -250,8 +250,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          style={{fill:"#a4a4a4",fillOpacity:1,strokeWidth:2.22649}}
          id="tspan6860">소득</tspan></text>
   </g>)}
-  
-  {/*(ableToJailbreakByMoney && isInTurn)*/ true ? (<g id="emoughMoneyToJailbreak"
+    {/*(ableToJailbreakByMoney && isInTurn)*/ true ? (<g id="emoughMoneyToJailbreak"
      transform="translate(0,74.791133)" onClick={(e) => {jailbreakByMoney()}}>
     <rect
        style={{fill:"#9c3a3a",fillOpacity:1,strokeWidth:0.29881,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
