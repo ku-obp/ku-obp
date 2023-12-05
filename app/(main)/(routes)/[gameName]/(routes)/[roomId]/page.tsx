@@ -14,39 +14,6 @@ import { ChessRoom } from "@/components/chess/chess-room";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
 
-const MONOPOLY_MODE_KEYS: {
-  [key: string]: string
-} = {
-  "classic": "Classic",
-  "monopol": "Monopol",
-  "rundown": "Run-Down",
-}
-
-
-function getMonopolyMode(gn: string) {
-  if(gn.match(/monopoly(\-(\w)+)?/g)) {
-    const splitGN = gn.split("-")
-    if(splitGN.length < 2) {
-      return {
-        isMonopoly: true,
-        modeKey: "Classic"
-      }
-    }
-    else{
-      return {
-        isMonopoly: true,
-        modeKey: MONOPOLY_MODE_KEYS[splitGN[1]]
-      }
-    }
-  } else {
-    return {
-      isMonopoly: false,
-      modeKey: ""
-    }
-  }
-}
-
-
 const OnlineRoom = (props: any) => {
   const router = useRouter();
   const params = useParams();
