@@ -6,8 +6,31 @@
    version="1.1"
    width="415.99704"
    height="887.17999"
+   sodipodi:docname="control-panel.svg"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview88"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="1.1576005"
+     inkscape:cx="63.06148"
+     inkscape:cy="443.59"
+     inkscape:window-width="2560"
+     inkscape:window-height="1351"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="_레이어_2" />
   <defs
      id="defs10">
     <rect
@@ -425,6 +448,13 @@
          id="polygon7" />
     </clipPath>
   </defs>
+  <rect
+     style="fill:#000000;stroke-width:1.33333;stroke-linejoin:round;stroke-dasharray:2.66667, 2.66667"
+     id="rect423"
+     width="415.99704"
+     height="887.17999"
+     x="0"
+     y="0" />
   <text
      xml:space="preserve"
      style="font-weight:bold;font-size:21.3333px;font-family:NanumGothic;-inkscape-font-specification:'NanumGothic Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.33333;stroke-linejoin:round;stroke-dasharray:2.66667, 2.66667"
@@ -455,7 +485,8 @@
        x="207.27319"
        y="562.58203"
        style="text-align:center;text-anchor:middle">기본 동작</tspan></text>
-  <g id="normalRollDice"
+  <g
+     id="normalRollDice"
      transform="translate(0,-87.216517)">
     <rect
        style="fill:#7bce7d;fill-opacity:1;stroke-width:0.31216;stroke-linejoin:round;stroke-dasharray:0.624324, 0.624324"
@@ -475,28 +506,10 @@
          y="742.11401"
          style="stroke-width:2.22649">주사위</tspan></text>
   </g>
-  <g id="unableNormalRollDice"
-     transform="translate(0,-87.216517)">
-    <rect
-       style="fill:#a4a4a4;fill-opacity:1;stroke-width:0.31216;stroke-linejoin:round;stroke-dasharray:0.624324, 0.624324"
-       id="rect6414"
-       width="178.21074"
-       height="113.51444"
-       x="29.787781"
-       y="669.95636" />
-    <text
-       xml:space="preserve"
-       style="font-weight:bold;font-size:35.6238px;font-family:NanumGothic;-inkscape-font-specification:'NanumGothic Bold';text-align:center;text-anchor:middle;fill:#6b6b6b;fill-opacity:1;stroke-width:2.22649;stroke-linejoin:round;stroke-dasharray:4.45299, 4.45299"
-       x="120.53186"
-       y="742.11401"
-       id="text6528"><tspan
-         id="tspan6526"
-         x="120.53186"
-         y="742.11401"
-         style="stroke-width:2.22649">주사위</tspan></text>
-  </g>
-  <g id="ableToRequestBasicIncome"
-     transform="translate(0,-87.216517)" visibility="">
+  <g
+     id="ableToRequestBasicIncome"
+     transform="translate(0,-87.216517)"
+     visibility="">
     <rect
        style="fill:#3a9c3c;fill-opacity:1;stroke-width:0.312161;stroke-linejoin:round;stroke-dasharray:0.624324, 0.624324"
        id="rect6416"
@@ -519,31 +532,8 @@
          style="fill:#7bce7d;fill-opacity:1;stroke-width:2.22649"
          id="tspan6843">소득</tspan></text>
   </g>
-  <g id="unableToRequestBasicIncome"
-     transform="translate(0,-87.216517)">
-    <rect
-       style="fill:#6b6b6b;fill-opacity:1;stroke-width:0.312161;stroke-linejoin:round;stroke-dasharray:0.624324, 0.624324"
-       id="rect6856"
-       width="178.21074"
-       height="113.51453"
-       x="207.99852"
-       y="669.9563" />
-    <text
-       xml:space="preserve"
-       style="font-weight:bold;font-size:35.6238px;font-family:NanumGothic;-inkscape-font-specification:'NanumGothic Bold';text-align:center;text-anchor:middle;fill:#a4a4a4;fill-opacity:1;stroke-width:2.22649;stroke-linejoin:round;stroke-dasharray:4.45299, 4.45299"
-       x="298.74258"
-       y="718.78992"
-       id="text6862"><tspan
-         id="tspan6858"
-         x="298.74258"
-         y="718.78992"
-         style="fill:#a4a4a4;fill-opacity:1;stroke-width:2.22649">기본</tspan><tspan
-         x="298.74258"
-         y="763.31964"
-         style="fill:#a4a4a4;fill-opacity:1;stroke-width:2.22649"
-         id="tspan6860">소득</tspan></text>
-  </g>
-  <g id="inJail"
+  <g
+     id="inJail"
      transform="translate(0,74.791133)">
     <rect
        style="fill:#ce7b7b;fill-opacity:1;stroke-width:0.298809;stroke-linejoin:round;stroke-dasharray:0.597621, 0.597621"
@@ -563,7 +553,8 @@
          y="742.11401"
          style="fill:#9c3a3a;fill-opacity:1;stroke-width:2.22649">주사위</tspan></text>
   </g>
-  <g id="emoughMoneyToJailbreak"
+  <g
+     id="emoughMoneyToJailbreak"
      transform="translate(0,74.791133)">
     <rect
        style="fill:#9c3a3a;fill-opacity:1;stroke-width:0.29881;stroke-linejoin:round;stroke-dasharray:0.597621, 0.597621"
@@ -587,53 +578,8 @@
          style="fill:#ce7b7b;fill-opacity:1;stroke-width:2.22649"
          id="tspan7106">지불</tspan></text>
   </g>
-  <g id="notEnoughMoneyToJailbreakOrNotInJail"
-     transform="translate(0,74.791133)" >
-    <rect
-       style="fill:#6b6b6b;fill-opacity:1;stroke-width:0.29881;stroke-linejoin:round;stroke-dasharray:0.597622, 0.597622"
-       id="rect7935"
-       width="178.21074"
-       height="104.01202"
-       x="207.99852"
-       y="674.70758" />
-    <text
-       xml:space="preserve"
-       style="font-weight:bold;font-size:35.6238px;font-family:NanumGothic;-inkscape-font-specification:'NanumGothic Bold';text-align:center;text-anchor:middle;fill:#a4a4a4;fill-opacity:1;stroke-width:2.22649;stroke-linejoin:round;stroke-dasharray:4.45299, 4.45299"
-       x="298.74258"
-       y="718.78992"
-       id="text7945"><tspan
-         x="298.74258"
-         y="718.78992"
-         style="fill:#a4a4a4;fill-opacity:1;stroke-width:2.22649"
-         id="tspan7941">현금</tspan><tspan
-         x="298.74258"
-         y="763.31964"
-         style="fill:#a4a4a4;fill-opacity:1;stroke-width:2.22649"
-         id="tspan7943">지불</tspan></text>
-  </g>
-  <g id="NotInJail"
-     transform="translate(0,74.791133)">
-    <rect
-       style="fill:#a4a4a4;fill-opacity:1;stroke-width:0.298809;stroke-linejoin:round;stroke-dasharray:0.597621, 0.597621"
-       id="rect12955"
-       width="178.21074"
-       height="104.01198"
-       x="29.787781"
-       y="674.70758" />
-    <text
-       xml:space="preserve"
-       style="font-weight:bold;font-size:35.6238px;font-family:NanumGothic;-inkscape-font-specification:'NanumGothic Bold';text-align:center;text-anchor:middle;fill:#6b6b6b;fill-opacity:1;stroke-width:2.22649;stroke-linejoin:round;stroke-dasharray:4.45299, 4.45299"
-       x="120.53186"
-       y="742.11401"
-       id="text12959"><tspan
-         id="tspan12957"
-         x="120.53186"
-         y="742.11401"
-         style="fill:#6b6b6b;fill-opacity:1;stroke-width:2.22649">주사위</tspan></text>
-  </g>
-
-  
-  <g id="ableToBuy"
+  <g
+     id="ableToBuy"
      transform="translate(0,-18.325151)">
     <rect
        style="fill:#8228b1;fill-opacity:1;stroke-width:0.299178;stroke-linejoin:round;stroke-dasharray:0.59836, 0.59836"
@@ -653,7 +599,8 @@
          y="397.80591"
          style="text-align:center;text-anchor:middle">산다</tspan></text>
   </g>
-  <g id="skip"
+  <g
+     id="skip"
      transform="translate(0,-18.325151)">
     <rect
        style="fill:#bf47a1;fill-opacity:1;stroke-width:0.299178;stroke-linejoin:round;stroke-dasharray:0.59836, 0.59836"
@@ -683,47 +630,8 @@
        x="207.27319"
        y="729.34088"
        style="text-align:center;text-anchor:middle">석방 동작</tspan></text>
-  <g id="unableToBuy"
-     transform="translate(0,-18.325151)">
-    <rect
-       style="fill:#6d6d6d;fill-opacity:1;stroke-width:0.299178;stroke-linejoin:round;stroke-dasharray:0.59836, 0.59836"
-       id="rect13059"
-       width="178.21074"
-       height="104.26929"
-       x="29.787781"
-       y="339.01529" />
-    <text
-       xml:space="preserve"
-       style="font-weight:bold;font-size:21.3333px;font-family:NanumGothic;-inkscape-font-specification:'NanumGothic Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.33333;stroke-linejoin:round;stroke-dasharray:2.66667, 2.66667"
-       x="118.5459"
-       y="397.80591"
-       id="text13063"><tspan
-         id="tspan13061"
-         x="118.5459"
-         y="397.80591"
-         style="text-align:center;text-anchor:middle">산다</tspan></text>
-  </g>
-  <g id="NotConstructable"
-     transform="translate(0,-18.325151)">
-    <rect
-       style="fill:#838383;fill-opacity:1;stroke-width:0.299178;stroke-linejoin:round;stroke-dasharray:0.59836, 0.59836"
-       id="rect13067"
-       width="178.21074"
-       height="104.26929"
-       x="29.787781"
-       y="443.28461" />
-    <text
-       xml:space="preserve"
-       style="font-weight:bold;font-size:21.3333px;font-family:NanumGothic;-inkscape-font-specification:'NanumGothic Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.33333;stroke-linejoin:round;stroke-dasharray:2.66667, 2.66667"
-       x="118.54591"
-       y="502.07523"
-       id="text13071"><tspan
-         id="tspan13069"
-         x="118.54591"
-         y="502.07523"
-         style="text-align:center;text-anchor:middle">사지 않는다</tspan></text>
-  </g>
-  <g id="ableToSell" >
+  <g
+     id="ableToSell">
     <rect
        style="fill:#1651be;fill-opacity:1;stroke-width:0.423102;stroke-linejoin:round;stroke-dasharray:0.846209, 0.846209"
        id="rect12551"
@@ -742,59 +650,41 @@
          y="429.14783"
          style="text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1">판다</tspan></text>
   </g>
-  <g id="unableToSell">
+  <g
+     id="chanceCard">
     <rect
-       style="fill:#6a6a6a;fill-opacity:1;stroke-width:0.423102;stroke-linejoin:round;stroke-dasharray:0.846209, 0.846209"
-       id="rect13193"
-       width="178.21074"
-       height="208.53859"
-       x="207.99852"
-       y="320.69016" />
+       style="fill:#d14a2a;fill-opacity:1;stroke-width:0.499951;stroke-linejoin:round;stroke-dasharray:0.999906, 0.999906"
+       id="rect9417"
+       width="357.17761"
+       height="145.27768"
+       x="29.031631"
+       y="111.25308" />
+    <rect
+       style="fill:#e4c48d;fill-opacity:1;stroke-width:0.300865;stroke-linejoin:round;stroke-dasharray:0.601734, 0.601734"
+       id="rect17160"
+       width="357.17761"
+       height="52.612598"
+       x="29.031631"
+       y="58.64048" />
+    <text
+       xml:space="preserve"
+       style="font-weight:bold;font-size:21.3333px;font-family:NanumGothic;-inkscape-font-specification:'NanumGothic Bold';fill:#d14a2a;fill-opacity:1;stroke-width:1.33333;stroke-linejoin:round;stroke-dasharray:2.66667, 2.66667"
+       x="207.27319"
+       y="90.694153"
+       id="text23024"><tspan
+         id="tspan23022"
+         x="207.27319"
+         y="90.694153"
+         style="text-align:center;text-anchor:middle;fill:#d14a2a;fill-opacity:1">카드명</tspan></text>
     <text
        xml:space="preserve"
        style="font-weight:bold;font-size:21.3333px;font-family:NanumGothic;-inkscape-font-specification:'NanumGothic Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.33333;stroke-linejoin:round;stroke-dasharray:2.66667, 2.66667"
-       x="296.75665"
-       y="429.14783"
-       id="text13197"><tspan
-         id="tspan13195"
-         x="296.75665"
-         y="429.14783"
-         style="text-align:center;text-anchor:middle;fill:#ffffff;fill-opacity:1">판다</tspan></text>
-  </g>
-  <g id="chanceCard">
-    <rect
-     style="fill:#d14a2a;fill-opacity:1;stroke-width:0.499951;stroke-linejoin:round;stroke-dasharray:0.999906, 0.999906"
-     id="rect9417"
-     width="357.17761"
-     height="145.27768"
-     x="29.031631"
-     y="111.25308" />
-     <rect
-     style="fill:#e4c48d;fill-opacity:1;stroke-width:0.300865;stroke-linejoin:round;stroke-dasharray:0.601734, 0.601734"
-     id="rect17160"
-     width="357.17761"
-     height="52.612598"
-     x="29.031631"
-     y="58.64048" />
-    <text
-      xml:space="preserve"
-      style="font-weight:bold;font-size:21.3333px;font-family:NanumGothic;-inkscape-font-specification:'NanumGothic Bold';fill:#d14a2a;fill-opacity:1;stroke-width:1.33333;stroke-linejoin:round;stroke-dasharray:2.66667, 2.66667"
-      x="207.27319"
-      y="90.694153"
-      id="text23024"><tspan
-        id="tspan23022"
-        x="207.27319"
-        y="90.694153"
-        style="text-align:center;text-anchor:middle;fill:#d14a2a;fill-opacity:1">카드명</tspan></text>
-    <text
-      xml:space="preserve"
-      style="font-weight:bold;font-size:21.3333px;font-family:NanumGothic;-inkscape-font-specification:'NanumGothic Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.33333;stroke-linejoin:round;stroke-dasharray:2.66667, 2.66667"
-      x="207.27319"
-      y="175.60068"
-      id="text23804"><tspan
-        id="tspan23802"
-        x="207.27319"
-        y="175.60068"
-        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:NanumGothic;-inkscape-font-specification:NanumGothic;text-align:center;text-anchor:middle">내용</tspan></text>
+       x="207.27319"
+       y="175.60068"
+       id="text23804"><tspan
+         id="tspan23802"
+         x="207.27319"
+         y="175.60068"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:NanumGothic;-inkscape-font-specification:NanumGothic;text-align:center;text-anchor:middle">내용</tspan></text>
   </g>
 </svg>
