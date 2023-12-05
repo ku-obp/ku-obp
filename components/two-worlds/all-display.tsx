@@ -1,5 +1,5 @@
 import { TwoWorldsBoard } from "@/components/two-worlds/two-worlds-board";
-import { TwoWorldsControlPanel } from "@/components/two-worlds/two-worlds-control";
+import { TwoWorldsControlPanel } from "@/components/two-worlds/two-worlds-control-simple";
 
 export const TwoWorldsAllDisplay = ({height}: {height: number}) => {
     return (
