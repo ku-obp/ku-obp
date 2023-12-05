@@ -122,7 +122,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
        y="562.58203"
        style={{textAlign:"center",textAnchor:"middle"}}>기본 동작</tspan></text>
    
-   {(ableToJailbreakByDice && isInTurn) ? (<g id="inJail" transform="translate(0,74.791133)" onClick={(e) => {tryJailbreakByDice()}}>
+   {/*(ableToJailbreakByDice && isInTurn)*/ true ? (<g id="inJail" transform="translate(0,74.791133)" onClick={(e) => {tryJailbreakByDice()}}>
  <rect
     style={{fill:"#ce7b7b",fillOpacity:1,strokeWidth:0.298809,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
     id="rect6866"
@@ -161,7 +161,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
       style={{fill:"#6b6b6b",fillOpacity:1,strokeWidth:2.22649}}>주사위</tspan></text>
 </g>)}
    
-   {(normallyRollable && isInTurn) ? (<g id="normalRollDice"
+   {/*(normallyRollable && isInTurn)*/ true ? (<g id="normalRollDice"
      transform="translate(0,-87.216517)" onClick={(e) => {
       normallyRollDice()
      }}>
@@ -203,7 +203,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          style={{strokeWidth:2.22649}}>주사위</tspan></text>
   </g>)}
 
-  {(requestableForBasicIncome && isInTurn) ? (<g id="ableToRequestBasicIncome"
+  {/*(requestableForBasicIncome && isInTurn)*/ true ? (<g id="ableToRequestBasicIncome"
      transform="translate(0,-87.216517)" onClick={(e) => {requestBasicIncome()}}>
     <rect
        style={{fill:"#3a9c3c",fillOpacity:1,strokeWidth:0.312161,strokeLinejoin:"round",strokeDasharray:"0.624324, 0.624324"}}
@@ -251,7 +251,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          id="tspan6860">소득</tspan></text>
   </g>)}
   
-  {(ableToJailbreakByMoney && isInTurn) ? (<g id="emoughMoneyToJailbreak"
+  {/*(ableToJailbreakByMoney && isInTurn)*/ true ? (<g id="emoughMoneyToJailbreak"
      transform="translate(0,74.791133)" onClick={(e) => {jailbreakByMoney()}}>
     <rect
        style={{fill:"#9c3a3a",fillOpacity:1,strokeWidth:0.29881,strokeLinejoin:"round",strokeDasharray:"0.597621, 0.597621"}}
@@ -300,7 +300,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
   </g>)}
   
   
-  {(enoughMoneyToConstruct && isInTurn) ? (<g id="EnoughMoneyToBuy"
+  {/*(enoughMoneyToConstruct && isInTurn)*/ true ? (<g id="EnoughMoneyToBuy"
      transform="translate(0,-18.325151)" onClick={(e) => {
       if(latestPayments !== null) {
          construct(myLocation)
@@ -345,7 +345,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
   </g>)}
   
   
-  {(skippable && isInTurn) ? (<g id="skip"
+  {/*(skippable && isInTurn)*/ true ? (<g id="skip"
      transform="translate(0,-18.325151)">
     <rect
        style={{fill:"#bf47a1",fillOpacity:1,strokeWidth:0.299178,strokeLinejoin:"round",strokeDasharray:"0.59836, 0.59836"}}
@@ -385,7 +385,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          style={{textAlign:"center",textAnchor:"middle"}}>사지 않는다</tspan></text>
   </g>)}
 
-  {(sellables.length > 0 && isInTurn) ? (<g id="ableToSell" onClick={(e) => {
+  {/* (sellables.length > 0 && isInTurn)*/ true ? (<g id="ableToSell" onClick={(e) => {
 
   }}>
     <rect
