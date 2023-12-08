@@ -107,7 +107,9 @@ export const ChessRoom = ({
                 <CarouselLayout tracks={carouselTracks}>
                   <ParticipantTile />
                 </CarouselLayout>
-                <ChessGame />
+                <div className="flex w-full h-full items-center pr-60">
+                  <ChessGame />
+                </div>
                 <div className="fixed right-4 top-4 z-1"></div>
               </FocusLayoutContainer>
             </div>

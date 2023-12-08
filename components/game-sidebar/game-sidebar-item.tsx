@@ -8,7 +8,7 @@ import { ActionTooltip } from "@/components/action-tooltip";
 
 interface NavigationItemProps {
   id: string;
-  imageUrl: string;
+  imageUrl: any;
   name: string;
 }
 
