@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { useDispatch } from "react-redux";
 
 import { AppDispatch } from "@/redux/store";
+import { openModal as createRoomOpenModal } from "@/redux/features/create-room-modal-slice";
 import { openModal } from "@/redux/features/modal-slice";
 
 import { Button } from "@/components/ui/button";
@@ -12,12 +13,20 @@ import { makeUpper } from "@/lib/utils";
 import { MobileToggle } from "@/components/mobile-toggle";
 import { GameRoomHeader } from "@/components/game-room/game-room-header";
 
+function getGameName(gn: string | string[]) {
+  if(typeof gn === "string") {
+    return gn
+  } else {
+    return gn[0]
+  }
+}
+
 const GameServer = (props: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const params = useParams();
   const gameName = params.gameName;
   const user = useSession();
-  const hostEmail = user.data?.user?.email;
+  const hostEmail = user.data?.user?.email ?? null;
 
   return (
     <div className="h-full w-full flex flex-col gap-8 justify-center items-center">
@@ -32,9 +41,9 @@ const GameServer = (props: any) => {
       <Button
         onClick={() =>
           dispatch(
-            openModal({
+            createRoomOpenModal({
               type: "createRoom",
-              data: { gameName, hostEmail },
+              data: { gameName: getGameName(gameName), hostEmail: (hostEmail === null) ? "" : hostEmail},
             })
           )
         }

@@ -62,7 +62,8 @@ export type AllStateType = {
     mandatory: PaymentTransaction | null,
     optional: PaymentTransaction | null
   } | null,
-  dicesDisplay: [DiceType | 0, DiceType | 0],
+  dices: [DiceType | 0, DiceType | 0],
+  doubles_count: number,
   frozen: boolean
 }
 
@@ -101,7 +102,8 @@ const initialState: AllStateType = {
   },
   latestChance: null,
   latestPayments: null,
-  dicesDisplay: [0,0],
+  dices: [0,0],
+  doubles_count: 0,
   frozen: true
 }
 
@@ -252,17 +254,20 @@ export const twoWorldsSlice = createSlice({
       
       state.frozen = false
     },
-    clearDisplayDices: (state) => {
-      state.dicesDisplay = [0,0]
+    clearDices: (state) => {
+      state.dices = [0,0]
     },
-    setDisplayDices: (state, action: PayloadAction<[DiceType, DiceType]>) => {
-      state.dicesDisplay = action.payload
+    setDices: (state, action: PayloadAction<[DiceType, DiceType]>) => {
+      state.dices = action.payload
+    },
+    refreshDoubles: (state, action: PayloadAction<number>) => {
+      state.doubles_count = action.payload
     }
   }
 });
 
 export const {
-    updateGameState, notifyChanceCardAcquistion, notifyPayments, flushChances, flushPayments, freeze, refresh, clearDisplayDices, setDisplayDices
+    updateGameState, notifyChanceCardAcquistion, notifyPayments, flushChances, flushPayments, freeze, refresh, clearDices, setDices, refreshDoubles
 } = twoWorldsSlice.actions;
 
 export default twoWorldsSlice.reducer;

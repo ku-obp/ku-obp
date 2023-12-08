@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 
-import { closeModal } from "@/redux/features/modal-slice";
+import { closeModal } from "@/redux/features/create-room-modal-slice";
 import { AppDispatch, useAppSelector } from "@/redux/store";
 import { v4 as uuidv4 } from "uuid";
 
@@ -20,25 +20,25 @@ import { Button } from "@/components/ui/button";
 
 export const CreateRoomModal = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const state = useAppSelector((state) => state.modalReducer);
+  const state = useAppSelector((state) => state.createRoomModalReducer);
 
   const router = useRouter();
   const params = useParams();
 
   const isModalOpen = state.isOpen && state.type === "createRoom";
-  const { gameName, hostEmail }: any = state.data;
+  const { gameName, hostEmail } = state.data;
 
   const roomId = uuidv4();
   const roomKey = `${gameName}:${roomId}`;
 
   // 야매
-  const [player1, setPlayer1] = useState(hostEmail);
+  const [player1, setPlayer1] = useState(hostEmail.toString());
   const [player2, setPlayer2] = useState("");
   const [player3, setPlayer3] = useState("");
   const [player4, setPlayer4] = useState("");
 
   const submitHandler = async () => {
-    const value = { roomKey, player1, player2, player3, player4 };
+    const value = { roomKey, player1: hostEmail, player2, player3, player4 };
     await fetch("/api/game/two-worlds/room/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -91,9 +91,11 @@ export const CreateRoomModal = () => {
                 <div className="flex items-center gap-2">
                   <label className="text-xl font-semibold">플레이어 1</label>
                   <input
+                    value={hostEmail.toString()}
                     className="w-[360px] h-10 p-2  text-white rounded-md"
-                    onChange={(e) => setPlayer1(e.target.value)}
-                    placeholder={hostEmail}
+                    onChange={(e) => {
+                      setPlayer1(e.target.value)
+                    }}
                     readOnly
                   />
                 </div>
