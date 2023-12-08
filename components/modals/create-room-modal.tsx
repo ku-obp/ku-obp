@@ -39,9 +39,9 @@ export const CreateRoomModal = () => {
 
   const submitHandler = async () => {
     const value = { roomKey, player1, player2, player3, player4 };
-    await fetch("https://ws.fly.dev/create", {
+    await fetch("/api/game/two-worlds/room/create", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(value),
     });
   };
