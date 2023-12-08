@@ -87,46 +87,56 @@ export const CreateRoomModal = () => {
               gap: "1rem",
             }}
           >
-            <div className="flex items-center justify-center gap-2 w-full">
-              <Button onClick={aiMode} variant={"primary"} size={"lg"}>
-                AI Mode
-              </Button>
-              <Button onClick={onlineMode} variant={"warning"} size={"lg"}>
-                Play Online
-              </Button>
-            </div>
-            {gameName === "two-worlds" && (
+            {gameName === "two-worlds" ? (
               <div className="flex flex-col gap-4 text-black">
                 <div className="flex items-center gap-2">
                   <label className="text-xl font-semibold">플레이어 1</label>
                   <input
-                    className="w-[360px] h-10 p-2  text-white"
+                    className="w-[360px] h-10 p-2  text-white rounded-md"
                     onChange={(e) => setPlayer1(e.target.value)}
                   />
                 </div>
                 <div className="flex items-center gap-2">
                   <label className="text-xl font-semibold">플레이어 2</label>
                   <input
-                    className="w-[360px] h-10 p-2 text-white"
+                    className="w-[360px] h-10 p-2 text-white rounded-md"
                     onChange={(e) => setPlayer2(e.target.value)}
                   />
                 </div>
                 <div className="flex items-center gap-2">
                   <label className="text-xl font-semibold">플레이어 3</label>
                   <input
-                    className="w-[360px] h-10 p-2 text-white"
+                    className="w-[360px] h-10 p-2 text-white rounded-md"
                     onChange={(e) => setPlayer3(e.target.value)}
                   />
                 </div>
                 <div className="flex items-center gap-2">
                   <label className="text-xl font-semibold">플레이어 4</label>
                   <input
-                    className="w-[360px] h-10 p-2 text-white"
+                    className="w-[360px] h-10 p-2 text-white rounded-md"
                     onChange={(e) => setPlayer4(e.target.value)}
                   />
                 </div>
-                <Button variant={"secondary"} onClick={submitHandler}>
-                  Submit
+                <div className="flex items-center justify-center gap-2 w-full">
+                  <Button
+                    variant={"primary"}
+                    onClick={submitHandler}
+                    size={"lg"}
+                  >
+                    Players Submit
+                  </Button>
+                  <Button onClick={onlineMode} variant={"warning"} size={"lg"}>
+                    Play Online
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2 w-full">
+                <Button onClick={aiMode} variant={"primary"} size={"lg"}>
+                  AI Mode
+                </Button>
+                <Button onClick={onlineMode} variant={"warning"} size={"lg"}>
+                  Play Online
                 </Button>
               </div>
             )}
