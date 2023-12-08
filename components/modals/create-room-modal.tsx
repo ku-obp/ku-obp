@@ -94,6 +94,7 @@ export const CreateRoomModal = () => {
                     className="w-[360px] h-10 p-2  text-white rounded-md"
                     onChange={(e) => setPlayer1(e.target.value)}
                     placeholder={hostEmail}
+                    readOnly
                   />
                 </div>
                 <div className="flex items-center gap-2">
