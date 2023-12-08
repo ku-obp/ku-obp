@@ -61,13 +61,14 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
    const [dices, setDices] = useState<DicesType | null>(null)
 
    useEffect(() => {
-      if (dicesDisplay[0] === 0 || dicesDisplay[1] === 0) {
-         setDices(null)
-      } else {
+      const [dice1, dice2] = dicesDisplay
+      if(dice1 !== 0 && dice2 !== 0) {
          setDices({
-            dice1: dicesDisplay[0],
-            dices2: dicesDisplay[1]
+            dice1,
+            dice2
          })
+      } else {
+         setDices(null)
       }
    }, [dicesDisplay])
 
@@ -137,7 +138,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
             </div>
          </div>
          <div>
-            <p style={{color: "white", textAligh: "center"}}><strong>{dices !== null && `주사위 : [${dices.dice1}], [${dices.dice2}]`}</strong></p>
+            <p style={{color: "white", textAlign: "center"}}><strong>{dices !== null && `주사위 : [${dices.dice1}], [${dices.dice2}]`}</strong></p>
          </div>
       </div>
       </>

@@ -62,7 +62,7 @@ export type AllStateType = {
     mandatory: PaymentTransaction | null,
     optional: PaymentTransaction | null
   } | null,
-  dicesDisplay: [DiceType, DiceType] | [0,0],
+  dicesDisplay: [DiceType | 0, DiceType | 0],
   frozen: boolean
 }
 
@@ -256,7 +256,7 @@ export const twoWorldsSlice = createSlice({
       state.dicesDisplay = [0,0]
     },
     setDisplayDices: (state, action: PayloadAction<[DiceType, DiceType]>) => {
-      state.dicesDisplay = action.paylaod
+      state.dicesDisplay = action.payload
     }
   }
 });
