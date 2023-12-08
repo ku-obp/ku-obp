@@ -5,17 +5,31 @@ import { SettingButton } from "@/components/auth/setting-button";
 
 import { GameSidebarAction } from "./game-sidebar-action";
 import { GameSidebarItem } from "./game-sidebar-item";
+import TwoWorlds from "@/public/assets/icons/two-worlds.png";
 
 export const GameSidebar = async () => {
   const games = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/game/list`)
     .then((response) => response.json())
     .then((json) => json.data.rows);
 
+  const twoWorlds = {
+    id: "0",
+    name: "two-worlds",
+    imageUrl: TwoWorlds,
+  };
+
   return (
     <div className="space-y-4 flex flex-col items-center h-full text-primary w-full dark:bg-[#1E1F22] bg-[#E3E5E8] py-3">
       <GameSidebarAction />
       <Separator className="h-[2px] bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
       <ScrollArea className="flex-1 w-full">
+        <div key={twoWorlds.id} className="mb-4">
+          <GameSidebarItem
+            id={twoWorlds.id}
+            name={twoWorlds.name}
+            imageUrl={twoWorlds.imageUrl}
+          />
+        </div>
         {games.map((game: any) => (
           <div key={game.id} className="mb-4">
             <GameSidebarItem
