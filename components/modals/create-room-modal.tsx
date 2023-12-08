@@ -41,7 +41,7 @@ export const CreateRoomModal = () => {
     const value = { roomKey, player1, player2, player3, player4 };
     await fetch("https://ws.fly.dev/create", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify(value),
     });
   };
