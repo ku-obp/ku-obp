@@ -19,22 +19,6 @@ import {
 import { Button } from "@/components/ui/button";
 
 export const CreateRoomModal = () => {
-  // 야매
-  const [player1, setPlayer1] = useState("");
-  const [player2, setPlayer2] = useState("");
-  const [player3, setPlayer3] = useState("");
-  const [player4, setPlayer4] = useState("");
-
-  const submitHandler = async () => {
-    const value = { player1, player2, player3, player4 };
-    await fetch("https://ws.fly.dev/create", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(value),
-    });
-  };
-  // 야매
-
   const dispatch = useDispatch<AppDispatch>();
   const state = useAppSelector((state) => state.modalReducer);
 
@@ -44,16 +28,31 @@ export const CreateRoomModal = () => {
   const isModalOpen = state.isOpen && state.type === "createRoom";
   const { gameName, hostEmail }: any = state.data;
 
+  const roomId = uuidv4();
+  const roomKey = `${gameName}:${roomId}`;
+
+  // 야매
+  const [player1, setPlayer1] = useState(hostEmail);
+  const [player2, setPlayer2] = useState("");
+  const [player3, setPlayer3] = useState("");
+  const [player4, setPlayer4] = useState("");
+
+  const submitHandler = async () => {
+    const value = { roomKey, player1, player2, player3, player4 };
+    await fetch("https://ws.fly.dev/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(value),
+    });
+  };
+  // 야매
+
   const aiMode = () => {
     router.push(`/${gameName}/computer`);
     dispatch(closeModal());
   };
 
   const onlineMode = () => {
-    const gameName = params.gameName;
-    const roomId = uuidv4();
-    const roomKey = `${gameName}:${roomId}`;
-
     try {
       router.push(`/${gameName}/${roomId}`);
     } catch (error) {
@@ -72,7 +71,7 @@ export const CreateRoomModal = () => {
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Create New Game
+            새 게임
           </DialogTitle>
         </DialogHeader>
         <DialogFooter className="bg-gray-100 px-6 py-4">
@@ -94,6 +93,7 @@ export const CreateRoomModal = () => {
                   <input
                     className="w-[360px] h-10 p-2  text-white rounded-md"
                     onChange={(e) => setPlayer1(e.target.value)}
+                    placeholder={hostEmail}
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -101,6 +101,7 @@ export const CreateRoomModal = () => {
                   <input
                     className="w-[360px] h-10 p-2 text-white rounded-md"
                     onChange={(e) => setPlayer2(e.target.value)}
+                    autoFocus
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -117,26 +118,26 @@ export const CreateRoomModal = () => {
                     onChange={(e) => setPlayer4(e.target.value)}
                   />
                 </div>
-                <div className="flex items-center justify-center gap-2 w-full">
+                <div className="flex items-center justify-center gap-2 w-full mt-2">
                   <Button
                     variant={"primary"}
                     onClick={submitHandler}
                     size={"lg"}
                   >
-                    Players Submit
+                    플레이어 등록
                   </Button>
                   <Button onClick={onlineMode} variant={"warning"} size={"lg"}>
-                    Play Online
+                    온라인 플레이
                   </Button>
                 </div>
               </div>
             ) : (
               <div className="flex items-center justify-center gap-2 w-full">
                 <Button onClick={aiMode} variant={"primary"} size={"lg"}>
-                  AI Mode
+                  AI 대전
                 </Button>
                 <Button onClick={onlineMode} variant={"warning"} size={"lg"}>
-                  Play Online
+                  온라인 플레이
                 </Button>
               </div>
             )}

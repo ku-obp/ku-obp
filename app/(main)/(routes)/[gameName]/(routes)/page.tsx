@@ -15,15 +15,19 @@ import { GameRoomHeader } from "@/components/game-room/game-room-header";
 const GameServer = (props: any) => {
   const dispatch = useDispatch<AppDispatch>();
   const params = useParams();
-  const user = useSession();
   const gameName = params.gameName;
+  const user = useSession();
   const hostEmail = user.data?.user?.email;
 
   return (
     <div className="h-full w-full flex flex-col gap-8 justify-center items-center">
       {/* <MobileToggle gameName={gameName} /> */}
       <p className="text-3xl lg:text-5xl font-bold text-rose-600">
-        Welcome to {makeUpper(props.params.gameName)} Online!
+        {gameName === "two-worlds"
+          ? "두개의 세상 온라인"
+          : gameName === "chess"
+          ? "체스 온라인"
+          : `Welcome to ${makeUpper(props.params.gameName)} Online!`}
       </p>
       <Button
         onClick={() =>
@@ -37,7 +41,7 @@ const GameServer = (props: any) => {
         variant={"warning"}
         size={"lg"}
       >
-        New Game
+        새 게임
       </Button>
     </div>
   );
