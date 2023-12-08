@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { PLAYER_COLORS, PropertiesRegistry } from "@/lib/two-worlds"
 
-import {PlayerIconType, PREDEFINED_CELLS} from "@/redux/features/two-worlds-slice"
+import {PlayerIconType, PREDEFINED_CELLS, DiceType} from "@/redux/features/two-worlds-slice"
 
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
@@ -13,13 +13,19 @@ import {useSocket} from "@/components/providers/two-worlds-socket-provider"
 
 import {arrayRange} from "@/lib/utils"
 
+type DicesType = {
+   dice1: DiceType,
+   dice2: DiceType
+}
+
+
 export const TwoWorldsControlPanel = ({height}: {height: number}) => {
 
    
    const dispatch = useDispatch<AppDispatch>();
    const allState = useAppSelector((state) => state.twoWorldsReducer);
 
-   const {gameState, latestChance, latestPayments, frozen} = allState
+   const {gameState, latestChance, latestPayments, dicesDisplay, frozen} = allState
 
    const {socket,
         isConnected,
@@ -51,6 +57,19 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
    const ableToJailbreakByMoney = inJail && (myPlayer !== undefined) && (myPlayer.cash >= 400000)
    const requestableForBasicIncome = (gameState.govIncome > 0) && (!inJail)
    const normallyRollable = (!inJail)
+
+   const [dices, setDices] = useState<DicesType | null>(null)
+
+   useEffect(() => {
+      if (dicesDisplay[0] === 0 || dicesDisplay[1] === 0) {
+         setDices(null)
+      } else {
+         setDices({
+            dice1: dicesDisplay[0],
+            dices2: dicesDisplay[1]
+         })
+      }
+   }, [dicesDisplay])
 
 
     return <>
@@ -116,6 +135,9 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
                      <p style={{color:"white", fontSize: 13}}><strong>보석금 지불</strong></p>
                   </div>
             </div>
+         </div>
+         <div>
+            <p style={{color: "white", textAligh: "center"}}><strong>{dices !== null && `주사위 : [${dices.dice1}], [${dices.dice2}]`}</strong></p>
          </div>
       </div>
       </>

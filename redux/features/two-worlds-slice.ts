@@ -13,6 +13,8 @@ export type RoomDataType = {
 
 export type PlayerIconType = 0 | 1 | 2 | 3
 
+export type DiceType = 1 | 2 | 3 | 4 | 5 | 6
+
 export type PlayerType = {
   email: string,
   icon: PlayerIconType,
@@ -60,6 +62,7 @@ export type AllStateType = {
     mandatory: PaymentTransaction | null,
     optional: PaymentTransaction | null
   } | null,
+  dicesDisplay: [DiceType, DiceType] | [0,0],
   frozen: boolean
 }
 
@@ -98,6 +101,7 @@ const initialState: AllStateType = {
   },
   latestChance: null,
   latestPayments: null,
+  dicesDisplay: [0,0],
   frozen: true
 }
 
@@ -247,12 +251,18 @@ export const twoWorldsSlice = createSlice({
       })(converted.payments.queue[converted.payments.queue.length - 1]) : null
       
       state.frozen = false
+    },
+    clearDisplayDices: (state) => {
+      state.dicesDisplay = [0,0]
+    },
+    setDisplayDices: (state, action: PayloadAction<[DiceType, DiceType]>) => {
+      state.dicesDisplay = action.paylaod
     }
   }
 });
 
 export const {
-    updateGameState, notifyChanceCardAcquistion, notifyPayments, flushChances, flushPayments, freeze, refresh
+    updateGameState, notifyChanceCardAcquistion, notifyPayments, flushChances, flushPayments, freeze, refresh, clearDisplayDices, setDisplayDices
 } = twoWorldsSlice.actions;
 
 export default twoWorldsSlice.reducer;

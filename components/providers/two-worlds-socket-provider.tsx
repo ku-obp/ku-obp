@@ -7,7 +7,7 @@ import { useDispatch, connect } from "react-redux";
 import io from "socket.io-client";
 
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { PaymentTransactionJSON, PlayerIconType, refresh, freeze, flushChances, flushPayments, notifyChanceCardAcquistion, notifyPayments, QueuesType, GameStateType, updateGameState, AllStateType } from "@/redux/features/two-worlds-slice";
+import { PaymentTransactionJSON, PlayerIconType, refresh, freeze, flushChances, flushPayments, notifyChanceCardAcquistion, notifyPayments, QueuesType, GameStateType, updateGameState, AllStateType, clearDisplayDices, setDisplayDices, DiceType } from "@/redux/features/two-worlds-slice";
 import { openModal } from "@/redux/features/modal-slice";
 
 type TwoWorldsContextType = {
@@ -341,9 +341,15 @@ export const TwoWorldsProvider = ({
       }
     })
     
+
+    socket.on("showDiceValues", ({dice1, dice2}: {dice1: DiceType, dice2: DiceType}) => {
+      const dices: [DiceType, DiceType] = [dice1, dice2]
+      dispatch(setDisplayDices(dices))
+    })
     
 
     socket.on("turnBegin", ({playerNowEmail, doubles_count, askJailbrak}: {playerNowEmail: string, doubles_count: number, askJailbrak: boolean}) => {
+      dispatch(clearDisplayDices())
       if(playerNowEmail === playerEmail) {
         if(askJailbrak) {
           setCommand("askJailbreak")
