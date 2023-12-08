@@ -23,7 +23,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
 
    const {socket,
         isConnected,
-        roomKey,
+        roomId,
         icon,
         jailbreakByMoney,
         tryJailbreakByDice,

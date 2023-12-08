@@ -1,16 +1,6 @@
 import { createSlice, PayloadAction, compose } from "@reduxjs/toolkit";
 import {range} from "lodash"
 
-export type RoomDataType = {
-  roomKey: string;
-  hostEmail: string;
-  maxGuests: number;
-  guests: string[];
-  isStarted: boolean;
-  isEnded: boolean;
-  waitingForAnswer: number;
-}
-
 export type PlayerIconType = 0 | 1 | 2 | 3
 
 export type DiceType = 1 | 2 | 3 | 4 | 5 | 6

@@ -13,7 +13,7 @@ import {openModal} from "@/redux/features/modal-slice"
 type TwoWorldsContextType = {
   socket: any | null;
   isConnected: boolean;
-  roomKey: string;
+  roomId: string;
   icon: PlayerIconType | null;
   jailbreakByMoney: () => void;
   tryJailbreakByDice: () => void;
@@ -29,7 +29,7 @@ type TwoWorldsContextType = {
 const TwoWorldsContext = createContext<TwoWorldsContextType>({
   socket: null,
   isConnected: false,
-  roomKey: "",
+  roomId: "",
   icon: null,
   jailbreakByMoney: () => {},
   tryJailbreakByDice: () => {},
@@ -223,7 +223,7 @@ export const TwoWorldsProvider = ({
 }) => {
   const [socket, setSocket] = useState<any>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [roomKey, setRoomKey] = useState("");
+  const [roomId, setRoomId] = useState("");
   const [icon, setIcon] = useState<PlayerIconType | null>(null)
   const params = useParams();
   const router = useRouter();
@@ -245,14 +245,11 @@ export const TwoWorldsProvider = ({
   const [skip, setSkip] = useState<() => void>(() => {})
 
   useEffect(() => {
-    const gameName = params.gameName;
-    const roomId = params.roomId;
-    const roomKey = `${gameName}:${roomId}`;
-    setRoomKey(roomKey);
+    setRoomId(`${params.roomId}`)
+    
+    const _playerEmail = user.data?.user?.email;
 
-    const playerEmail = user.data?.user?.email;
-
-    setPlayerEmail((playerEmail ?? null)?.toString() ?? "")
+    setPlayerEmail((_playerEmail ?? null)?.toString() ?? "")
 
     const socket = io(
       process.env.NEXT_PUBLIC_TWO_WORLDS_SOCKET_URL || "http://localhost:11000",
@@ -267,7 +264,7 @@ export const TwoWorldsProvider = ({
 
     socket.on("connect", () => {
       console.log("Connected to Socket.io server");
-      socket.emit("joinRoom", { playerEmail, roomKey });
+      socket.emit("joinRoom", { playerEmail, roomId });
     });
 
     socket.on("disconnect", () => {
@@ -363,7 +360,7 @@ export const TwoWorldsProvider = ({
     })
 
     socket.on("turnEnd", () => {
-      socket.emit("nextTurn", roomKey)
+      socket.emit("nextTurn", roomId)
     })
 
     socket.on("refreshDoubles", (doubles_count: number) => {
@@ -372,38 +369,38 @@ export const TwoWorldsProvider = ({
     
     setJailbreakByMoney(() => {
       if(socket === null) {return;}
-      socket.emit("jailbreakByMoney", {roomKey, playerEmail})
+      socket.emit("jailbreakByMoney", {roomId, playerEmail})
       setIsTurnBegin(false)
     })
     setTryJailbreakByDice(() => {
       if(socket === null) {return;}
       const {dice1, dice2} = rollDice()
-      socket.emit("reportRollDiceResult", {roomKey, playerEmail, dice1, dice2, flag_jailbreak: true})
+      socket.emit("reportRollDiceResult", {roomId, playerEmail, dice1, dice2, flag_jailbreak: true})
       setIsTurnBegin(false)
     })
     setConstruct((cellId: number) => {
       if(socket === null) {return;}
-      socket.emit("reportTransaction", {type: "constsruct", roomKey,playerEmail, cellId, amount: 1})
+      socket.emit("reportTransaction", {type: "constsruct", roomId,playerEmail, cellId, amount: 1})
       setIsTurnBegin(false)
     })
     setSell((cellId, amount) => {
       if(socket === null) {return;}
-      socket.emit("reportTransaction", {type: "sell", roomKey,playerEmail, cellId, amount})
+      socket.emit("reportTransaction", {type: "sell", roomId,playerEmail, cellId, amount})
     })
     setNormallyRollDice(() => {
       if(socket === null) {return;}
       const {dice1, dice2} = rollDice()
-      socket.emit("reportRollDiceResult", {roomKey, playerEmail, dice1, dice2, flag_jailbreak: false})
+      socket.emit("reportRollDiceResult", {roomId, playerEmail, dice1, dice2, flag_jailbreak: false})
       setIsTurnBegin(false)
     })
     setRequestBasicIncome(() => {
       if(socket === null) {return;}
-      socket.emit("requestBasicIncome", roomKey)
+      socket.emit("requestBasicIncome", roomId)
     })
 
     setSkip(() => {
       if(socket === null) {return;}
-      socket.emit("skip",{roomKey, playerEmail})
+      socket.emit("skip",{roomId, playerEmail})
     })
 
     setSocket(socket);
@@ -420,7 +417,7 @@ export const TwoWorldsProvider = ({
 
   return (
     <TwoWorldsContext.Provider value={{
-      socket, isConnected, roomKey, icon, playerEmail, isTurnBegin,
+      socket, isConnected, roomId, icon, playerEmail, isTurnBegin,
       jailbreakByMoney, tryJailbreakByDice, normallyRollDice, requestBasicIncome, construct, sell, skip
     }}>
       {children}

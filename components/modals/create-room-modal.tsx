@@ -38,7 +38,7 @@ export const CreateRoomModal = () => {
   const [player4, setPlayer4] = useState("");
 
   const submitHandler = async () => {
-    const value = { roomKey, player1: hostEmail, player2, player3, player4 };
+    const value = { roomId, player1: hostEmail, player2, player3, player4 };
     await fetch("/api/game/two-worlds/room/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
