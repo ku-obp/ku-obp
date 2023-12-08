@@ -39,3 +39,6 @@ next-env.d.ts
 /database/*.sql
 
 /z-auth
+
+
+/components/two-worlds/*.svg
