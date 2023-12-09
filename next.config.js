@@ -16,10 +16,6 @@ const nextConfig = {
       {
         source: "/api/game/two-worlds/room/create",
         destination: createDest
-      },
-      {
-        source: "/socket.io",
-        destination: sockDest
       }
     ]
   }
