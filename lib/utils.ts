@@ -20,3 +20,11 @@ export const arrayRange = (start: number, stop: number, step: number = 1) =>
         { length: (stop - start) / step + 1 },
         (value, index) => start + index * step
 );
+
+export function getSingleString(gn: string | string[]) {
+  if(typeof gn === "string") {
+    return gn
+  } else {
+    return gn[0]
+  }
+}

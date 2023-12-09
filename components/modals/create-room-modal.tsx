@@ -39,11 +39,13 @@ export const CreateRoomModal = () => {
 
   const submitHandler = async () => {
     const value = { roomId, player1: hostEmail, player2, player3, player4 };
-    await fetch("/api/game/two-worlds/room/create", {
+    const response = await fetch("/api/game/two-worlds/room/create", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(value),
-    });
+    })
+    const data = (await response.json())
+    console.log(data.status)
   };
   // 야매
 

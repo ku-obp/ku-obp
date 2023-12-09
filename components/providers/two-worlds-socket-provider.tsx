@@ -214,7 +214,7 @@ export function rollDice() {
 }
 
 
-
+import { getSingleString } from "@/lib/utils";
 
 export const TwoWorldsProvider = ({
   children,
@@ -245,7 +245,7 @@ export const TwoWorldsProvider = ({
   const [skip, setSkip] = useState<() => void>(() => {})
 
   useEffect(() => {
-    setRoomId(`${params.roomId}`)
+    setRoomId(getSingleString(params.roomId))
     
     const _playerEmail = user.data?.user?.email;
 
