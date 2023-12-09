@@ -246,10 +246,7 @@ export const TwoWorldsProvider = ({
 
   useEffect(() => {
     setRoomId(getSingleString(params.roomId))
-    
-    const _playerEmail = user.data?.user?.email;
-
-    setPlayerEmail((_playerEmail ?? null)?.toString() ?? "")
+    setPlayerEmail(String((user.data?.user?.email) || ""))
 
     const socket = io(
       process.env.NEXT_PUBLIC_TWO_WORLDS_SOCKET_URL || "http://localhost:11000",
@@ -259,11 +256,11 @@ export const TwoWorldsProvider = ({
     );
     
     socket.on("joinFailed", ({msg}: {msg: string}) => {
-      console.log(msg);
+      console.log(`${playerEmail} Failed to join the room: ${msg}`);
     });
 
     socket.on("connect", () => {
-      console.log("Connected to Socket.io server");
+      console.log(`${playerEmail} Connected to Socket.io server`);
       socket.emit("joinRoom", { playerEmail, roomId });
     });
 
