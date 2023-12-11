@@ -102,72 +102,6 @@ function getResult(myEmail: string | null | undefined, orig: {
   }
 }
 
-export type SyncQueueEventPayload = {
-  kind: "notifyChanceCardAcquistion",
-  queue: {
-    chances: {
-      queue: string[],
-      processed: number
-    },
-    payments: {
-      queue: {
-        cellId: number;
-        mandatory: PaymentTransactionJSON | null,
-        optional: PaymentTransactionJSON | null
-      }[],
-      processed: number
-    }
-  },
-  payload: {
-    description: string,
-    displayName: string
-  }
-} | {
-  kind: "notifyPayments",
-  queue: {
-    chances: {
-      queue: string[],
-      processed: number
-    },
-    payments: {
-      queue: {
-        cellId: number
-        mandatory: PaymentTransactionJSON | null,
-        optional: PaymentTransactionJSON | null
-      }[],
-      processed: number
-    }
-  },
-  payload: {
-    type: string,
-    name: string,
-    maxBuildable: 0 | 1 | 3,
-    cellId: number,
-    invoices: {
-      mandatory: PaymentTransactionJSON | null,
-      optional: PaymentTransactionJSON | null
-    }
-  }
-} | {
-  kind: "flushPayments" | "flushChances",
-  queue: {
-    chances: {
-      queue: string[],
-      processed: number
-    },
-    payments: {
-      queue: {
-        cellId: number
-        mandatory: PaymentTransactionJSON | null,
-        optional: PaymentTransactionJSON | null
-      }[],
-      processed: number
-    }
-  },
-  payload: undefined
-}
-
-import { Socket } from "socket.io-client";
 import { sample } from "lodash";
 
 type ChanceCard = {
@@ -303,35 +237,10 @@ export const TwoWorldsProvider = ({
         processed: number;
       }
     }}) => {
+      console.log("Game state updated.")
       dispatch(updateGameState(gameState))
       if(fresh) {
         dispatch(refresh(rq))
-      }
-    })
-
-
-    socket.on("syncQueue", ({kind, queue, payload}: SyncQueueEventPayload) => {
-      const chances_queue = ((orig) => {
-        return orig.queue.map((value) => ({
-          displayCardName: CHANCE_CARDS[value].displayName,
-          cardDescription: CHANCE_CARDS[value].description
-        }))
-      })(queue.chances)
-      const queues: QueuesType = {
-        chances: {
-          queue: chances_queue,
-          processed: queue.chances.processed
-        },
-        payments: queue.payments
-      }
-      if(kind === "notifyChanceCardAcquistion") {
-        dispatch(notifyChanceCardAcquistion({queues,payload}))
-      } else if(kind === "notifyPayments") {
-        dispatch(notifyPayments({queues,payload}))
-      } else if(kind === "flushPayments") {
-        dispatch(flushPayments(queues))
-      } else {
-        dispatch(flushChances(queues))
       }
     })
     
