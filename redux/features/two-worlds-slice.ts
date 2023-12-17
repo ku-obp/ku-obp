@@ -1,454 +1,145 @@
 import { createSlice, PayloadAction, compose } from "@reduxjs/toolkit";
 import {range} from "lodash"
 
-export type PlayerIconType = 0 | 1 | 2 | 3
-
-export type DiceType = 1 | 2 | 3 | 4 | 5 | 6
+export type PlayerIconType = number
 
 export type PlayerType = {
-  email: string,
-  icon: PlayerIconType,
+  icon: number,
   location: number,
   displayLocation: number,
   cash: number,
   cycles: number,
   university: string,
   tickets: {
-    discountRent: number,
-    bonus: boolean,
+    feeExemption: number,
+    taxExemption: number,
+    bonus: number,
     doubleLotto: number,
+    lawyer: number,
+    freeHospital: number
   },
   remainingJailTurns: number,
 }
 
 export type PropertyType = {
-  ownerEmail: string,
-  count: number,
-  cellId: number
+  ownerIcon: number,
+  count: number
 }
 
 export type GameStateType = {
-  players: PlayerType[],
-  properties: PropertyType[],
+  playerStates: PlayerType[],
+  properties: Map<number, PropertyType>,
   nowInTurn: number,
   govIncome: number,
   charityIncome: number,
   sidecars: {
-    limitRents: number
+    catastrophe: number,
+    pandemic: number
   }
-}
-
-export type AllStateType = {
-  gameState: GameStateType,
-  queues: QueuesType,
-  latestChance: {
-    displayCardName: string,
-    cardDescription: string
-  } | null,
-  latestPayments: {
-    type: string,
-    cellId: number
-    name: string,
-    mandatory: PaymentTransaction | null,
-    optional: PaymentTransaction | null
-  } | null,
-  dices: [DiceType | 0, DiceType | 0],
-  doubles_count: number,
-  frozen: boolean
 }
 
 const INITIAL_CASH = 6000000
 
+export type RoomState = {
+  playerEmails: string[],
+  isEnded: boolean
+}
+
+export type TurnState = {
+  doublesCount: number,
+  diceCache: number,
+  quirkOfFateDiceCache: number,
+  prompt: string,
+  chanceCardDisplay: string
+}
+
+export type AllStateType = {
+  roomState: RoomState,
+  turnState: TurnState,
+  gameState: GameStateType,
+}
+
+
+
 const initialState: AllStateType = {
+  roomState: {
+    playerEmails: [],
+    isEnded: false
+  },
+  turnState: {
+    doublesCount: 0,
+    diceCache: 0,
+    quirkOfFateDiceCache: 0,
+    prompt: "none",
+    chanceCardDisplay: ""
+  },
   gameState: {
-    players: range(4).map((icon) => ({
-      email: `${icon}`,
-      icon: (icon as PlayerIconType),
-      location: 0,
-      displayLocation: 0,
-      cash: INITIAL_CASH,
-      cycles: 0,
-      university: "notYet",
-      tickets: {discountRent: 0, bonus: false, doubleLotto: 0},
-      remainingJailTurns: 0
-    })),
-    properties: [],
+    playerStates: [],
+    properties: new Map<number, PropertyType>(),
     nowInTurn: 0,
-    govIncome: 0,
+   govIncome: 0,
     charityIncome: 0,
     sidecars: {
-      limitRents: 0
-    }
-  },
-  queues: {
-    chances: {
-      queue: [],
-      processed: 0
-    },
-    payments: {
-      queue: [],
-      processed: 0
-    }
-  },
-  latestChance: null,
-  latestPayments: null,
-  dices: [0,0],
-  doubles_count: 0,
-  frozen: true
-}
-
-export type QueuesType = {
-  chances: {
-    queue: {
-      displayCardName: string,
-      cardDescription: string
-    }[],
-    processed: number
-  },
-  payments: {
-    queue: {
-      cellId: number,
-      mandatory: PaymentTransactionJSON | null,
-      optional: PaymentTransactionJSON | null
-    }[],
-    processed: number
-  }
-}
-
-export type NotifyChanceCardAcquistionPayload = {
-  queues: QueuesType,
-  payload: {
-    description: string,
-    displayName: string
-  }
-}
-export type NotifyPaymentsPayload = {
-  queues: {
-    chances: {
-      queue: {
-        displayCardName: string,
-        cardDescription: string
-      }[],
-      processed: number
-    },
-    payments: {
-      queue: {
-        cellId: number,
-        mandatory: PaymentTransactionJSON | null,
-        optional: PaymentTransactionJSON | null
-      }[],
-      processed: number
-    }
-  },
-  payload: {
-    type: string,
-    name: string,
-    cellId: number,
-    invoices: {
-      mandatory: PaymentTransactionJSON | null,
-      optional: PaymentTransactionJSON | null
+      catastrophe: 0,
+      pandemic: 0
     }
   }
-} 
+}
 
 export const twoWorldsSlice = createSlice({
   name: "two-worlds",
   initialState,
   reducers: {
     updateGameState: (state, action: PayloadAction<GameStateType>) => {
-      if(!state.frozen) { state.gameState = action.payload }
+      state.gameState = action.payload     
     },
-    notifyChanceCardAcquistion: (state, action: PayloadAction<NotifyChanceCardAcquistionPayload>) => {
-      if(!state.frozen) {
-        state.latestChance = {
-          displayCardName: action.payload.payload.description,
-          cardDescription: action.payload.payload.description
+    updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
+      state.turnState.chanceCardDisplay = action.payload
+    },
+    showQuirkOfFateStatus: (state, action: PayloadAction<{dice1: number, dice2: number}>) => {
+      const {dice1, dice2} = action.payload
+      if(dice1 < 1 || dice1 > 6 || dice2 < 1 || dice2 > 6) {
+        state.turnState.quirkOfFateDiceCache = 0
+      } else {
+        state.turnState.quirkOfFateDiceCache = (dice1 - 1) * 6 + dice2
+      }
+    },
+    eraseQuirkOfFateStatus: (state) => {
+      state.turnState.quirkOfFateDiceCache = 0
+    },
+    publishChanceCard: (state, action: PayloadAction<string>) => {
+        state.turnState.chanceCardDisplay = action.payload
+    },
+    notifyRoomStatus: (state, action: PayloadAction<RoomState>) => {
+        state.roomState = action.payload
+    },
+    showDices: (state, action: PayloadAction<number>) => {
+        if((action.payload < 1) || (action.payload > 36)) {
+            state.turnState.diceCache = 0
+        } else {
+            state.turnState.diceCache = action.payload
         }
-        state.queues = action.payload.queues
-      }
     },
-    notifyPayments: (state, action: PayloadAction<NotifyPaymentsPayload>) => {
-      if(!state.frozen) {
-        const {
-          type, name, invoices, cellId
-        } = action.payload.payload
-        const [mandatory, optional] = ((_invoices) => [
-          (_invoices.mandatory === null) ? null : PaymentTransaction.fromJSON(_invoices.mandatory),
-          (_invoices.optional === null) ? null : PaymentTransaction.fromJSON(_invoices.optional)
-        ])(invoices)
-        state.latestPayments = {type,name, cellId,mandatory,optional}
-        state.queues = action.payload.queues
-      }
+    flushDices: (state) => {
+        state.turnState.diceCache = 0
     },
-    flushChances: (state, action: PayloadAction<QueuesType>) => {
-      state.queues.payments = action.payload.payments
-      state.queues.chances = {
-        queue: [],
-        processed: 0
-      }
-      state.latestChance = null
+    updatePrompt: (state, action: PayloadAction<string>) => {
+        state.turnState.prompt = action.payload
     },
-    flushPayments: (state, action: PayloadAction<QueuesType>) => {
-      state.queues.chances = action.payload.chances
-      state.queues.payments = {
-        queue: [],
-        processed: 0
-      }
-      state.latestPayments = null
-    },
-    freeze: (state) => {
-      state.frozen = true
-    },
-    refresh: (state, action: PayloadAction<{
-      chances: {
-        queue: string[];
-        processed: number;
-      };
-      payments: {
-        queue: {
-          cellId: number;
-          mandatory: PaymentTransactionJSON | null;
-          optional: PaymentTransactionJSON | null;
-        }[];
-        processed: number;
-      }
-    }>) => {
-      const converted: QueuesType = {
-        payments: action.payload.payments,
-        chances: {
-          queue: action.payload.chances.queue.map((value) => {
-            return {
-              displayCardName: CHANCE_CARDS[value].displayName,
-              cardDescription: CHANCE_CARDS[value].description
-            }
-          }),
-          processed: action.payload.chances.processed
-        }
-      }
-      state.queues = converted
-
-      state.latestChance = (converted.chances.queue.length > 0) ? converted.chances.queue[converted.chances.queue.length - 1] : null
-
-      state.latestPayments = (converted.payments.queue.length > 0) ? ((last) => {
-        const cell = PREDEFINED_CELLS[last.cellId]
-        const mandatory = (last.mandatory === null) ? null : PaymentTransaction.fromJSON(last.mandatory)
-        const optional = (last.optional === null) ? null : PaymentTransaction.fromJSON(last.optional)
-        return {
-          name: cell.name,
-          type: cell.type,
-          cellId: cell.cellId,
-          mandatory,
-          optional
-        }
-      })(converted.payments.queue[converted.payments.queue.length - 1]) : null
-      
-      state.frozen = false
-    },
-    clearDices: (state) => {
-      state.dices = [0,0]
-    },
-    setDices: (state, action: PayloadAction<[DiceType, DiceType]>) => {
-      state.dices = action.payload
-    },
-    refreshDoubles: (state, action: PayloadAction<number>) => {
-      state.doubles_count = action.payload
+    updateDoublesCount: (state, action: PayloadAction<number>) => {
+        state.turnState.doublesCount = action.payload
     }
   }
 });
 
 export const {
-    updateGameState, notifyChanceCardAcquistion, notifyPayments, flushChances, flushPayments, freeze, refresh, clearDices, setDices, refreshDoubles
+    updateGameState, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
+    showDices, flushDices, updatePrompt, updateDoublesCount
 } = twoWorldsSlice.actions;
 
 export default twoWorldsSlice.reducer;
 
 import * as TwoWorlds from "@/lib/two-worlds"
-
-export class PaymentTransaction {
-  private _player0: number
-  public get player0(): number {
-    return this._player0
-  }
-  private _player1: number
-  public get player1(): number {
-    return this._player1
-  }
-  private _player2: number
-  public get player2(): number {
-    return this._player2
-  }
-  private _player3: number
-  public get player3(): number  {
-    return this._player3
-  }
-  private _government: number
-  public get government(): number {
-    return this._government
-  }
-  private _charity: number
-  public get charity(): number {
-    return this._charity
-  }
-  public constructor({player0, player1, player2, player3, government, charity}: {
-    player0?: number, player1?: number, player2?: number, player3?: number, government?: number, charity?: number
-  }) {
-    this._player0 = player0 ?? 0;
-    this._player1 = player1 ?? 0;
-    this._player2 = player2 ?? 0;
-    this._player3 = player3 ?? 0;
-    this._government = government ?? 0;
-    this._charity = charity ?? 0;
-  }
-  public static toJSON(transaction: PaymentTransaction): PaymentTransactionJSON {
-    const {
-      player0, player1, player2, player3, government, charity
-    }: {player0: number, player1: number, player2: number, player3: number, government: number, charity: number} = transaction
-    return {
-      player0,
-      player1,
-      player2,
-      player3,
-      government,
-      charity
-    }
-  }
-
-  public static fromJSON(transactionJSON: PaymentTransactionJSON): PaymentTransaction {
-    return new PaymentTransaction(transactionJSON)
-  }
-  public merge(other: PaymentTransaction): PaymentTransaction {
-    return new PaymentTransaction({
-      player0: this.player0 + other.player0,
-      player1: this.player1 + other.player1,
-      player2: this.player2 + other.player2,
-      player3: this.player3 + other.player3,
-      government: this.government + other.government,
-      charity: this.charity + other.charity
-    })
-  }
-
-  public get revert() {
-    return new PaymentTransaction({
-      player0: -this.player0,
-      player1: -this.player1,
-      player2: -this.player2,
-      player3: -this.player3,
-      government: -this.government,
-      charity: -this.charity
-    })
-  }
-
-  public get flat() {
-    return {
-      playerTransactions: [
-        this.player0,
-        this.player1,
-        this.player2,
-        this.player3
-      ],
-      government: this.government,
-      charity: this.charity,
-    }
-  }
-
-  public static P2G(playerIcon: PlayerIconType, amount: number) {
-    switch(playerIcon) {
-      case 0:
-        return new PaymentTransaction({
-          player0: -amount,
-          government: amount
-        })
-      case 1:
-        return new PaymentTransaction({
-          player1: -amount,
-          government: amount
-        })
-      case 2:
-        return new PaymentTransaction({
-          player2: -amount,
-          government: amount
-        })
-      case 3:
-        return new PaymentTransaction({
-          player3: -amount,
-          government: amount
-        })
-    }
-  }
-
-  public static G2M(amount: number) {
-    return new PaymentTransaction({
-      government: -amount,
-    })
-  }
-
-  public static P2C(playerIcon: PlayerIconType, amount: number) {
-    switch(playerIcon) {
-      case 0:
-        return new PaymentTransaction({
-          player0: -amount,
-          charity: amount
-        })
-      case 1:
-        return new PaymentTransaction({
-          player1: -amount,
-          charity: amount
-        })
-      case 2:
-        return new PaymentTransaction({
-          player2: -amount,
-          charity: amount
-        })
-      case 3:
-        return new PaymentTransaction({
-          player3: -amount,
-          charity: amount
-        })
-    }
-  }
-
-  public static unidirectional(playerIcon: PlayerIconType, amount: number) {
-    switch(playerIcon) {
-      case 0:
-        return new PaymentTransaction({
-          player0: amount
-        })
-      case 1:
-        return new PaymentTransaction({
-          player1: amount
-        })
-      case 2:
-        return new PaymentTransaction({
-          player2: amount
-        })
-      case 3:
-        return new PaymentTransaction({
-          player3: amount
-        })
-    }
-  }
-
-  public static P2P(from: PlayerIconType, to: PlayerIconType, amount: number): PaymentTransaction {
-    const different_pair = TwoWorlds.DifferentNumberPair.checkDifferent<PlayerIconType>(from, to)
-    return TwoWorlds.nullableMapper(different_pair,({a,b}) => {
-      return PaymentTransaction.unidirectional(a, -amount).merge(PaymentTransaction.unidirectional(b, amount))
-    },{
-      mapNullIsGenerator: false, constant: new PaymentTransaction({})
-    })
-  }
-
-  public pickByIcon(icon: PlayerIconType) {
-    if(icon === 0) {
-      return this.player0
-    } else if(icon === 1) {
-      return this.player1
-    } else if(icon === 2) {
-      return this.player2
-    } else {
-      return this.player3
-    }
-  }
-}
 
 export type PaymentTransactionJSON = {
   player0: number;
@@ -870,6 +561,8 @@ function gatherPredefined(): ICellData[] {
 const GROUP_PRICES = [1, 2, 3, 4, 5, 6, 7, 8].reduce((accumulator: {[key: number]: number}, target: number) => ({...accumulator, [target]: (target * 100000)}),{} as {[key: number]: number})
 
 import { Socket } from "socket.io-client";
+import { ActionTooltip } from "@/components/action-tooltip";
+import { access } from "fs";
 
 export const PREDEFINED_CELLS: ICellData[] = gatherPredefined();
 

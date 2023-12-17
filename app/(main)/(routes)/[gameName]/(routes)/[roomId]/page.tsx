@@ -9,7 +9,7 @@ import { makeUpper } from "@/lib/utils";
 import { TwoWorldsRoom } from "@/components/two-worlds/two-worlds-room";
 
 import "@livekit/components-styles";
-import { LiveKitRoom } from "@livekit/components-react";
+import { LiveKitRoom, ChatToggle } from "@livekit/components-react";
 import { ChessRoom } from "@/components/chess/chess-room";
 import { AppDispatch } from "@/redux/store";
 import { useDispatch } from "react-redux";
@@ -69,7 +69,7 @@ const OnlineRoom = (props: any) => {
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       data-lk-theme="default"
     >
-      {(gameName === "chess") ? (<ChessRoom />) : (gameName === "two-worlds") ? (<TwoWorldsRoom />) : (<></>)}
+      <ChessRoom />
     </LiveKitRoom>
   ) : (gameName === "two-worlds") ? (
     <LiveKitRoom

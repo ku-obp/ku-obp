@@ -7,7 +7,7 @@ import { useDispatch, connect } from "react-redux";
 import io from "socket.io-client";
 
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { PaymentTransactionJSON, PlayerIconType, refresh, refreshDoubles, freeze, flushChances, flushPayments, notifyChanceCardAcquistion, notifyPayments, QueuesType, GameStateType, updateGameState, AllStateType, clearDices, setDices, DiceType } from "@/redux/features/two-worlds-slice";
+import { PaymentTransactionJSON, PlayerIconType, PropertyType, GameStateType, updateGameState, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, AllStateType, PlayerType, publishChanceCard, notifyRoomStatus, showDices, flushDices, updatePrompt, updateDoublesCount } from "@/redux/features/two-worlds-slice";
 import {openModal} from "@/redux/features/modal-slice"
 
 type TwoWorldsContextType = {
@@ -102,72 +102,6 @@ function getResult(myEmail: string | null | undefined, orig: {
   }
 }
 
-export type SyncQueueEventPayload = {
-  kind: "notifyChanceCardAcquistion",
-  queue: {
-    chances: {
-      queue: string[],
-      processed: number
-    },
-    payments: {
-      queue: {
-        cellId: number;
-        mandatory: PaymentTransactionJSON | null,
-        optional: PaymentTransactionJSON | null
-      }[],
-      processed: number
-    }
-  },
-  payload: {
-    description: string,
-    displayName: string
-  }
-} | {
-  kind: "notifyPayments",
-  queue: {
-    chances: {
-      queue: string[],
-      processed: number
-    },
-    payments: {
-      queue: {
-        cellId: number
-        mandatory: PaymentTransactionJSON | null,
-        optional: PaymentTransactionJSON | null
-      }[],
-      processed: number
-    }
-  },
-  payload: {
-    type: string,
-    name: string,
-    maxBuildable: 0 | 1 | 3,
-    cellId: number,
-    invoices: {
-      mandatory: PaymentTransactionJSON | null,
-      optional: PaymentTransactionJSON | null
-    }
-  }
-} | {
-  kind: "flushPayments" | "flushChances",
-  queue: {
-    chances: {
-      queue: string[],
-      processed: number
-    },
-    payments: {
-      queue: {
-        cellId: number
-        mandatory: PaymentTransactionJSON | null,
-        optional: PaymentTransactionJSON | null
-      }[],
-      processed: number
-    }
-  },
-  payload: undefined
-}
-
-import { Socket } from "socket.io-client";
 import { sample } from "lodash";
 
 type ChanceCard = {
@@ -259,14 +193,118 @@ export const TwoWorldsProvider = ({
       console.log(`${playerEmail} Failed to join the room: ${msg}`);
     });
 
+    socket.on("joinSucceed", () => {
+      console.log('Succeeded to join the room')
+    })
+
     socket.on("connect", () => {
       console.log(`${playerEmail} Connected to Socket.io server`);
-      socket.emit("joinRoom", { playerEmail, roomId });
+      socket.emit("joinRoom", { roomId: params.roomId });
     });
+
 
     socket.on("disconnect", () => {
       console.log("Disconnected from Socket.io server");
     });
+
+    
+    socket.on("notifyRoomStatus", (playerEmails: string[], isEnded: boolean) => {
+      dispatch(notifyRoomStatus({playerEmails,isEnded}))
+    })
+
+    socket.on("updateGameState", (gameStateJSON: string) => {
+      const parsed = JSON.parse(gameStateJSON)
+      const {
+        charityIncome,
+        govIncome,
+        nowInTurn,
+        playerStates,
+        properties,
+        remainingCatastropheTurns,
+        remainingPandemicTurns,
+      } = parsed
+
+      let propertiesPostprocessed: Map<number,PropertyType> = new Map<number,PropertyType>()      
+      for(const {cellId, ownerIcon, count} of properties) {
+        propertiesPostprocessed = propertiesPostprocessed.set(cellId,{ownerIcon,count})
+      }
+
+      let playerStatesPostprocessed: PlayerType[] = []
+
+      for(const {
+        cash, cycles, displayLocation, icon, location,
+        remainingJailTurns, tickets, university
+      } of playerStates) {
+        const {
+          feeExemption,
+          taxExemption,
+          bonus,
+          doubleLotto,
+          lawyer,
+          freeHospital
+        } = tickets
+        
+        playerStatesPostprocessed.push({
+          icon,
+          location,
+          displayLocation,
+          cash,
+          cycles,
+          university,
+          tickets: {
+            feeExemption,
+            taxExemption,
+            bonus,
+            doubleLotto,
+            lawyer,
+            freeHospital
+          },
+          remainingJailTurns
+        })
+      }
+
+      const gameState: GameStateType = {
+        charityIncome,
+        govIncome,
+        nowInTurn,
+        sidecars: {
+          catastrophe: remainingCatastropheTurns,
+          pandemic: remainingPandemicTurns
+        },
+        playerStates: playerStatesPostprocessed,
+        properties: propertiesPostprocessed
+      }
+
+      dispatch(updateGameState(gameState))
+    })
+
+    socket.on("showQuirkOfFateStatus", (dice1: number, dice2: number) => {
+      dispatch(showQuirkOfFateStatus({dice1, dice2}))
+    })
+
+    socket.on("updateChanceCardDisplay", (chanceId: string) => {
+      dispatch(publishChanceCard(chanceId))
+    })
+
+    socket.on("updateDoublesCount", (doublesCount: number) => {
+      dispatch(updateDoublesCount(doublesCount))
+    })
+
+    socket.on("showDices", (diceCache: number) => {
+      dispatch(showDices(diceCache))
+    })
+
+    socket.on("flushDices", () => {
+      dispatch(flushDices())
+    })
+
+
+    socket.on("updatePrompt", (prompt: string) => {
+      dispatch(updatePrompt(prompt))
+    })
+
+
+
 
 
     socket.on("endGame", (overall_finances: {
@@ -278,7 +316,7 @@ export const TwoWorldsProvider = ({
 
       console.log("game ended.");
       router.push("/two-worlds");
-      dispatch(freeze());
+      // dispatch(freeze());
       dispatch(
         openModal({
           type: "gameResult",
@@ -288,117 +326,6 @@ export const TwoWorldsProvider = ({
     });
 
     
-
-    socket.on("updateGameState", ({fresh, gameState, rq}: {fresh: false, gameState: GameStateType, rq: undefined} | {fresh: true, gameState: GameStateType, rq: {
-      chances: {
-        queue: string[];
-        processed: number;
-      };
-      payments: {
-        queue: {
-          cellId: number;
-          mandatory: PaymentTransactionJSON | null;
-          optional: PaymentTransactionJSON | null;
-        }[];
-        processed: number;
-      }
-    }}) => {
-      dispatch(updateGameState(gameState))
-      if(fresh) {
-        dispatch(refresh(rq))
-      }
-    })
-
-
-    socket.on("syncQueue", ({kind, queue, payload}: SyncQueueEventPayload) => {
-      const chances_queue = ((orig) => {
-        return orig.queue.map((value) => ({
-          displayCardName: CHANCE_CARDS[value].displayName,
-          cardDescription: CHANCE_CARDS[value].description
-        }))
-      })(queue.chances)
-      const queues: QueuesType = {
-        chances: {
-          queue: chances_queue,
-          processed: queue.chances.processed
-        },
-        payments: queue.payments
-      }
-      if(kind === "notifyChanceCardAcquistion") {
-        dispatch(notifyChanceCardAcquistion({queues,payload}))
-      } else if(kind === "notifyPayments") {
-        dispatch(notifyPayments({queues,payload}))
-      } else if(kind === "flushPayments") {
-        dispatch(flushPayments(queues))
-      } else {
-        dispatch(flushChances(queues))
-      }
-    })
-    
-
-    socket.on("showDices", ({dice1, dice2}: {dice1: DiceType, dice2: DiceType}) => {
-      const dices: [DiceType, DiceType] = [dice1, dice2]
-      dispatch(setDices(dices))
-    })
-    
-
-    socket.on("turnBegin", ({playerNowEmail, askJailbrak}: {playerNowEmail: string, askJailbrak: boolean}) => {
-      dispatch(clearDices())
-      if(playerNowEmail === playerEmail) {
-        if(askJailbrak) {
-          setCommand("askJailbreak")
-        } else {
-          setCommand("normal")
-        }
-        setIsTurnBegin(true)
-      } else {
-        setIsTurnBegin(false)
-      }
-    })
-
-    socket.on("turnEnd", () => {
-      socket.emit("nextTurn", roomId)
-    })
-
-    socket.on("refreshDoubles", (doubles_count: number) => {
-      dispatch(refreshDoubles(doubles_count))
-    })
-    
-    setJailbreakByMoney(() => {
-      if(socket === null) {return;}
-      socket.emit("jailbreakByMoney", {roomId, playerEmail})
-      setIsTurnBegin(false)
-    })
-    setTryJailbreakByDice(() => {
-      if(socket === null) {return;}
-      const {dice1, dice2} = rollDice()
-      socket.emit("reportRollDiceResult", {roomId, playerEmail, dice1, dice2, flag_jailbreak: true})
-      setIsTurnBegin(false)
-    })
-    setConstruct((cellId: number) => {
-      if(socket === null) {return;}
-      socket.emit("reportTransaction", {type: "constsruct", roomId,playerEmail, cellId, amount: 1})
-      setIsTurnBegin(false)
-    })
-    setSell((cellId, amount) => {
-      if(socket === null) {return;}
-      socket.emit("reportTransaction", {type: "sell", roomId,playerEmail, cellId, amount})
-    })
-    setNormallyRollDice(() => {
-      if(socket === null) {return;}
-      const {dice1, dice2} = rollDice()
-      socket.emit("reportRollDiceResult", {roomId, playerEmail, dice1, dice2, flag_jailbreak: false})
-      setIsTurnBegin(false)
-    })
-    setRequestBasicIncome(() => {
-      if(socket === null) {return;}
-      socket.emit("requestBasicIncome", roomId)
-    })
-
-    setSkip(() => {
-      if(socket === null) {return;}
-      socket.emit("skip",{roomId, playerEmail})
-    })
 
     setSocket(socket);
 
