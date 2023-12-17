@@ -220,7 +220,9 @@ export const TwoWorldsProvider = ({
 
     })
 
-
+    socket.on("updateChanceCardDisplay", (chanceId: string) => {
+      
+    })
 
 
 

@@ -28,9 +28,8 @@ export type PropertyType = {
 
 export type GameStateType = {
   playerStates: PlayerType[],
-  properties: {
-    [cellId: number]: PropertyType
-  },
+  ownedCellIds: number[],
+  properties: Map<number, PropertyType>,
   nowInTurn: number,
   govIncome: number,
   charityIncome: number,
@@ -52,7 +51,8 @@ export type TurnState = {
   doublesCount: number,
   diceCache: number,
   quirkOfFateDiceCache: number,
-  prompt: string
+  prompt: string,
+  chanceCardDisplay: string
 }
 
 export type AllStateType = {
@@ -73,11 +73,13 @@ const initialState: AllStateType = {
     doublesCount: 0,
     diceCache: 0,
     quirkOfFateDiceCache: 0,
-    prompt: "none"
+    prompt: "none",
+    chanceCardDisplay: ""
   },
   gameState: {
     playerStates: [],
-    properties: {},
+    ownedCellIds: [],
+    properties: new Map<number, PropertyType>(),
     nowInTurn: 0,
    govIncome: 0,
     charityIncome: 0,
@@ -95,6 +97,15 @@ export const twoWorldsSlice = createSlice({
     updateGameState: (state, action: PayloadAction<GameStateType>) => {
       state.gameState = action.payload     
     },
+    updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
+      state.turnState.chanceCardDisplay = action.payload
+    },
+    showQuirkOfFateStatus: (state, action: PayloadAction<number>) => {
+      state.turnState.quirkOfFateDiceCache = action.payload
+    },
+    eraseQuirkOfFateStatus: (state) => {
+      state.turnState.quirkOfFateDiceCache = 0
+    }
   }
 });
 
