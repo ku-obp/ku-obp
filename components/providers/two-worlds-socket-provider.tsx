@@ -199,7 +199,7 @@ export const TwoWorldsProvider = ({
 
     socket.on("connect", () => {
       console.log(`${playerEmail} Connected to Socket.io server`);
-      socket.emit("joinRoom", { playerEmail, roomId });
+      socket.emit("joinRoom", { roomId });
     });
 
 
@@ -221,7 +221,7 @@ export const TwoWorldsProvider = ({
     })
 
     socket.on("updateChanceCardDisplay", (chanceId: string) => {
-      
+
     })
 
 
