@@ -215,6 +215,7 @@ export const TwoWorldsProvider = ({
     socket.on("updateGameState", (gameState: any) => {
       const payload = String(gameState)
       console.log(payload)
+      console.log(typeof gameState)
     })
 
     socket.on("showQuirkOfFateStatus", (dice1: number, dice2: number) => {
