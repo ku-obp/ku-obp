@@ -7,7 +7,7 @@ import { useDispatch, connect } from "react-redux";
 import io from "socket.io-client";
 
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { PaymentTransactionJSON, PlayerIconType, refresh, refreshDoubles, freeze, flushChances, flushPayments, notifyChanceCardAcquistion, notifyPayments, QueuesType, GameStateType, updateGameState, AllStateType, clearDices, setDices, DiceType } from "@/redux/features/two-worlds-slice";
+import { PaymentTransactionJSON, PlayerIconType, GameStateType, updateGameState, AllStateType } from "@/redux/features/two-worlds-slice";
 import {openModal} from "@/redux/features/modal-slice"
 
 type TwoWorldsContextType = {
@@ -193,14 +193,35 @@ export const TwoWorldsProvider = ({
       console.log(`${playerEmail} Failed to join the room: ${msg}`);
     });
 
+    socket.on("joinSucceed", () => {
+      console.log('Succeeded to join the room')
+    })
+
     socket.on("connect", () => {
       console.log(`${playerEmail} Connected to Socket.io server`);
       socket.emit("joinRoom", { playerEmail, roomId });
     });
 
+
     socket.on("disconnect", () => {
       console.log("Disconnected from Socket.io server");
     });
+
+    
+    socket.on("notifyRoomStatus", (playerEmails: string[], isEnded: boolean) => {
+
+    })
+
+    socket.on("updateGameState", (gameState: any) => {
+      console.log(gameState)
+    })
+
+    socket.on("showQuirkOfFateStatus", (dice1: number, dice2: number) => {
+
+    })
+
+
+
 
 
     socket.on("endGame", (overall_finances: {
@@ -212,7 +233,7 @@ export const TwoWorldsProvider = ({
 
       console.log("game ended.");
       router.push("/two-worlds");
-      dispatch(freeze());
+      // dispatch(freeze());
       dispatch(
         openModal({
           type: "gameResult",
@@ -223,91 +244,12 @@ export const TwoWorldsProvider = ({
 
     
 
-    socket.on("updateGameState", ({fresh, gameState, rq}: {fresh: false, gameState: GameStateType, rq: undefined} | {fresh: true, gameState: GameStateType, rq: {
-      chances: {
-        queue: string[];
-        processed: number;
-      };
-      payments: {
-        queue: {
-          cellId: number;
-          mandatory: PaymentTransactionJSON | null;
-          optional: PaymentTransactionJSON | null;
-        }[];
-        processed: number;
-      }
-    }}) => {
+    socket.on("updateGameState", (gameState: GameStateType) => {
       console.log("Game state updated.")
       dispatch(updateGameState(gameState))
-      if(fresh) {
-        dispatch(refresh(rq))
-      }
-    })
+    })    
+
     
-
-    socket.on("showDices", ({dice1, dice2}: {dice1: DiceType, dice2: DiceType}) => {
-      const dices: [DiceType, DiceType] = [dice1, dice2]
-      dispatch(setDices(dices))
-    })
-    
-
-    socket.on("turnBegin", ({playerNowEmail, askJailbrak}: {playerNowEmail: string, askJailbrak: boolean}) => {
-      dispatch(clearDices())
-      if(playerNowEmail === playerEmail) {
-        if(askJailbrak) {
-          setCommand("askJailbreak")
-        } else {
-          setCommand("normal")
-        }
-        setIsTurnBegin(true)
-      } else {
-        setIsTurnBegin(false)
-      }
-    })
-
-    socket.on("turnEnd", () => {
-      socket.emit("nextTurn", roomId)
-    })
-
-    socket.on("refreshDoubles", (doubles_count: number) => {
-      dispatch(refreshDoubles(doubles_count))
-    })
-    
-    setJailbreakByMoney(() => {
-      if(socket === null) {return;}
-      socket.emit("jailbreakByMoney", {roomId, playerEmail})
-      setIsTurnBegin(false)
-    })
-    setTryJailbreakByDice(() => {
-      if(socket === null) {return;}
-      const {dice1, dice2} = rollDice()
-      socket.emit("reportRollDiceResult", {roomId, playerEmail, dice1, dice2, flag_jailbreak: true})
-      setIsTurnBegin(false)
-    })
-    setConstruct((cellId: number) => {
-      if(socket === null) {return;}
-      socket.emit("reportTransaction", {type: "constsruct", roomId,playerEmail, cellId, amount: 1})
-      setIsTurnBegin(false)
-    })
-    setSell((cellId, amount) => {
-      if(socket === null) {return;}
-      socket.emit("reportTransaction", {type: "sell", roomId,playerEmail, cellId, amount})
-    })
-    setNormallyRollDice(() => {
-      if(socket === null) {return;}
-      const {dice1, dice2} = rollDice()
-      socket.emit("reportRollDiceResult", {roomId, playerEmail, dice1, dice2, flag_jailbreak: false})
-      setIsTurnBegin(false)
-    })
-    setRequestBasicIncome(() => {
-      if(socket === null) {return;}
-      socket.emit("requestBasicIncome", roomId)
-    })
-
-    setSkip(() => {
-      if(socket === null) {return;}
-      socket.emit("skip",{roomId, playerEmail})
-    })
 
     setSocket(socket);
 

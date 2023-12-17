@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { PLAYER_COLORS, PropertiesRegistry } from "@/lib/two-worlds"
 
-import {PlayerIconType, PREDEFINED_CELLS, DiceType, PropertyType, PlayerType, GameStateType} from "@/redux/features/two-worlds-slice"
+import {PlayerIconType, PREDEFINED_CELLS, PropertyType, PlayerType, GameStateType} from "@/redux/features/two-worlds-slice"
 
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
@@ -12,15 +12,6 @@ import { AppDispatch, useAppSelector } from "@/redux/store";
 import {useSocket} from "@/components/providers/two-worlds-socket-provider"
 
 import {arrayRange} from "@/lib/utils"
-
-type DicesType = {
-   dice1: DiceType,
-   dice2: DiceType
-}
-
-function isValidDices(dices: [DiceType | 0, DiceType | 0]): boolean {
-   return ((dices[0] !== 0) && (dices[1] !== 0))
-}
 
 
 class ControlStatus {
@@ -38,25 +29,25 @@ class ControlStatus {
    public get requestableForBasicIncome() { return this._requestableForBasicIncome }
    public get normallyRollable() { return this._normallyRollable }
 
-   private readonly _sellables: PropertyType[]
-   private readonly _myPlayer: PlayerType | null
-   private readonly _isInTurn: boolean
-   private readonly _now: string
-   private readonly _myLocation: number
-   private readonly _propsHere: PropertyType | undefined
-   private readonly _skippable: boolean
-   private readonly _enoughMoneyToConstruct: boolean
-   private readonly _inJail: boolean
-   private readonly _ableToJailbreakByDice: boolean
-   private readonly _ableToJailbreakByMoney: boolean
-   private readonly _requestableForBasicIncome: boolean
-   private readonly _normallyRollable: boolean
+   private _sellables: PropertyType[]
+   private _myPlayer: PlayerType | null
+   private _isInTurn: boolean
+   private _now: string
+   private _myLocation: number
+   private _propsHere: PropertyType | undefined
+   private _skippable: boolean
+   private _enoughMoneyToConstruct: boolean
+   private _inJail: boolean
+   private _ableToJailbreakByDice: boolean
+   private _ableToJailbreakByMoney: boolean
+   private _requestableForBasicIncome: boolean
+   private _normallyRollable: boolean
 
    public constructor(gameState: GameStateType, playerEmail: string) {
       this._sellables = gameState.properties.filter(p => p.ownerEmail === playerEmail && p.count > 0)
-      this._myPlayer = gameState.players.find((player) => player.email === playerEmail) ?? null
-      this._isInTurn = this._myPlayer?.icon === gameState.nowInTurn
-      this._now = gameState.players.find(p => p.icon === gameState.nowInTurn)?.email ?? ""
+      // this._myPlayer = gameState.players.find((player) => player.email === playerEmail) ?? null
+      // this._isInTurn = this._myPlayer?.icon === gameState.nowInTurn
+      // this._now = gameState.players.find(p => p.icon === gameState.nowInTurn)?.email ?? ""
 
       this._myLocation = this._myPlayer?.location ?? 0
       this._propsHere = this._sellables.find(s => s.cellId === this._myLocation)
