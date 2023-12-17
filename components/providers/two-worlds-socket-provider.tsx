@@ -7,7 +7,7 @@ import { useDispatch, connect } from "react-redux";
 import io from "socket.io-client";
 
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { PaymentTransactionJSON, PlayerIconType, GameStateType, updateGameState, AllStateType } from "@/redux/features/two-worlds-slice";
+import { PaymentTransactionJSON, PlayerIconType, PropertyType, GameStateType, updateGameState, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, AllStateType, PlayerType, publishChanceCard, notifyRoomStatus, showDices, flushDices, updatePrompt, updateDoublesCount } from "@/redux/features/two-worlds-slice";
 import {openModal} from "@/redux/features/modal-slice"
 
 type TwoWorldsContextType = {
@@ -209,21 +209,101 @@ export const TwoWorldsProvider = ({
 
     
     socket.on("notifyRoomStatus", (playerEmails: string[], isEnded: boolean) => {
-
+      dispatch(notifyRoomStatus({playerEmails,isEnded}))
     })
 
     socket.on("updateGameState", (gameStateJSON: string) => {
       const parsed = JSON.parse(gameStateJSON)
-      console.log(parsed)
+      const {
+        charityIncome,
+        govIncome,
+        nowInTurn,
+        playerStates,
+        properties,
+        remainingCatastropheTurns,
+        remainingPandemicTurns,
+      } = parsed
+
+      let propertiesPostprocessed: Map<number,PropertyType> = new Map<number,PropertyType>()      
+      for(const {cellId, ownerIcon, count} of properties) {
+        propertiesPostprocessed = propertiesPostprocessed.set(cellId,{ownerIcon,count})
+      }
+
+      let playerStatesPostprocessed: PlayerType[] = []
+
+      for(const {
+        cash, cycles, displayLocation, icon, location,
+        remainingJailTurns, tickets, university
+      } of playerStates) {
+        const {
+          feeExemption,
+          taxExemption,
+          bonus,
+          doubleLotto,
+          lawyer,
+          freeHospital
+        } = tickets
+        
+        playerStatesPostprocessed.push({
+          icon,
+          location,
+          displayLocation,
+          cash,
+          cycles,
+          university,
+          tickets: {
+            feeExemption,
+            taxExemption,
+            bonus,
+            doubleLotto,
+            lawyer,
+            freeHospital
+          },
+          remainingJailTurns
+        })
+      }
+
+      const gameState: GameStateType = {
+        charityIncome,
+        govIncome,
+        nowInTurn,
+        sidecars: {
+          catastrophe: remainingCatastropheTurns,
+          pandemic: remainingPandemicTurns
+        },
+        playerStates: playerStatesPostprocessed,
+        properties: propertiesPostprocessed
+      }
+
+      dispatch(updateGameState(gameState))
     })
 
     socket.on("showQuirkOfFateStatus", (dice1: number, dice2: number) => {
-
+      dispatch(showQuirkOfFateStatus({dice1, dice2}))
     })
 
     socket.on("updateChanceCardDisplay", (chanceId: string) => {
-
+      dispatch(publishChanceCard(chanceId))
     })
+
+    socket.on("updateDoublesCount", (doublesCount: number) => {
+      dispatch(updateDoublesCount(doublesCount))
+    })
+
+    socket.on("showDices", (diceCache: number) => {
+      dispatch(showDices(diceCache))
+    })
+
+    socket.on("flushDices", () => {
+      dispatch(flushDices())
+    })
+
+
+    socket.on("updatePrompt", (prompt: string) => {
+      dispatch(updatePrompt(prompt))
+    })
+
+
 
 
 
@@ -244,13 +324,6 @@ export const TwoWorldsProvider = ({
         })
       );
     });
-
-    
-
-    socket.on("updateGameState", (gameState: GameStateType) => {
-      console.log("Game state updated.")
-      dispatch(updateGameState(gameState))
-    })    
 
     
 

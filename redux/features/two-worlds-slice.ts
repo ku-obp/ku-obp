@@ -28,7 +28,6 @@ export type PropertyType = {
 
 export type GameStateType = {
   playerStates: PlayerType[],
-  ownedCellIds: number[],
   properties: Map<number, PropertyType>,
   nowInTurn: number,
   govIncome: number,
@@ -42,7 +41,6 @@ export type GameStateType = {
 const INITIAL_CASH = 6000000
 
 export type RoomState = {
-  roomId: string,
   playerEmails: string[],
   isEnded: boolean
 }
@@ -65,7 +63,6 @@ export type AllStateType = {
 
 const initialState: AllStateType = {
   roomState: {
-    roomId: "",
     playerEmails: [],
     isEnded: false
   },
@@ -78,7 +75,6 @@ const initialState: AllStateType = {
   },
   gameState: {
     playerStates: [],
-    ownedCellIds: [],
     properties: new Map<number, PropertyType>(),
     nowInTurn: 0,
    govIncome: 0,
@@ -100,17 +96,45 @@ export const twoWorldsSlice = createSlice({
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
       state.turnState.chanceCardDisplay = action.payload
     },
-    showQuirkOfFateStatus: (state, action: PayloadAction<number>) => {
-      state.turnState.quirkOfFateDiceCache = action.payload
+    showQuirkOfFateStatus: (state, action: PayloadAction<{dice1: number, dice2: number}>) => {
+      const {dice1, dice2} = action.payload
+      if(dice1 < 1 || dice1 > 6 || dice2 < 1 || dice2 > 6) {
+        state.turnState.quirkOfFateDiceCache = 0
+      } else {
+        state.turnState.quirkOfFateDiceCache = (dice1 - 1) * 6 + dice2
+      }
     },
     eraseQuirkOfFateStatus: (state) => {
       state.turnState.quirkOfFateDiceCache = 0
+    },
+    publishChanceCard: (state, action: PayloadAction<string>) => {
+        state.turnState.chanceCardDisplay = action.payload
+    },
+    notifyRoomStatus: (state, action: PayloadAction<RoomState>) => {
+        state.roomState = action.payload
+    },
+    showDices: (state, action: PayloadAction<number>) => {
+        if((action.payload < 1) || (action.payload > 36)) {
+            state.turnState.diceCache = 0
+        } else {
+            state.turnState.diceCache = action.payload
+        }
+    },
+    flushDices: (state) => {
+        state.turnState.diceCache = 0
+    },
+    updatePrompt: (state, action: PayloadAction<string>) => {
+        state.turnState.prompt = action.payload
+    },
+    updateDoublesCount: (state, action: PayloadAction<number>) => {
+        state.turnState.doublesCount = action.payload
     }
   }
 });
 
 export const {
-    updateGameState
+    updateGameState, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
+    showDices, flushDices, updatePrompt, updateDoublesCount
 } = twoWorldsSlice.actions;
 
 export default twoWorldsSlice.reducer;
@@ -537,6 +561,8 @@ function gatherPredefined(): ICellData[] {
 const GROUP_PRICES = [1, 2, 3, 4, 5, 6, 7, 8].reduce((accumulator: {[key: number]: number}, target: number) => ({...accumulator, [target]: (target * 100000)}),{} as {[key: number]: number})
 
 import { Socket } from "socket.io-client";
+import { ActionTooltip } from "@/components/action-tooltip";
+import { access } from "fs";
 
 export const PREDEFINED_CELLS: ICellData[] = gatherPredefined();
 
