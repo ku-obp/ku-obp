@@ -28,3 +28,10 @@ export function getSingleString(gn: string | string[]) {
     return gn[0]
   }
 }
+
+export function divmod(x: number, y: number) {
+  return {
+      quotient: Math.floor(y/x),
+      remainder: y % x
+  }
+}

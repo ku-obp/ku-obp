@@ -15,15 +15,8 @@ type TwoWorldsContextType = {
   isConnected: boolean;
   roomId: string;
   icon: PlayerIconType | null;
-  jailbreakByMoney: () => void;
-  tryJailbreakByDice: () => void;
-  normallyRollDice: () => void;
-  requestBasicIncome: () => void;
   playerEmail: string;
-  construct: (cellId: number) => void;
   isTurnBegin: boolean;
-  sell: (cellId: number, amount: 1 | 2 | 3) => void,
-  skip: () => void
 }
 
 const TwoWorldsContext = createContext<TwoWorldsContextType>({
@@ -31,15 +24,8 @@ const TwoWorldsContext = createContext<TwoWorldsContextType>({
   isConnected: false,
   roomId: "",
   icon: null,
-  jailbreakByMoney: () => {},
-  tryJailbreakByDice: () => {},
-  normallyRollDice: () => {},
-  requestBasicIncome: () => {},
   playerEmail: "",
-  construct: (cellId) => {},
-  isTurnBegin: false,
-  sell: (cellId: number, amount: 1 | 2 | 3) => {},
-  skip: () => {}
+  isTurnBegin: false
 })
 
 export const useSocket = () => {
@@ -341,8 +327,7 @@ export const TwoWorldsProvider = ({
 
   return (
     <TwoWorldsContext.Provider value={{
-      socket, isConnected, roomId, icon, playerEmail, isTurnBegin,
-      jailbreakByMoney, tryJailbreakByDice, normallyRollDice, requestBasicIncome, construct, sell, skip
+      socket, isConnected, roomId, icon, playerEmail, isTurnBegin
     }}>
       {children}
     </TwoWorldsContext.Provider>
