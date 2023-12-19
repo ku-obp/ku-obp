@@ -14,6 +14,7 @@ import {useSocket} from "@/components/providers/two-worlds-socket-provider"
 import {arrayRange} from "@/lib/utils"
 import { ChanceCardDisplay } from "./two-worlds-chance-card-display";
 import TwoWorldsAction from './two-worlds-action';
+import { DicesDisplay } from "./two-worlds-dices";
 
 export const TwoWorldsControlPanel = ({height}: {height: number}) => {
 
@@ -33,6 +34,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
     return <>
       <div style={{backgroundColor: "black", width: 300, height: 600, justifyContent: "center", alignItems: "center", display:"flow-root"}}>
          <p style={{color: PLAYER_COLORS[gameState.nowInTurn]}}>현재 턴 : {roomState.playerEmails[gameState.nowInTurn]}</p>
+         <DicesDisplay diceCache={turnState.diceCache} scale={0.75} />
          <div style={{margin: 20}}>
             <p style={{color:"white", textAlign: "center"}}><strong>변화 카드</strong></p>
             <ChanceCardDisplay chanceId={""} width={260}/>
@@ -50,6 +52,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
          <div>
             <TwoWorldsAction socket={socket} roomId={roomId} playerEmail={playerEmail} />
          </div>
+         {turnState.prompt === "quirkOfFate" && <DicesDisplay diceCache={turnState.quirkOfFateDiceCache} scale={0.75} />}
       </div>
    </>
 }
