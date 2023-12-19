@@ -257,7 +257,7 @@ export const TwoWorldsProvider = ({
           catastrophe: remainingCatastropheTurns,
           pandemic: remainingPandemicTurns
         },
-        playerStates: playerStatesPostprocessed,
+        playerStates: Array.from(playerStatesPostprocessed),
         properties: propertiesPostprocessed
       }
 

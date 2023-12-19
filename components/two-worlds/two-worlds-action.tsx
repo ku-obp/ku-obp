@@ -37,6 +37,9 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
     const [sellTarget, setSellTarget] = useState<number>(0)
     const [sellAmount, setSellAmount] = useState<number>(0)
 
+    console.log(gameState.nowInTurn)
+    console.log(gameState.playerStates.length)
+
     useEffect(() => {
         const nowInTurn = gameState.nowInTurn
         if (roomState.playerEmails[nowInTurn] === playerEmail) {

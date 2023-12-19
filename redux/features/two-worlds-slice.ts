@@ -91,10 +91,16 @@ export const twoWorldsSlice = createSlice({
   initialState,
   reducers: {
     updateGameState: (state, action: PayloadAction<GameStateType>) => {
-      state.gameState = action.payload     
+        // state.gameState = action.payload     
+        state.gameState.charityIncome = action.payload.charityIncome
+        state.gameState.govIncome = action.payload.govIncome
+        state.gameState.nowInTurn = action.payload.nowInTurn
+        state.gameState.playerStates = Array.from(action.payload.playerStates)
+        state.gameState.properties = new Map<number, PropertyType>(action.payload.properties)
+
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
-      state.turnState.chanceCardDisplay = action.payload
+        state.turnState.chanceCardDisplay = action.payload
     },
     showQuirkOfFateStatus: (state, action: PayloadAction<{dice1: number, dice2: number}>) => {
       const {dice1, dice2} = action.payload
@@ -105,7 +111,7 @@ export const twoWorldsSlice = createSlice({
       }
     },
     eraseQuirkOfFateStatus: (state) => {
-      state.turnState.quirkOfFateDiceCache = 0
+        state.turnState.quirkOfFateDiceCache = 0
     },
     publishChanceCard: (state, action: PayloadAction<string>) => {
         state.turnState.chanceCardDisplay = action.payload
@@ -560,38 +566,4 @@ function gatherPredefined(): ICellData[] {
 
 const GROUP_PRICES = [1, 2, 3, 4, 5, 6, 7, 8].reduce((accumulator: {[key: number]: number}, target: number) => ({...accumulator, [target]: (target * 100000)}),{} as {[key: number]: number})
 
-import { Socket } from "socket.io-client";
-import { ActionTooltip } from "@/components/action-tooltip";
-import { access } from "fs";
-
 export const PREDEFINED_CELLS: ICellData[] = gatherPredefined();
-
-type ChanceCard = {
-    description: string,
-    displayName: string,
-    action: (socket: Socket, state: GameStateType, playerEmail: string) => Promise<GameStateType | null>
-}
-
-export const CHANCE_IDS = [
-    "free-lotto",
-    "scholarship",
-    "discountRent",
-    "bonus",
-    "doubleLotto",
-    "limitRents",
-]
-
-export type ChanceActionCallback = ({chances, payments}: {chances: {queue: string[], processed: number}, payments: {queue: {
-    cellId: number,
-    mandatory: PaymentTransactionJSON | null,
-    optional: PaymentTransactionJSON | null
-  }[], processed: number}}, {description, displayName}: {description: string, displayName: string}) => void
-
-export type PaymentsActionCallback = ({chances, payments}: {chances: {queue: string[], processed: number}, payments: {queue: {
-    cellId: number,
-    mandatory: PaymentTransactionJSON | null,
-    optional: PaymentTransactionJSON | null
-  }[], processed: number}}, {mandatory, optional}:{
-    mandatory: PaymentTransactionJSON | null,
-    optional: PaymentTransactionJSON | null
-}) => void
