@@ -198,56 +198,42 @@ export const TwoWorldsProvider = ({
       dispatch(notifyRoomStatus({playerEmails,isEnded}))
     })
 
-    socket.on("updateGameState", (gameStateJSON: string) => {
-      const parsed = JSON.parse(gameStateJSON)
-      const {
-        charityIncome,
-        govIncome,
-        nowInTurn,
-        playerStates,
-        properties,
-        remainingCatastropheTurns,
-        remainingPandemicTurns,
-      } = parsed
-
-      let propertiesPostprocessed: Map<number,PropertyType> = new Map<number,PropertyType>()      
-      for(const {cellId, ownerIcon, count} of properties) {
-        propertiesPostprocessed = propertiesPostprocessed.set(cellId,{ownerIcon,count})
-      }
-
-      let playerStatesPostprocessed: PlayerType[] = []
-
-      for(const {
-        cash, cycles, displayLocation, icon, location,
-        remainingJailTurns, tickets, university
-      } of playerStates) {
-        const {
-          feeExemption,
-          taxExemption,
-          bonus,
-          doubleLotto,
-          lawyer,
-          freeHospital
-        } = tickets
-        
-        playerStatesPostprocessed.push({
-          icon,
-          location,
-          displayLocation,
-          cash,
-          cycles,
-          university,
+    socket.on("updateGameState", (playerStates: string,
+      properties: string,
+      nowInTurn: number,
+      govIncome: number,
+      charityIncome: number,
+      remainingCatastropheTurns: number,
+      remainingPandemicTurns: number) => {
+      const playerStates_parsed = JSON.parse(playerStates)
+      const properties_parsed = JSON.parse(properties)
+      
+      const playerStatesPostprocessed = playerStates_parsed.map((state: any) => {
+        return {
+          icon: state.icon,
+          location: state.location,
+          displayLocation: state.displayLocation,
+          cash: state.cash,
+          cycles: state.cycles,
+          university: state.univertisy,
           tickets: {
-            feeExemption,
-            taxExemption,
-            bonus,
-            doubleLotto,
-            lawyer,
-            freeHospital
+            feeExemption: state.tickets.feeExemption,
+            taxExemption: state.tickets.taxExemption,
+            bonus: state.tickets.bonus,
+            doubleLotto: state.tickets.doubleLotto,
+            lawyer: state.tickets.lawyer,
+            freeHospital: state.tickets.freeHospital
           },
-          remainingJailTurns
-        })
-      }
+          remainingJailTurns: state.remainingJailTurns
+        } as PlayerType
+      })
+      
+      const propertiesPostprocessed = properties_parsed.map((prop: any) => {
+        return [prop.cellId as number,{
+          ownerIcon: prop.ownerIcon,
+          count: prop.count
+        } as PropertyType]
+      })
 
       const gameState: GameStateType = {
         charityIncome,
@@ -258,7 +244,7 @@ export const TwoWorldsProvider = ({
           pandemic: remainingPandemicTurns
         },
         playerStates: Array.from(playerStatesPostprocessed),
-        properties: propertiesPostprocessed
+        properties: new Map<number, PropertyType>(propertiesPostprocessed)
       }
 
       dispatch(updateGameState(gameState))
