@@ -32,6 +32,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
 
     return <>
       <div style={{backgroundColor: "black", width: 300, height: 600, justifyContent: "center", alignItems: "center", display:"flow-root"}}>
+         <p style={{color: PLAYER_COLORS[gameState.nowInTurn]}}>현재 턴 : {roomState.playerEmails[gameState.nowInTurn]}</p>
          <div style={{margin: 20}}>
             <p style={{color:"white", textAlign: "center"}}><strong>변화 카드</strong></p>
             <ChanceCardDisplay chanceId={""} width={260}/>
