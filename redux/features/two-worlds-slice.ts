@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction, compose, current } from "@reduxjs/toolkit";
 import {range} from "lodash"
 
+import copy from 'fast-copy'
+
 export type PlayerIconType = number
 
 export type PlayerType = {
@@ -18,7 +20,7 @@ export type PlayerType = {
     lawyer: number,
     freeHospital: number
   },
-  remainingJailTurns: number,
+  remainingJailTurns: number
 }
 
 export type PropertyType = {
@@ -86,14 +88,36 @@ const initialState: AllStateType = {
   }
 }
 
+export type UpdateOtherStatesPayload = {
+    nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number
+}
+
 export const twoWorldsSlice = createSlice({
   name: "two-worlds",
   initialState,
   reducers: {
-    updateGameState: (state, action: PayloadAction<GameStateType>) => {
-        // state.gameState = action.payload     
-        Object.assign(state.gameState,action.payload)
-        console.log(current(state))
+    updatePlayerStates: (state, action: PayloadAction<Array<PlayerType>>) => {
+        const sorted = action.payload.toSorted((a,b) => a.icon - b.icon)
+        for (const n of range(0,sorted.length)) {
+            if(state.gameState.playerStates.length <= n) {
+                state.gameState.playerStates.push(sorted[n])
+            } else {
+                state.gameState.playerStates[n] = sorted[n]
+            }
+        }
+    },
+    updateProperties: (state, action: PayloadAction<Map<number, PropertyType>>) => {
+        state.gameState.properties.clear()
+        action.payload.forEach((property, location) => {
+            state.gameState.properties = state.gameState.properties.set(location,property)
+        })
+    },
+    updateOtherStates: (state, action: PayloadAction<UpdateOtherStatesPayload>) => {
+        state.gameState.charityIncome = action.payload.charityIncome
+        state.gameState.govIncome = action.payload.govIncome
+        state.gameState.nowInTurn = action.payload.nowInTurn
+        state.gameState.sidecars.catastrophe = action.payload.remainingCatastropheTurns
+        state.gameState.sidecars.pandemic = action.payload.remainingPandemicTurns
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
         state.turnState.chanceCardDisplay = action.payload
@@ -135,7 +159,7 @@ export const twoWorldsSlice = createSlice({
 });
 
 export const {
-    updateGameState, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
+    updatePlayerStates, updateProperties, updateOtherStates, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
     showDices, flushDices, updatePrompt, updateDoublesCount
 } = twoWorldsSlice.actions;
 

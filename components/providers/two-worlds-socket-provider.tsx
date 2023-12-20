@@ -7,8 +7,10 @@ import { useDispatch, connect } from "react-redux";
 import io from "socket.io-client";
 
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { PaymentTransactionJSON, PlayerIconType, PropertyType, GameStateType, updateGameState, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, AllStateType, PlayerType, publishChanceCard, notifyRoomStatus, showDices, flushDices, updatePrompt, updateDoublesCount } from "@/redux/features/two-worlds-slice";
+import { PaymentTransactionJSON, PlayerIconType, PropertyType, updateOtherStates, GameStateType, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, AllStateType, PlayerType, publishChanceCard, notifyRoomStatus, showDices, flushDices, updatePrompt, updateDoublesCount, updatePlayerStates, updateProperties } from "@/redux/features/two-worlds-slice";
 import {openModal} from "@/redux/features/modal-slice"
+
+import copy from 'fast-copy'
 
 type TwoWorldsContextType = {
   socket: any | null;
@@ -133,6 +135,19 @@ export function rollDice() {
   }
 }
 
+function parseProperty(raw: string): PropertyType {
+  const parsed = JSON.parse(raw)
+  const {
+    ownerIcon,
+    count
+  } = parsed as PropertyType
+  return {
+    ownerIcon,
+    count
+  }
+}
+
+
 
 import { getSingleString } from "@/lib/utils";
 
@@ -193,62 +208,60 @@ export const TwoWorldsProvider = ({
       console.log("Disconnected from Socket.io server");
     });
 
-    
+    socket.on("refresh", (count: number) => {
+      
+    })
+
     socket.on("notifyRoomStatus", (playerEmails: string[], isEnded: boolean) => {
       dispatch(notifyRoomStatus({playerEmails,isEnded}))
     })
 
-    socket.on("updateGameState", (playerStates: string,
-      properties: string,
-      nowInTurn: number,
-      govIncome: number,
-      charityIncome: number,
-      remainingCatastropheTurns: number,
-      remainingPandemicTurns: number) => {
-      const playerStates_parsed = JSON.parse(playerStates)
-      const properties_parsed = JSON.parse(properties)
-      
-      const playerStatesPostprocessed = playerStates_parsed.map((state: any) => {
+    socket.on("updatePlayerStates", (playerStateStrings: string[]) => {
+      const playerStates: PlayerType[] = playerStateStrings.map((raw) => {
+        const parsed = JSON.parse(raw)
+        const {
+          icon,
+          location,
+          displayLocation,
+          cash,
+          cycles,
+          university,
+          tickets,
+          remainingJailTurns
+        } = parsed as PlayerType
         return {
-          icon: state.icon,
-          location: state.location,
-          displayLocation: state.displayLocation,
-          cash: state.cash,
-          cycles: state.cycles,
-          university: state.univertisy,
-          tickets: {
-            feeExemption: state.tickets.feeExemption,
-            taxExemption: state.tickets.taxExemption,
-            bonus: state.tickets.bonus,
-            doubleLotto: state.tickets.doubleLotto,
-            lawyer: state.tickets.lawyer,
-            freeHospital: state.tickets.freeHospital
-          },
-          remainingJailTurns: state.remainingJailTurns
-        } as PlayerType
+          icon,
+          location,
+          displayLocation,
+          cash,
+          cycles,
+          university,
+          tickets,
+          remainingJailTurns
+        }
       })
-      
-      const propertiesPostprocessed = properties_parsed.map((prop: any) => {
-        return [prop.cellId as number,{
-          ownerIcon: prop.ownerIcon,
-          count: prop.count
-        } as PropertyType]
-      })
-
-      const gameState: GameStateType = {
-        charityIncome,
-        govIncome,
-        nowInTurn,
-        sidecars: {
-          catastrophe: remainingCatastropheTurns,
-          pandemic: remainingPandemicTurns
-        },
-        playerStates: Array.from(playerStatesPostprocessed),
-        properties: new Map<number, PropertyType>(propertiesPostprocessed)
-      }
-
-      dispatch(updateGameState(gameState))
+      dispatch(updatePlayerStates(playerStates))
     })
+
+    socket.on("updateProperties", (cellIds: number[], propertiesJSON: any) => {
+      console.log(propertiesJSON)
+
+      const pairs = cellIds.map((cellId) => [cellId, parseProperty(propertiesJSON[`cell${cellId}`] as string)] as [number,PropertyType])
+      const properties = new Map<number,PropertyType>(pairs)
+      dispatch(updateProperties(properties))
+    })
+
+    socket.on("updateOtherStates",(nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number) => {
+      dispatch(updateOtherStates({
+        nowInTurn: nowInTurn,
+        govIncome: govIncome,
+        charityIncome: charityIncome,
+        remainingCatastropheTurns: remainingCatastropheTurns,
+        remainingPandemicTurns: remainingPandemicTurns
+      }))
+    })
+
+    
 
     socket.on("showQuirkOfFateStatus", (dice1: number, dice2: number) => {
       dispatch(showQuirkOfFateStatus({dice1, dice2}))
