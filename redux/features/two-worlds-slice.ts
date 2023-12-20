@@ -100,9 +100,9 @@ export const twoWorldsSlice = createSlice({
         const sorted = action.payload.toSorted((a,b) => a.icon - b.icon)
         for (const n of range(0,sorted.length)) {
             if(state.gameState.playerStates.length <= n) {
-                state.gameState.playerStates.push(sorted[n])
+                state.gameState.playerStates.push(copy(sorted[n]))
             } else {
-                state.gameState.playerStates[n] = sorted[n]
+                state.gameState.playerStates[n] = copy(sorted[n])
             }
         }
     },
@@ -113,14 +113,14 @@ export const twoWorldsSlice = createSlice({
         })
     },
     updateOtherStates: (state, action: PayloadAction<UpdateOtherStatesPayload>) => {
-        state.gameState.charityIncome = action.payload.charityIncome
-        state.gameState.govIncome = action.payload.govIncome
-        state.gameState.nowInTurn = action.payload.nowInTurn
-        state.gameState.sidecars.catastrophe = action.payload.remainingCatastropheTurns
-        state.gameState.sidecars.pandemic = action.payload.remainingPandemicTurns
+        state.gameState.charityIncome = copy(action.payload.charityIncome)
+        state.gameState.govIncome = copy(action.payload.govIncome)
+        state.gameState.nowInTurn = copy(action.payload.nowInTurn)
+        state.gameState.sidecars.catastrophe = copy(action.payload.remainingCatastropheTurns)
+        state.gameState.sidecars.pandemic = copy(action.payload.remainingPandemicTurns)
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
-        state.turnState.chanceCardDisplay = action.payload
+        state.turnState.chanceCardDisplay = copy(action.payload)
     },
     showQuirkOfFateStatus: (state, action: PayloadAction<{dice1: number, dice2: number}>) => {
       const {dice1, dice2} = action.payload
@@ -134,26 +134,33 @@ export const twoWorldsSlice = createSlice({
         state.turnState.quirkOfFateDiceCache = 0
     },
     publishChanceCard: (state, action: PayloadAction<string>) => {
-        state.turnState.chanceCardDisplay = action.payload
+        state.turnState.chanceCardDisplay = copy(action.payload)
     },
     notifyRoomStatus: (state, action: PayloadAction<RoomState>) => {
-        state.roomState = action.payload
+        for (const n of range(0,action.payload.playerEmails.length)) {
+            if(state.roomState.playerEmails.length <= n) {
+                state.roomState.playerEmails.push(copy(action.payload.playerEmails[n]))
+            } else {
+                state.roomState.playerEmails[n] = copy(action.payload.playerEmails[n])
+            }
+        }
+        state.roomState.isEnded = copy(action.payload.isEnded)
     },
     showDices: (state, action: PayloadAction<number>) => {
         if((action.payload < 1) || (action.payload > 36)) {
             state.turnState.diceCache = 0
         } else {
-            state.turnState.diceCache = action.payload
+            state.turnState.diceCache = copy(action.payload)
         }
     },
     flushDices: (state) => {
         state.turnState.diceCache = 0
     },
     updatePrompt: (state, action: PayloadAction<string>) => {
-        state.turnState.prompt = action.payload
+        state.turnState.prompt = copy(action.payload)
     },
     updateDoublesCount: (state, action: PayloadAction<number>) => {
-        state.turnState.doublesCount = action.payload
+        state.turnState.doublesCount = copy(action.payload)
     }
   }
 });

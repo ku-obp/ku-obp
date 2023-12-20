@@ -212,7 +212,8 @@ export const TwoWorldsProvider = ({
       
     })
 
-    socket.on("notifyRoomStatus", (playerEmails: string[], isEnded: boolean) => {
+    socket.on("notifyRoomStatus", (playerEmails: string[], isEndedStringified: string) => {
+      const isEnded = JSON.parse(isEndedStringified) as boolean
       dispatch(notifyRoomStatus({playerEmails,isEnded}))
     })
 
