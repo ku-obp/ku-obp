@@ -243,7 +243,8 @@ export const TwoWorldsProvider = ({
       dispatch(updatePlayerStates(playerStates))
     })
 
-    socket.on("updateProperties", (cellIds: number[], propertiesJSON: any) => {
+    socket.on("updateProperties", (cellIds: number[], raw: string) => {
+      const propertiesJSON = JSON.parse(raw)
       console.log(propertiesJSON)
 
       const pairs = cellIds.map((cellId) => [cellId, parseProperty(propertiesJSON[`cell${cellId}`] as string)] as [number,PropertyType])
