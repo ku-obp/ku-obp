@@ -7,7 +7,7 @@ import { useDispatch, connect } from "react-redux";
 import io from "socket.io-client";
 
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { PaymentTransactionJSON, PlayerIconType, PropertyType, updateOtherStates, GameStateType, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, AllStateType, PlayerType, publishChanceCard, notifyRoomStatus, showDices, flushDices, updatePrompt, updateDoublesCount, updatePlayerStates, updateProperties, TicketType } from "@/redux/features/two-worlds-slice";
+import { PaymentTransactionJSON, PlayerIconType, PropertyType, GameStateType, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, AllStateType, PlayerType, publishChanceCard, notifyRoomStatus, showDices, flushDices, updatePrompt, updateDoublesCount, updateGameState, TicketType } from "@/redux/features/two-worlds-slice";
 import {openModal} from "@/redux/features/modal-slice"
 
 import copy from 'fast-copy'
@@ -217,7 +217,7 @@ export const TwoWorldsProvider = ({
       dispatch(notifyRoomStatus({playerEmails,isEnded}))
     })
 
-    socket.on("updatePlayerStates", (playerStateStrings: string[]) => {
+    socket.on("updateGameState", (playerStateStrings: string[], cellIds: number[], rawProperties: string, nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number) => {
       console.log(playerStateStrings.length)
       const playerStates: PlayerType[] = playerStateStrings.map((raw) => {
         const parsed = JSON.parse(raw)
@@ -254,29 +254,19 @@ export const TwoWorldsProvider = ({
           remainingJailTurns: remainingJailTurns as number
         } as PlayerType
       })
-      dispatch(updatePlayerStates(playerStates))
-    })
 
-    socket.on("updateProperties", (cellIds: number[], raw: string) => {
-      const propertiesJSON = JSON.parse(raw)
+      const propertiesJSON = JSON.parse(rawProperties)
       console.log(propertiesJSON)
 
       const pairs = cellIds.map((cellId) => [cellId, parseProperty(propertiesJSON[`cell${cellId}`] as string)] as [number,PropertyType])
       const properties = new Map<number,PropertyType>(pairs)
-      dispatch(updateProperties(properties))
-    })
 
-    socket.on("updateOtherStates",(nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number) => {
-      dispatch(updateOtherStates({
-        nowInTurn: nowInTurn,
+      dispatch(updateGameState({playerStates, properties,
         govIncome: govIncome,
         charityIncome: charityIncome,
         remainingCatastropheTurns: remainingCatastropheTurns,
-        remainingPandemicTurns: remainingPandemicTurns
-      }))
+        remainingPandemicTurns: remainingPandemicTurns}))
     })
-
-    
 
     socket.on("showQuirkOfFateStatus", (dice1: number, dice2: number) => {
       dispatch(showQuirkOfFateStatus({dice1, dice2}))

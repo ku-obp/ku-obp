@@ -90,7 +90,8 @@ const initialState: AllStateType = {
   }
 }
 
-export type UpdateOtherStatesPayload = {
+export type UpdateGameStatePayload = {
+    playerStates: Array<PlayerType>, properties: Map<number, PropertyType>,
     nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number
 }
 
@@ -98,8 +99,8 @@ export const twoWorldsSlice = createSlice({
   name: "two-worlds",
   initialState,
   reducers: {
-    updatePlayerStates: (state, action: PayloadAction<Array<PlayerType>>) => {
-        const sorted = action.payload.toSorted((a,b) => a.icon - b.icon)
+    updateGameState: (state, action: PayloadAction<updateGameState>) => {
+        const sorted = action.payload.playerStates.toSorted((a,b) => a.icon - b.icon)
         for (const n of range(0,sorted.length)) {
             if(state.gameState.playerStates.length <= n) {
                 state.gameState.playerStates.push(copy(sorted[n]))
@@ -107,14 +108,10 @@ export const twoWorldsSlice = createSlice({
                 state.gameState.playerStates[n] = copy(sorted[n])
             }
         }
-    },
-    updateProperties: (state, action: PayloadAction<Map<number, PropertyType>>) => {
         state.gameState.properties.clear()
-        action.payload.forEach((property, location) => {
+        action.payload.properties.forEach((property, location) => {
             state.gameState.properties = new Map<number, PropertyType>(state.gameState.properties).set(location,property)
         })
-    },
-    updateOtherStates: (state, action: PayloadAction<UpdateOtherStatesPayload>) => {
         state.gameState.charityIncome = copy(action.payload.charityIncome)
         state.gameState.govIncome = copy(action.payload.govIncome)
         state.gameState.nowInTurn = copy(action.payload.nowInTurn)
@@ -168,7 +165,7 @@ export const twoWorldsSlice = createSlice({
 });
 
 export const {
-    updatePlayerStates, updateProperties, updateOtherStates, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
+    updateGameState, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
     showDices, flushDices, updatePrompt, updateDoublesCount
 } = twoWorldsSlice.actions;
 
