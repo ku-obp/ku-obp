@@ -217,6 +217,7 @@ export const TwoWorldsProvider = ({
     })
 
     socket.on("updatePlayerStates", (playerStateStrings: string[]) => {
+      console.log(playerStateStrings.length)
       const playerStates: PlayerType[] = playerStateStrings.map((raw) => {
         const parsed = JSON.parse(raw)
         const {
