@@ -7,7 +7,7 @@ import { useDispatch, connect } from "react-redux";
 import io from "socket.io-client";
 
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { PaymentTransactionJSON, PlayerIconType, PropertyType, GameStateType, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, AllStateType, PlayerType, publishChanceCard, notifyRoomStatus, showDices, flushDices, updatePrompt, updateDoublesCount, updateGameState, TicketType } from "@/redux/features/two-worlds-slice";
+import { PaymentTransactionJSON, PlayerIconType, PropertyType, GameStateType, updateChanceCardDisplay, showQuirkOfFateStatus, refreshGameState, eraseQuirkOfFateStatus, AllStateType, PlayerType, publishChanceCard, notifyRoomStatus, showDices, flushDices, updatePrompt, updateDoublesCount, updateGameState, TicketType } from "@/redux/features/two-worlds-slice";
 import {openModal} from "@/redux/features/modal-slice"
 
 import copy from 'fast-copy'

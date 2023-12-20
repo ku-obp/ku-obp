@@ -205,7 +205,7 @@ export const twoWorldsSlice = createSlice({
 });
 
 export const {
-    updateGameState, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
+    updateGameState, refreshGameState, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
     showDices, flushDices, updatePrompt, updateDoublesCount
 } = twoWorldsSlice.actions;
 
