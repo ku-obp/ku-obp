@@ -111,7 +111,7 @@ export const twoWorldsSlice = createSlice({
     updateProperties: (state, action: PayloadAction<Map<number, PropertyType>>) => {
         state.gameState.properties.clear()
         action.payload.forEach((property, location) => {
-            state.gameState.properties = state.gameState.properties.set(location,property)
+            state.gameState.properties = new Map<number, PropertyType>(state.gameState.properties).set(location,property)
         })
     },
     updateOtherStates: (state, action: PayloadAction<UpdateOtherStatesPayload>) => {
