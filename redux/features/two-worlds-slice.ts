@@ -99,7 +99,7 @@ export const twoWorldsSlice = createSlice({
   name: "two-worlds",
   initialState,
   reducers: {
-    updateGameState: (state, action: PayloadAction<updateGameState>) => {
+    updateGameState: (state, action: PayloadAction<UpdateGameStatePayload>) => {
         const sorted = action.payload.playerStates.toSorted((a,b) => a.icon - b.icon)
         for (const n of range(0,sorted.length)) {
             if(state.gameState.playerStates.length <= n) {
