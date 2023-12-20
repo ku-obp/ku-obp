@@ -1,7 +1,18 @@
-import { createSlice, PayloadAction, compose } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, compose, current } from "@reduxjs/toolkit";
 import {range} from "lodash"
 
+import copy from 'fast-copy'
+
 export type PlayerIconType = number
+
+export type TicketType = {
+    feeExemption: number,
+    taxExemption: number,
+    bonus: number,
+    doubleLotto: number,
+    lawyer: number,
+    freeHospital: number
+}
 
 export type PlayerType = {
   icon: number,
@@ -10,15 +21,8 @@ export type PlayerType = {
   cash: number,
   cycles: number,
   university: string,
-  tickets: {
-    feeExemption: number,
-    taxExemption: number,
-    bonus: number,
-    doubleLotto: number,
-    lawyer: number,
-    freeHospital: number
-  },
-  remainingJailTurns: number,
+  tickets: TicketType,
+  remainingJailTurns: number
 }
 
 export type PropertyType = {
@@ -86,15 +90,39 @@ const initialState: AllStateType = {
   }
 }
 
+export type UpdateOtherStatesPayload = {
+    nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number
+}
+
 export const twoWorldsSlice = createSlice({
   name: "two-worlds",
   initialState,
   reducers: {
-    updateGameState: (state, action: PayloadAction<GameStateType>) => {
-      state.gameState = action.payload     
+    updatePlayerStates: (state, action: PayloadAction<Array<PlayerType>>) => {
+        const sorted = action.payload.toSorted((a,b) => a.icon - b.icon)
+        for (const n of range(0,sorted.length)) {
+            if(state.gameState.playerStates.length <= n) {
+                state.gameState.playerStates.push(copy(sorted[n]))
+            } else {
+                state.gameState.playerStates[n] = copy(sorted[n])
+            }
+        }
+    },
+    updateProperties: (state, action: PayloadAction<Map<number, PropertyType>>) => {
+        state.gameState.properties.clear()
+        action.payload.forEach((property, location) => {
+            state.gameState.properties = new Map<number, PropertyType>(state.gameState.properties).set(location,property)
+        })
+    },
+    updateOtherStates: (state, action: PayloadAction<UpdateOtherStatesPayload>) => {
+        state.gameState.charityIncome = copy(action.payload.charityIncome)
+        state.gameState.govIncome = copy(action.payload.govIncome)
+        state.gameState.nowInTurn = copy(action.payload.nowInTurn)
+        state.gameState.sidecars.catastrophe = copy(action.payload.remainingCatastropheTurns)
+        state.gameState.sidecars.pandemic = copy(action.payload.remainingPandemicTurns)
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
-      state.turnState.chanceCardDisplay = action.payload
+        state.turnState.chanceCardDisplay = copy(action.payload)
     },
     showQuirkOfFateStatus: (state, action: PayloadAction<{dice1: number, dice2: number}>) => {
       const {dice1, dice2} = action.payload
@@ -105,35 +133,42 @@ export const twoWorldsSlice = createSlice({
       }
     },
     eraseQuirkOfFateStatus: (state) => {
-      state.turnState.quirkOfFateDiceCache = 0
+        state.turnState.quirkOfFateDiceCache = 0
     },
     publishChanceCard: (state, action: PayloadAction<string>) => {
-        state.turnState.chanceCardDisplay = action.payload
+        state.turnState.chanceCardDisplay = copy(action.payload)
     },
     notifyRoomStatus: (state, action: PayloadAction<RoomState>) => {
-        state.roomState = action.payload
+        for (const n of range(0,action.payload.playerEmails.length)) {
+            if(state.roomState.playerEmails.length <= n) {
+                state.roomState.playerEmails.push(copy(action.payload.playerEmails[n]))
+            } else {
+                state.roomState.playerEmails[n] = copy(action.payload.playerEmails[n])
+            }
+        }
+        state.roomState.isEnded = copy(action.payload.isEnded)
     },
     showDices: (state, action: PayloadAction<number>) => {
         if((action.payload < 1) || (action.payload > 36)) {
             state.turnState.diceCache = 0
         } else {
-            state.turnState.diceCache = action.payload
+            state.turnState.diceCache = copy(action.payload)
         }
     },
     flushDices: (state) => {
         state.turnState.diceCache = 0
     },
     updatePrompt: (state, action: PayloadAction<string>) => {
-        state.turnState.prompt = action.payload
+        state.turnState.prompt = copy(action.payload)
     },
     updateDoublesCount: (state, action: PayloadAction<number>) => {
-        state.turnState.doublesCount = action.payload
+        state.turnState.doublesCount = copy(action.payload)
     }
   }
 });
 
 export const {
-    updateGameState, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
+    updatePlayerStates, updateProperties, updateOtherStates, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
     showDices, flushDices, updatePrompt, updateDoublesCount
 } = twoWorldsSlice.actions;
 
@@ -560,38 +595,4 @@ function gatherPredefined(): ICellData[] {
 
 const GROUP_PRICES = [1, 2, 3, 4, 5, 6, 7, 8].reduce((accumulator: {[key: number]: number}, target: number) => ({...accumulator, [target]: (target * 100000)}),{} as {[key: number]: number})
 
-import { Socket } from "socket.io-client";
-import { ActionTooltip } from "@/components/action-tooltip";
-import { access } from "fs";
-
 export const PREDEFINED_CELLS: ICellData[] = gatherPredefined();
-
-type ChanceCard = {
-    description: string,
-    displayName: string,
-    action: (socket: Socket, state: GameStateType, playerEmail: string) => Promise<GameStateType | null>
-}
-
-export const CHANCE_IDS = [
-    "free-lotto",
-    "scholarship",
-    "discountRent",
-    "bonus",
-    "doubleLotto",
-    "limitRents",
-]
-
-export type ChanceActionCallback = ({chances, payments}: {chances: {queue: string[], processed: number}, payments: {queue: {
-    cellId: number,
-    mandatory: PaymentTransactionJSON | null,
-    optional: PaymentTransactionJSON | null
-  }[], processed: number}}, {description, displayName}: {description: string, displayName: string}) => void
-
-export type PaymentsActionCallback = ({chances, payments}: {chances: {queue: string[], processed: number}, payments: {queue: {
-    cellId: number,
-    mandatory: PaymentTransactionJSON | null,
-    optional: PaymentTransactionJSON | null
-  }[], processed: number}}, {mandatory, optional}:{
-    mandatory: PaymentTransactionJSON | null,
-    optional: PaymentTransactionJSON | null
-}) => void
