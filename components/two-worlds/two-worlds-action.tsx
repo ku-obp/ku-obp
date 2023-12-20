@@ -80,50 +80,30 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
             </> : (turnState.prompt === "purchase") ? <>
                 <p style={{color: "white", textAlign: "center"}}><strong>건설</strong></p>
                 <div>
-                    {(gameState.properties.get(gameState.playerStates[gameState.nowInTurn].location) !== undefined)
-                        ? (gameState.properties.get(gameState.playerStates[gameState.nowInTurn].location).count <= gameState.playerStates[gameState.nowInTurn].cycles)
-                            ? <> 
-                                <selector onChange={(e) => {
-                                    setPurchaseAmount(parseInt(e.target.value))
-                                }}>
-                                    {
-                                        range(1,(gameState.playerStates[gameState.nowInTurn].cycles - gameState.properties[gameState.playerStates[gameState.nowInTurn].location].count) + 2).map((num) => (
-                                            <option key={string(num)} value={string(num)} defaultValue={num === 1}>{num}</option>
-                                        ))
-                                    }
-                                </selector>
-                                <button onClick={(e) => {
-                                    if(purchaseAmount !== 0) {
-                                        socket.emit("purchase", {roomId: roomId, amount: purchaseAmount})
-                                    }
-                                }}>산다</button>
-                                
-                                <button onClick={(e) => {
-                                    socket.emit("skip", {roomId: roomId})
-                                }}>건너뛴다</button>
-                            </> : <>{
-                                socket.on("skip", {roomId: roomId})
-                            }</>
-                        : <>
-                            <selector onChange={(e) => {
-                                setPurchaseAmount(parseInt(e.target.value))
-                            }}>
-                                {
-                                    range(1,gameState.playerStates[gameState.nowInTurn].cycles + 2).map((num) => (
-                                        <option key={string(num)} value={string(num)} defaultValue={num === 1}>{num}</option>
-                                    ))
-                                }
-                            </selector>
-                            <button onClick={(e) => {
-                                if(purchaseAmount !== 0) {
-                                    socket.emit("purchase", {roomId: roomId, amount: purchaseAmount})
-                                }
-                            }}>산다</button>
-                            <button onClick={(e) => {
-                                socket.emit("skip", {roomId: roomId})
-                            }}>건너뛴다</button>
-                        </>
-                    }
+                    <input type="text" onChange={(e) => {
+                        switch(e.target.value) {
+                            case "1":
+                                setPurchaseAmount(1)
+                                break;
+                            case "2":
+                                setPurchaseAmount(2)
+                                break;
+                            case "3":
+                                setPurchaseAmount(3)
+                                break;
+                            default:
+                                setPurchaseAmount(0)
+                                break;
+                        }
+                    }} defaultValue={"0"} />
+                    <button onClick={(e) => {
+                        if(purchaseAmount !== 0) {
+                            socket.emit("purchase", {roomId: roomId, amount: purchaseAmount})
+                        }
+                    }}>산다</button>
+                    <button onClick={(e) => {
+                        socket.emit("skip", {roomId: roomId})
+                    }}>건너뛴다</button>
                 </div>
             </> : (turnState.prompt === "jail") ? <>
                 <p style={{color: "white", textAlign: "center"}}><strong>감옥</strong></p>
