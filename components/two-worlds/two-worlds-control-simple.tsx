@@ -50,7 +50,7 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
             )}
          </div>
          <div>
-            <TwoWorldsAction socket={socket} roomId={roomId} playerEmail={playerEmail} />
+            {(roomState.playerEmails[gameState.nowInTurn] === playerEmail) && <TwoWorldsAction socket={socket} roomId={roomId} playerEmail={playerEmail} />}
          </div>
          {turnState.prompt === "quirkOfFate" && <DicesDisplay diceCache={turnState.quirkOfFateDiceCache} scale={0.75} />}
       </div>
