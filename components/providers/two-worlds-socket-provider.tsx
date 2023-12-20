@@ -216,7 +216,74 @@ export const TwoWorldsProvider = ({
       const isEnded = JSON.parse(isEndedStringified) as boolean
       dispatch(notifyRoomStatus({playerEmails,isEnded}))
     })
+    socket.on("refreshGameState", (playerEmails: string[], isEndedStringified: string, playerStateStrings: string[], cellIds: number[], rawProperties: string, nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, doublesCount: number, diceCache: number, chanceId: string, prompt: string) => {
+      const isEnded = JSON.parse(isEndedStringified) as boolean
+      console.log(playerStateStrings.length)
+      const playerStates: PlayerType[] = playerStateStrings.map((raw) => {
+        const parsed = JSON.parse(raw)
+        const {
+          icon,
+          location,
+          displayLocation,
+          cash,
+          cycles,
+          university,
+          ticketFeeExemption,
+          ticketTaxExemption,
+          ticketBonus,
+          ticketDoubleLotto,
+          ticketLawyer,
+          ticketFreeHospital,
+          remainingJailTurns
+        } = parsed
+        return {
+          icon: icon as number,
+          location: location as number,
+          displayLocation: displayLocation as number,
+          cash: cash as number,
+          cycles: cycles as number,
+          university: copy(university as string),
+          tickets: {
+            feeExemption: ticketFeeExemption as number,
+            taxExemption: ticketTaxExemption as number,
+            bonus: ticketBonus as number,
+            doubleLotto: ticketDoubleLotto as number,
+            lawyer: ticketLawyer as number,
+            freeHospital: ticketFreeHospital as number
+          } as TicketType,
+          remainingJailTurns: remainingJailTurns as number
+        } as PlayerType
+      })
 
+      const propertiesJSON = JSON.parse(rawProperties)
+      console.log(propertiesJSON)
+
+      const pairs = cellIds.map((cellId) => [cellId, parseProperty(propertiesJSON[`cell${cellId}`] as string)] as [number,PropertyType])
+      const properties = new Map<number,PropertyType>(pairs)
+
+      dispatch(refreshGameState(
+        {
+          playerEmails: playerEmails,
+          isEnded: isEnded,
+          gs: {
+            playerStates: playerStates, properties: properties, nowInTurn: nowInTurn,
+            govIncome: govIncome,
+            charityIncome: charityIncome,
+            remainingCatastropheTurns: remainingCatastropheTurns,
+            remainingPandemicTurns: remainingPandemicTurns
+          },
+          ts: {
+            doublesCount: doublesCount,
+            diceCache: diceCache,
+            quirkOfFateDiceCache: quirkOfFateDiceCache,
+            prompt: prompt,
+            chanceCardDisplay: chanceId
+          }
+        }
+      ))
+    })
+
+    
     socket.on("updateGameState", (playerStateStrings: string[], cellIds: number[], rawProperties: string, nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number) => {
       console.log(playerStateStrings.length)
       const playerStates: PlayerType[] = playerStateStrings.map((raw) => {

@@ -95,28 +95,68 @@ export type UpdateGameStatePayload = {
     nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number
 }
 
+export type RefreshGameStatePayload = {
+    playerEmails: string[],
+    isEnded: boolean,
+    gs: UpdateGameStatePayload,
+    ts: TurnState
+}
+
+function _refreshGameState(payload: RefreshGameStatePayload): AllStateType {
+    return {
+        roomState: {
+            playerEmails: copy(payload.playerEmails),
+            isEnded: copy(payload.isEnded)
+        },
+        gameState: {
+            playerStates: copy(payload.gs.playerStates),
+            properties: copy(payload.gs.properties),
+            nowInTurn: copy(payload.gs.nowInTurn),
+            govIncome: copy(payload.gs.govIncome),
+            charityIncome: copy(payload.gs.charityIncome),
+            sidecars: {
+                catastrophe: copy(payload.gs.remainingCatastropheTurns),
+                pandemic: copy(payload.gs.remainingPandemicTurns)
+            }
+        },
+        turnState: {
+            doublesCount: copy(payload.ts.doublesCount),
+            diceCache: copy(payload.ts.diceCache),
+            quirkOfFateDiceCache: copy(payload.ts.quirkOfFateDiceCache),
+            prompt: copy(payload.ts.prompt),
+            chanceCardDisplay: coopy(payload.ts.chanceCardDisplay)
+        }
+    }
+}
+
+function _updateGameState(payload: UpdateGameStatePayload): GameStateType {
+    return {
+        playerStates: copy(payload.playerStates),
+        properties: copy(payload.properties),
+        nowInTurn: copy(payload.nowInTurn),
+        govIncome: copy(payload.govIncome),
+        charityIncome: copy(payload.charityIncome),
+        sidecars: {
+            catastrophe: copy(payload.remainingCatastropheTurns),
+            pandemic: copy(payload.remainingPandemicTurns)
+        }
+    }
+}
+
 export const twoWorldsSlice = createSlice({
   name: "two-worlds",
   initialState,
   reducers: {
+    refreshGameState: (state, action: PayloadAction<RefreshGameStatePayload>) => {
+        state = _refreshGameState(action.payload)
+    },
     updateGameState: (state, action: PayloadAction<UpdateGameStatePayload>) => {
-        const sorted = action.payload.playerStates.toSorted((a,b) => a.icon - b.icon)
-        for (const n of range(0,sorted.length)) {
-            if(state.gameState.playerStates.length <= n) {
-                state.gameState.playerStates.push(copy(sorted[n]))
-            } else {
-                state.gameState.playerStates[n] = copy(sorted[n])
-            }
+        const {roomState, turnState} = copy(state)
+        state = {
+            roomState,
+            gameState: _updateGameState(action.payload),
+            turnState
         }
-        state.gameState.properties.clear()
-        action.payload.properties.forEach((property, location) => {
-            state.gameState.properties = new Map<number, PropertyType>(state.gameState.properties).set(location,property)
-        })
-        state.gameState.charityIncome = copy(action.payload.charityIncome)
-        state.gameState.govIncome = copy(action.payload.govIncome)
-        state.gameState.nowInTurn = copy(action.payload.nowInTurn)
-        state.gameState.sidecars.catastrophe = copy(action.payload.remainingCatastropheTurns)
-        state.gameState.sidecars.pandemic = copy(action.payload.remainingPandemicTurns)
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
         state.turnState.chanceCardDisplay = copy(action.payload)
@@ -553,6 +593,10 @@ const parsePredefined: {
 
 
 import PredefinedCells from "./predefined_cells.json"
+import { AllStateType } from '@/redux/features/two-worlds-slice';
+import { AllStateType } from '@/redux/features/two-worlds-slice';
+import { GameStateType } from '@/redux/features/two-worlds-slice';
+import { ChanceCardDisplay } from './../../components/two-worlds/two-worlds-chance-card-display';
 
 
 
