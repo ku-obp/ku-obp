@@ -7,7 +7,7 @@ import { useDispatch, connect } from "react-redux";
 import io from "socket.io-client";
 
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { PaymentTransactionJSON, PlayerIconType, PropertyType, updateOtherStates, GameStateType, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, AllStateType, PlayerType, publishChanceCard, notifyRoomStatus, showDices, flushDices, updatePrompt, updateDoublesCount, updatePlayerStates, updateProperties } from "@/redux/features/two-worlds-slice";
+import { PaymentTransactionJSON, PlayerIconType, PropertyType, updateOtherStates, GameStateType, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, AllStateType, PlayerType, publishChanceCard, notifyRoomStatus, showDices, flushDices, updatePrompt, updateDoublesCount, updatePlayerStates, updateProperties, TicketType } from "@/redux/features/two-worlds-slice";
 import {openModal} from "@/redux/features/modal-slice"
 
 import copy from 'fast-copy'
@@ -237,22 +237,22 @@ export const TwoWorldsProvider = ({
           remainingJailTurns
         } = parsed
         return {
-          icon,
-          location,
-          displayLocation,
-          cash,
-          cycles,
-          university,
+          icon: icon as number,
+          location: location as number,
+          displayLocation: displayLocation as number,
+          cash: cash as number,
+          cycles: cycles as number,
+          university: copy(university as string),
           tickets: {
-            feeExemption: ticketFeeExemption,
-            taxExemption: ticketTaxExemption,
-            bonus: ticketBonus,
-            doubleLotto: ticketDoubleLotto,
-            lawyer: ticketLawyer,
-            freeHospital: ticketFreeHospital
-          },
-          remainingJailTurns
-        }
+            feeExemption: ticketFeeExemption as number,
+            taxExemption: ticketTaxExemption as number,
+            bonus: ticketBonus as number,
+            doubleLotto: ticketDoubleLotto as number,
+            lawyer: ticketLawyer as number,
+            freeHospital: ticketFreeHospital as number
+          } as TicketType,
+          remainingJailTurns: remainingJailTurns as number
+        } as PlayerType
       })
       dispatch(updatePlayerStates(playerStates))
     })

@@ -5,6 +5,15 @@ import copy from 'fast-copy'
 
 export type PlayerIconType = number
 
+export type TicketType = {
+    feeExemption: number,
+    taxExemption: number,
+    bonus: number,
+    doubleLotto: number,
+    lawyer: number,
+    freeHospital: number
+}
+
 export type PlayerType = {
   icon: number,
   location: number,
@@ -12,14 +21,7 @@ export type PlayerType = {
   cash: number,
   cycles: number,
   university: string,
-  tickets: {
-    feeExemption: number,
-    taxExemption: number,
-    bonus: number,
-    doubleLotto: number,
-    lawyer: number,
-    freeHospital: number
-  },
+  tickets: TicketType,
   remainingJailTurns: number
 }
 
