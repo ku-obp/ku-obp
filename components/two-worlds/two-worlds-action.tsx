@@ -81,7 +81,7 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                 <p style={{color: "white", textAlign: "center"}}><strong>건설</strong></p>
                 <div>
                     {(gameState.properties.has(gameState.playerStates[gameState.nowInTurn].location))
-                        ? (gameState.properties[gameState.playerStates[gameState.nowInTurn].location].count <= gameState.playerStates[gameState.nowInTurn].cycles)
+                        ? (gameState.properties.get(gameState.playerStates[gameState.nowInTurn].location).count <= gameState.playerStates[gameState.nowInTurn].cycles)
                             ? <> 
                                 <selector onChange={(e) => {
                                     setPurchaseAmount(parseInt(e.target.value))
