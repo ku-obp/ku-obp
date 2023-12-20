@@ -80,7 +80,7 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
             </> : (turnState.prompt === "purchase") ? <>
                 <p style={{color: "white", textAlign: "center"}}><strong>건설</strong></p>
                 <div>
-                    {(gameState.properties.has(gameState.playerStates[gameState.nowInTurn].location))
+                    {(gameState.properties.get(gameState.playerStates[gameState.nowInTurn].location) !== undefined)
                         ? (gameState.properties.get(gameState.playerStates[gameState.nowInTurn].location).count <= gameState.playerStates[gameState.nowInTurn].cycles)
                             ? <> 
                                 <selector onChange={(e) => {
