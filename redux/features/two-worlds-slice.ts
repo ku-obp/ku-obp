@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction, compose } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction, compose, current } from "@reduxjs/toolkit";
 import {range} from "lodash"
 
 export type PlayerIconType = number
@@ -92,12 +92,8 @@ export const twoWorldsSlice = createSlice({
   reducers: {
     updateGameState: (state, action: PayloadAction<GameStateType>) => {
         // state.gameState = action.payload     
-        state.gameState.charityIncome = action.payload.charityIncome
-        state.gameState.govIncome = action.payload.govIncome
-        state.gameState.nowInTurn = action.payload.nowInTurn
-        state.gameState.playerStates = Array.from(action.payload.playerStates)
-        state.gameState.properties = new Map<number, PropertyType>(action.payload.properties)
-
+        Object.assign(state.gameState,action.payload)
+        console.log(current(state))
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
         state.turnState.chanceCardDisplay = action.payload
