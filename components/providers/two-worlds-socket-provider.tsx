@@ -227,9 +227,14 @@ export const TwoWorldsProvider = ({
           cash,
           cycles,
           university,
-          tickets,
+          ticketFeeExemption,
+          ticketTaxExemption,
+          ticketBonus,
+          ticketDoubleLotto,
+          ticketLawyer,
+          ticketFreeHospital,
           remainingJailTurns
-        } = parsed as PlayerType
+        } = parsed
         return {
           icon,
           location,
@@ -237,7 +242,14 @@ export const TwoWorldsProvider = ({
           cash,
           cycles,
           university,
-          tickets,
+          tickets: {
+            feeExemption: ticketFeeExemption,
+            taxExemption: ticketTaxExemption,
+            bonus: ticketBonus,
+            doubleLotto: ticketDoubleLotto,
+            lawyer: ticketLawyer,
+            freeHospital: ticketFreeHospital
+          },
           remainingJailTurns
         }
       })
