@@ -237,14 +237,13 @@ export const TwoWorldsProvider = ({
       console.log(propertiesJSON)
 
       const pairs = cellIds.map((cellId) => [cellId, parseProperty(propertiesJSON[`cell${cellId}`] as string)] as [number,PropertyType])
-      const properties = new Map<number,PropertyType>(pairs)
 
       dispatch(refreshGameState(
         {
           playerEmails: playerEmails,
           isEnded: isEnded,
           gs: {
-            playerStates: playerStates, properties: properties, nowInTurn: nowInTurn,
+            playerStates: copy(playerStates), properties: new Map<number,PropertyType>(pairs), nowInTurn: nowInTurn,
             govIncome: govIncome,
             charityIncome: charityIncome,
             remainingCatastropheTurns: remainingCatastropheTurns,
