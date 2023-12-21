@@ -242,10 +242,10 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                     }
                 }}>교환한다</button>
             </> : (turnState.prompt === "pickChance") ? <>
-                <p style={{color: "white", textAlign: "center"}}><strong>찬스 뽑기</strong></p>
+                <p style={{color: "white", textAlign: "center"}}><strong>변화카드 뽑기</strong></p>
                 <button onClick={(e) => {
                     socket.emit("pickChance", {roomId: roomId})
-                }}>주사위를 굴린다</button>                
+                }}>변화 카드를 뽑는다</button>                
             </> : (turnState.prompt === "normal") ? <>
                 <p style={{color: "white", textAlign: "center"}}><strong>주사위 굴리기</strong></p>
                 <button onClick={(e) => {
