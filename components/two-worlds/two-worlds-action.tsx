@@ -41,6 +41,7 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
 
     const [alreadyClicked, setAlreadyClicked] = useState<boolean>(false)
 
+
     useEffect(() => {
         const nowInTurn = gameState.nowInTurn
         if (roomState.playerEmails[nowInTurn] === playerEmail) {
@@ -100,7 +101,8 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                             setAlreadyClicked(true)
                         } else if(purchaseAmount === "3") {
                             if (!alreadyClicked) { socket.emit("purchase", {roomId: roomId, amount: "3"}) }
-                            setAlreadyClicked(true)                        }
+                            setAlreadyClicked(true)
+                        }
                         
                     }}>산다</button>
                     <button onClick={(e) => {
