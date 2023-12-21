@@ -156,7 +156,7 @@ export const twoWorldsSlice = createSlice({
         state = {
             roomState,
             gameState: _updateGameState(action.payload),
-            turnstate
+            turnState
         }
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
