@@ -177,7 +177,7 @@ export const twoWorldsSlice = createSlice({
             gameState: _updateGameState(action.payload)
         }
         state = copied
-        console.log(state)
+        return state
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
         state.turnState.chanceCardDisplay = action.payload
