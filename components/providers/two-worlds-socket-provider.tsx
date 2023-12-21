@@ -194,24 +194,6 @@ export const TwoWorldsProvider = ({
       console.log(`${playerEmail} Failed to join the room: ${msg}`);
     });
 
-    socket.on("joinSucceed", () => {
-      console.log('Succeeded to join the room')
-    })
-
-    socket.on("connect", () => {
-      console.log(`${playerEmail} Connected to Socket.io server`);
-      socket.emit("joinRoom", { roomId: params.roomId });
-    });
-
-
-    socket.on("disconnect", () => {
-      console.log("Disconnected from Socket.io server");
-    });
-
-    socket.on("notifyRoomStatus", (playerEmails: string[], isEndedStringified: string) => {
-      const isEnded = JSON.parse(isEndedStringified) as boolean
-      dispatch(notifyRoomStatus({playerEmails,isEnded}))
-    })
     socket.on("refreshGameState", (playerEmails: string[], isEndedStringified: string, playerStateStrings: string[], cellIds: number[], rawProperties: string, nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, doublesCount: number, diceCache: number, chanceId: string, prompt: string, quirkOfFateDiceCache: number) => {
       const isEnded = JSON.parse(isEndedStringified) as boolean
       console.log(playerStateStrings.length)
@@ -279,6 +261,26 @@ export const TwoWorldsProvider = ({
         }
       ))
     })
+
+    socket.on("joinSucceed", () => {
+      console.log('Succeeded to join the room')
+    })
+
+    socket.on("connect", () => {
+      console.log(`${playerEmail} Connected to Socket.io server`);
+      socket.emit("joinRoom", { roomId: params.roomId });
+    });
+
+
+    socket.on("disconnect", () => {
+      console.log("Disconnected from Socket.io server");
+    });
+
+    socket.on("notifyRoomStatus", (playerEmails: string[], isEndedStringified: string) => {
+      const isEnded = JSON.parse(isEndedStringified) as boolean
+      dispatch(notifyRoomStatus({playerEmails,isEnded}))
+    })
+    
 
     
     socket.on("updateGameState", (playerStateStrings: string[], cellIds: number[], rawProperties: string, nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, qofDiceCache: number) => {
