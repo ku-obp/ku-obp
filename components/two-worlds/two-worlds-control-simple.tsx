@@ -38,13 +38,13 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
       <div style={{backgroundColor: "black", width: 300, height: 600, justifyContent: "center", alignItems: "center", display:"flow-root"}}>
          <p style={{color: PLAYER_COLORS[allState.gameState.nowInTurn]}}>현재 턴 : {allState.roomState.playerEmails[allState.gameState.nowInTurn]}</p>
          <DicesDisplay diceCache={allState.turnState.diceCache} scale={0.5} />
-         <div style={{margin: 20}}>
+         <div>
             <p style={{color:"white", textAlign: "center"}}><strong>변화 카드</strong></p>
-            <ChanceCardDisplay chanceId={allState.turnState.chanceCardDisplay} width={260}/>
+            <ChanceCardDisplay chanceId={allState.turnState.chanceCardDisplay} scale={0.75}/>
          </div>
          <div>
             <p style={{color:"white", textAlign: "center"}}><strong>플레이어 현황</strong></p>
-            {copy(allState.gameState.playerStates).map((state) => 
+            {allState.gameState.playerStates.map((state) => 
                <>
                   <p style={{color: PLAYER_COLORS[state.icon]}}>{allState.roomState.playerEmails[state.icon]}</p>
                   <p style={{color: PLAYER_COLORS[state.icon]}}>현금 : {state.cash}</p>

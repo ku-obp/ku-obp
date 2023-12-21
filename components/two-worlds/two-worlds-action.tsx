@@ -97,6 +97,7 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                         }
                     }} defaultValue={"0"} />
                     <button onClick={(e) => {
+                        console.log(purchaseAmount)
                         if(purchaseAmount !== 0) {
                             socket.emit("purchase", {roomId: roomId, amount: purchaseAmount})
                         }

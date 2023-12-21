@@ -30,9 +30,22 @@ export type PropertyType = {
   count: number
 }
 
+
+export type PropDict = {
+  [cellId: number]: PropertyType
+}
+
+export function convertProperties(raw: Array<[number,PropertyType]>): PropDict {
+  let output: PropDict = {}
+  for(const [cellId, prop] of raw) {
+    output[cellId] = prop
+  }
+  return output
+}
+
 export type GameStateType = {
   playerStates: PlayerType[],
-  properties: Map<number, PropertyType>,
+  properties: PropDict,
   nowInTurn: number,
   govIncome: number,
   charityIncome: number,
@@ -79,7 +92,7 @@ export const initialState: AllStateType = {
   },
   gameState: {
     playerStates: [],
-    properties: new Map<number, PropertyType>(),
+    properties: {},
     nowInTurn: 0,
    govIncome: 0,
     charityIncome: 0,
@@ -92,57 +105,60 @@ export const initialState: AllStateType = {
 
 
 export type UpdateGameStatePayload = {
-    playerStates: Array<PlayerType>, properties: Map<number, PropertyType>,
-    nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, qofDiceCache: number
+    playerStates: Array<PlayerType>, properties: PropDict,
+    nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number,
+    ts: TurnState
 }
 
 export type RefreshGameStatePayload = {
     playerEmails: string[],
     isEnded: boolean,
-    gs: UpdateGameStatePayload,
-    ts: TurnState
+    gs: UpdateGameStatePayload
 }
 
 function _refreshGameState(payload: RefreshGameStatePayload): AllStateType {
     return {
         roomState: {
-            playerEmails: copy(payload.playerEmails),
-            isEnded: copy(payload.isEnded)
+            playerEmails: payload.playerEmails,
+            isEnded: payload.isEnded
         },
         gameState: {
-            playerStates: copy(payload.gs.playerStates),
-            properties: copy(payload.gs.properties),
-            nowInTurn: copy(payload.gs.nowInTurn),
-            govIncome: copy(payload.gs.govIncome),
-            charityIncome: copy(payload.gs.charityIncome),
+            playerStates: payload.gs.playerStates,
+            properties: payload.gs.properties,
+            nowInTurn: payload.gs.nowInTurn,
+            govIncome: payload.gs.govIncome,
+            charityIncome: payload.gs.charityIncome,
             sidecars: {
-                catastrophe: copy(payload.gs.remainingCatastropheTurns),
-                pandemic: copy(payload.gs.remainingPandemicTurns)
+                catastrophe: payload.gs.remainingCatastropheTurns,
+                pandemic: payload.gs.remainingPandemicTurns
             }
         },
         turnState: {
-            doublesCount: copy(payload.ts.doublesCount),
-            diceCache: copy(payload.ts.diceCache),
-            quirkOfFateDiceCache: copy(payload.ts.quirkOfFateDiceCache),
-            prompt: copy(payload.ts.prompt),
-            chanceCardDisplay: copy(payload.ts.chanceCardDisplay)
+            doublesCount: payload.gs.ts.doublesCount,
+            diceCache: payload.gs.ts.diceCache,
+            quirkOfFateDiceCache: payload.gs.ts.quirkOfFateDiceCache,
+            prompt: payload.gs.ts.prompt,
+            chanceCardDisplay: payload.gs.ts.chanceCardDisplay
         }
     } as AllStateType
 }
 
 function _updateGameState(payload: UpdateGameStatePayload): GameStateType {
     return {
-        playerStates: copy(payload.playerStates),
-        properties: copy(payload.properties),
-        nowInTurn: copy(payload.nowInTurn),
-        govIncome: copy(payload.govIncome),
-        charityIncome: copy(payload.charityIncome),
+        playerStates: payload.playerStates,
+        properties: payload.properties,
+        nowInTurn: payload.nowInTurn,
+        govIncome: payload.govIncome,
+        charityIncome: payload.charityIncome,
         sidecars: {
-            catastrophe: copy(payload.remainingCatastropheTurns),
-            pandemic: copy(payload.remainingPandemicTurns)
+            catastrophe: payload.remainingCatastropheTurns,
+            pandemic: payload.remainingPandemicTurns
         }
     } as GameStateType
+}
 
+function _updateTurnState(payload: UpdateGameStatePayload) {
+    return payload.ts
 }
 
 export const twoWorldsSlice = createSlice({
@@ -152,22 +168,19 @@ export const twoWorldsSlice = createSlice({
     refreshGameState: (state, action: PayloadAction<RefreshGameStatePayload>) => {
         const payload = action.payload
         state = _refreshGameState(payload)
-        console.log(state)
+        return state
     },
     updateGameState: (state, action: PayloadAction<UpdateGameStatePayload>) => {
         const copied: AllStateType = {
-            ...copy(state),
-            turnState: {
-                ...copy(state.turnState),
-                quirkOfFateDiceCache: action.payload.qofDiceCache
-            },
+            ...state,
+            turnState: _updateTurnState(action.payload),
             gameState: _updateGameState(action.payload)
         }
         state = copied
         console.log(state)
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
-        state.turnState.chanceCardDisplay = copy(action.payload)
+        state.turnState.chanceCardDisplay = action.payload
     },
     showQuirkOfFateStatus: (state, action: PayloadAction<{dice1: number, dice2: number}>) => {
       const {dice1, dice2} = action.payload
@@ -181,33 +194,33 @@ export const twoWorldsSlice = createSlice({
         state.turnState.quirkOfFateDiceCache = 0
     },
     publishChanceCard: (state, action: PayloadAction<string>) => {
-        state.turnState.chanceCardDisplay = copy(action.payload)
+        state.turnState.chanceCardDisplay = action.payload
     },
     notifyRoomStatus: (state, action: PayloadAction<RoomState>) => {
         for (const n of range(0,action.payload.playerEmails.length)) {
             if(state.roomState.playerEmails.length <= n) {
-                state.roomState.playerEmails.push(copy(action.payload.playerEmails[n]))
+                state.roomState.playerEmails.push(action.payload.playerEmails[n])
             } else {
-                state.roomState.playerEmails[n] = copy(action.payload.playerEmails[n])
+                state.roomState.playerEmails[n] = action.payload.playerEmails[n]
             }
         }
-        state.roomState.isEnded = copy(action.payload.isEnded)
+        state.roomState.isEnded = action.payload.isEnded
     },
     showDices: (state, action: PayloadAction<number>) => {
         if((action.payload < 1) || (action.payload > 36)) {
             state.turnState.diceCache = 0
         } else {
-            state.turnState.diceCache = copy(action.payload)
+            state.turnState.diceCache = action.payload
         }
     },
     flushDices: (state) => {
         state.turnState.diceCache = 0
     },
     updatePrompt: (state, action: PayloadAction<string>) => {
-        state.turnState.prompt = copy(action.payload)
+        state.turnState.prompt = action.payload
     },
     updateDoublesCount: (state, action: PayloadAction<number>) => {
-        state.turnState.doublesCount = copy(action.payload)
+        state.turnState.doublesCount = action.payload
     }
   }
 });

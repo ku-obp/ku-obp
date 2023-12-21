@@ -12,7 +12,7 @@ export const SimpleDescription = ({content}: {content: string[]}) => {
     <text
        xmlSpace="preserve"
        transform="matrix(0.35277777,0,0,0.35277777,62.378289,96.201763)"
-       style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "13px", lineHeight: "0px",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
+       style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "13pt", lineHeight: "0pt",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
        x="46.761703"
        y="0"><tspan
            style={{fontFamily:'KoPubBatang Medium'}}
@@ -22,7 +22,7 @@ export const SimpleDescription = ({content}: {content: string[]}) => {
        <text
        xmlSpace="preserve"
        transform="matrix(0.35277777,0,0,0.35277777,62.378289,92.074273)"
-       style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "3px",lineHeight: "0px",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
+       style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "10pt",lineHeight: "0pt",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
        x="46.761703"
        y="0"><tspan
            style={{fontFamily:'KoPubBatang Medium'}}
@@ -30,7 +30,7 @@ export const SimpleDescription = ({content}: {content: string[]}) => {
         <text
        xmlSpace="preserve"
        transform="matrix(0.35277777,0,0,0.35277777,62.378289,100.32925)"
-       style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "3px",lineHeight: "0px",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
+       style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "10pt",lineHeight: "0pt",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
        x="46.761703"
        y="0"><tspan
            style={{fontFamily:'KoPubBatang Medium'}}
@@ -40,7 +40,7 @@ export const SimpleDescription = ({content}: {content: string[]}) => {
     <text
        xmlSpace="preserve"
        transform="matrix(0.35277777,0,0,0.35277777,62.378289,89.781213)"
-       style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "3px",lineHeight: "0px",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
+       style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "10pt",lineHeight: "0pt",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
        x="46.761703"
        y="0"><tspan
            style={{fontFamily:'KoPubBatang Medium'}}
@@ -48,7 +48,7 @@ export const SimpleDescription = ({content}: {content: string[]}) => {
     <text
        xmlSpace="preserve"
        transform="matrix(0.35277777,0,0,0.35277777,62.378289,96.201763)"
-       style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "3px",lineHeight: "0px",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
+       style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "10pt",lineHeight: "0pt",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
        x="46.761703"
        y="0"><tspan
            style={{fontFamily:'KoPubBatang Medium'}}
@@ -56,7 +56,7 @@ export const SimpleDescription = ({content}: {content: string[]}) => {
     <text
        xmlSpace="preserve"
        transform="matrix(0.35277777,0,0,0.35277777,62.378289,102.622313)"
-       style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "3px",lineHeight: "0px",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
+       style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "10pt",lineHeight: "0pt",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
        x="46.761703"
        y="0"><tspan
            style={{fontFamily:'KoPubBatang Medium'}}
@@ -71,7 +71,7 @@ export const Details = ({content}: {content: string[]}) => {
       <text
           xmlSpace="preserve"
           transform="matrix(0.35277777,0,0,0.35277777,62.378289,113.49126)"
-          style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "0px",lineHeight: "0px",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
+          style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "10pt",lineHeight: "0pt",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
           id="text11300"
           x="46.761703"
           y="0"><tspan
@@ -80,7 +80,7 @@ export const Details = ({content}: {content: string[]}) => {
        <text
           xmlSpace="preserve"
           transform="matrix(0.35277777,0,0,0.35277777,62.378289,118.07737)"
-          style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "0px",lineHeight: "0px",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
+          style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "10pt",lineHeight: "0pt",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
           id="text11278"
           x="46.761703"
           y="0"><tspan
@@ -91,7 +91,7 @@ export const Details = ({content}: {content: string[]}) => {
       <text
           xmlSpace="preserve"
           transform="matrix(0.35277777,0,0,0.35277777,62.378289,118.07737)"
-          style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "0px",lineHeight: "0px",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
+          style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "10pt",lineHeight: "0pt",fontFamily:'KoPubBatang_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:146.822, display: "inline", fill: "#ffffff", fillOpacity: 0.899994, fillRule: "nonzero", stroke: "none"}}
           id="text11278"
           x="46.761703"
           y="0"><tspan
@@ -103,7 +103,7 @@ export const Details = ({content}: {content: string[]}) => {
 
 import PREDEFINED_CHANCE_CARDS, { ChanceCardMetadata, PREDEFINED_CHANCE_IDS } from "@/lib/two-worlds.parts/chance-cards"
 
-export const ChanceCardDisplay = ({chanceId, width}: {chanceId: string, width: number}) => {
+export const ChanceCardDisplay = ({chanceId, scale}: {chanceId: string, scale: number}) => {
 
    const [metadata, setMetadata] = React.useState<ChanceCardMetadata | null>(null)
    
@@ -118,9 +118,10 @@ export const ChanceCardDisplay = ({chanceId, width}: {chanceId: string, width: n
 
 
     
-    return (
-        <svg
-        width={width}
+    return (<div style={{scale: scale}}>
+        <svg     
+         width="94.000107mm"
+         height="63.000107mm"
         preserveAspectRatio="xMidYMid meet"
    viewBox="0 0 94.000107 63.000107"
    version="1.1"
@@ -152,14 +153,10 @@ export const ChanceCardDisplay = ({chanceId, width}: {chanceId: string, width: n
    
       <text
        xmlSpace="preserve"
-       style={{fontVariant: "normal", fontWeight: "bold", fontStretch: "normal", fontSize: "5.64444px",fontFamily:'KoPubDotum_Pro Bold', fill: "#c23844", fillOpacity: 1, fillRule: "nonzero", stroke: "none", strokeWidth: 0.352778}}
+       style={{fontVariant: "normal", fontWeight: "bold", fontStretch: "normal", fontSize: "5.64444pt",fontFamily:'KoPubDotum_Pro Bold', fill: "#c23844", fillOpacity: 1, fillRule: "nonzero", stroke: "none", strokeWidth: 0.352778}}
        id="text11268"
-       x="66.298531"
-       y="76.932053"><tspan
-         x="66.298531 71.220482 76.142441 77.779327 82.701286 87.623238"
-         y="76.932053"
-         id="tspan11266"
-         style={{strokeWidth: 0.352778}}>{metadata.title}</tspan></text>
+       x="63"
+       y="76.932053">{metadata.title}</text>
    <SimpleDescription content={metadata.simple.split("\n")} />
    <Details content={metadata.detail.split("\n")} />
    {(metadata.note !== null) ? <>
@@ -171,7 +168,7 @@ export const ChanceCardDisplay = ({chanceId, width}: {chanceId: string, width: n
          id="path11280" />
       <text
          xmlSpace="preserve"
-         style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "2.11667px",fontFamily:'KoPubDotum_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:111.956, display: "inline", fill: "#231f20", fillOpacity: 1, fillRule: "nonzero", stroke: "none", strokeWidth: 0.352778}}
+         style={{fontVariant: "normal", fontWeight: "normal", fontStretch: "normal", fontSize: "2.11667pt",fontFamily:'KoPubDotum_Pro Medium', textAlign: "center", textAnchor: "middle", whiteSpace: "pre", inlineSize:111.956, display: "inline", fill: "#231f20", fillOpacity: 1, fillRule: "nonzero", stroke: "none", strokeWidth: 0.352778}}
          id="text11284"
          x="130.46347"
          y="123.86874"
@@ -188,5 +185,6 @@ export const ChanceCardDisplay = ({chanceId, width}: {chanceId: string, width: n
     
   </g>
 </svg>
+</div>
     )
 }

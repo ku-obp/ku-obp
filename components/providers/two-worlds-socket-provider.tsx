@@ -7,7 +7,7 @@ import { useDispatch, connect } from "react-redux";
 import io from "socket.io-client";
 
 import { AppDispatch, useAppSelector } from "@/redux/store";
-import { PaymentTransactionJSON, PlayerIconType, PropertyType, GameStateType, updateChanceCardDisplay, showQuirkOfFateStatus, refreshGameState, eraseQuirkOfFateStatus, AllStateType, PlayerType, publishChanceCard, notifyRoomStatus, showDices, flushDices, updatePrompt, updateDoublesCount, updateGameState, TicketType } from "@/redux/features/two-worlds-slice";
+import { PaymentTransactionJSON, PlayerIconType, PropertyType, GameStateType, updateChanceCardDisplay, showQuirkOfFateStatus, refreshGameState, PropDict, convertProperties,eraseQuirkOfFateStatus, AllStateType, PlayerType, publishChanceCard, notifyRoomStatus, showDices, flushDices, updatePrompt, updateDoublesCount, updateGameState, TicketType } from "@/redux/features/two-worlds-slice";
 import {openModal} from "@/redux/features/modal-slice"
 
 import copy from 'fast-copy'
@@ -148,7 +148,6 @@ function parseProperty(raw: string): PropertyType {
 }
 
 
-
 import { getSingleString } from "@/lib/utils";
 
 export const TwoWorldsProvider = ({
@@ -220,7 +219,7 @@ export const TwoWorldsProvider = ({
           displayLocation: displayLocation,
           cash: cash,
           cycles: cycles,
-          university: copy(university),
+          university: university,
           tickets: {
             feeExemption: ticketFeeExemption,
             taxExemption: ticketTaxExemption,
@@ -244,19 +243,18 @@ export const TwoWorldsProvider = ({
           playerEmails: playerEmails,
           isEnded: isEnded,
           gs: {
-            playerStates: copy(playerStates), properties: new Map<number,PropertyType>(pairs), nowInTurn: nowInTurn,
-            govIncome: copy(govIncome),
-            charityIncome: copy(charityIncome),
-            remainingCatastropheTurns: copy(remainingCatastropheTurns),
-            remainingPandemicTurns: copy(remainingPandemicTurns),
-            qofDiceCache: copy(quirkOfFateDiceCache)
-          },
-          ts: {
-            doublesCount: copy(doublesCount),
-            diceCache: copy(diceCache),
-            quirkOfFateDiceCache: copy(quirkOfFateDiceCache),
-            prompt: copy(prompt),
-            chanceCardDisplay: copy(chanceId)
+            playerStates: playerStates, properties: convertProperties(pairs), nowInTurn: nowInTurn,
+            govIncome: govIncome,
+            charityIncome: charityIncome,
+            remainingCatastropheTurns: remainingCatastropheTurns,
+            remainingPandemicTurns: remainingPandemicTurns,
+            ts: {
+              doublesCount: doublesCount,
+              diceCache: diceCache,
+              quirkOfFateDiceCache: quirkOfFateDiceCache,
+              prompt: prompt,
+              chanceCardDisplay: chanceId
+            }
           }
         }
       ))
@@ -281,7 +279,7 @@ export const TwoWorldsProvider = ({
       dispatch(notifyRoomStatus({playerEmails,isEnded}))
     })
     
-    socket.on("updateGameState", (playerStateStrings: string[], cellIds: number[], rawProperties: string, nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, qofDiceCache: number) => {
+    socket.on("updateGameState", (playerStateStrings: string[], cellIds: number[], rawProperties: string, nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, doublesCount: number, diceCache: number, chanceId: string, prompt: string, quirkOfFateDiceCache: number) => {
 
       console.log(playerStateStrings.length)
       const playerStates: PlayerType[] = playerStateStrings.map((raw) => {
@@ -307,7 +305,7 @@ export const TwoWorldsProvider = ({
           displayLocation: displayLocation,
           cash: cash,
           cycles: cycles,
-          university: copy(university),
+          university: university,
           tickets: {
             feeExemption: ticketFeeExemption,
             taxExemption: ticketTaxExemption,
@@ -324,43 +322,57 @@ export const TwoWorldsProvider = ({
       console.log(propertiesJSON)
 
       const pairs = cellIds.map((cellId) => [cellId, parseProperty(propertiesJSON[`cell${cellId}`] as string)] as [number,PropertyType])
-      const properties = new Map<number,PropertyType>(pairs)
+      const properties = convertProperties(pairs)
 
       dispatch(updateGameState({playerStates, properties, nowInTurn,
         govIncome: govIncome,
         charityIncome: charityIncome,
         remainingCatastropheTurns: remainingCatastropheTurns,
         remainingPandemicTurns: remainingPandemicTurns,
-        qofDiceCache: qofDiceCache
+        ts: {
+          doublesCount: doublesCount,
+          diceCache: diceCache,
+          quirkOfFateDiceCache: quirkOfFateDiceCache,
+          prompt: prompt,
+          chanceCardDisplay: chanceId
+        }
 
       }))
+
+      console.log("refresh")
     })
 
     
 
     socket.on("showQuirkOfFateStatus", (dice1: number, dice2: number) => {
       dispatch(showQuirkOfFateStatus({dice1, dice2}))
+      console.log("showQuirkofFateStatus")
     })
 
     socket.on("updateChanceCardDisplay", (chanceId: string) => {
       dispatch(publishChanceCard(chanceId))
+      console.log("updateChance")
     })
 
     socket.on("updateDoublesCount", (doublesCount: number) => {
       dispatch(updateDoublesCount(doublesCount))
+      console.log("updateDC")
     })
 
     socket.on("showDices", (diceCache: number) => {
       dispatch(showDices(diceCache))
+      console.log("showDices")
     })
 
     socket.on("flushDices", () => {
       dispatch(flushDices())
+      console.log("flushDices")
     })
 
 
     socket.on("updatePrompt", (prompt: string) => {
       dispatch(updatePrompt(prompt))
+      console.log("updatePrompt")
     })
 
 
@@ -394,9 +406,6 @@ export const TwoWorldsProvider = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-
-  useEffect(() => {}, [])
   
 
   return (
