@@ -124,7 +124,7 @@ function _refreshGameState(payload: RefreshGameStatePayload): AllStateType {
             diceCache: copy(payload.ts.diceCache),
             quirkOfFateDiceCache: copy(payload.ts.quirkOfFateDiceCache),
             prompt: copy(payload.ts.prompt),
-            chanceCardDisplay: coopy(payload.ts.chanceCardDisplay)
+            chanceCardDisplay: copy(payload.ts.chanceCardDisplay)
         }
     }
 }
