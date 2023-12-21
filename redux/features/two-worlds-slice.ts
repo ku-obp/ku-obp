@@ -92,7 +92,7 @@ const initialState: AllStateType = {
 
 export type UpdateGameStatePayload = {
     playerStates: Array<PlayerType>, properties: Map<number, PropertyType>,
-    nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number
+    nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, qofDiceCache: number
 }
 
 export type RefreshGameStatePayload = {
@@ -152,10 +152,11 @@ export const twoWorldsSlice = createSlice({
     },
     updateGameState: (state, action: PayloadAction<UpdateGameStatePayload>) => {
         const {roomState, turnState} = copy(state)
+        turnState.quirkOfFateDiceCache = action.payload.qofDiceCache
         state = {
             roomState,
             gameState: _updateGameState(action.payload),
-            turnState
+            turnstate
         }
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {

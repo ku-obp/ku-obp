@@ -208,15 +208,12 @@ export const TwoWorldsProvider = ({
       console.log("Disconnected from Socket.io server");
     });
 
-    socket.on("refresh", (count: number) => {
-      
-    })
 
     socket.on("notifyRoomStatus", (playerEmails: string[], isEndedStringified: string) => {
       const isEnded = JSON.parse(isEndedStringified) as boolean
       dispatch(notifyRoomStatus({playerEmails,isEnded}))
     })
-    socket.on("refreshGameState", (playerEmails: string[], isEndedStringified: string, playerStateStrings: string[], cellIds: number[], rawProperties: string, nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, doublesCount: number, diceCache: number, chanceId: string, prompt: string) => {
+    socket.on("refreshGameState", (playerEmails: string[], isEndedStringified: string, playerStateStrings: string[], cellIds: number[], rawProperties: string, nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, doublesCount: number, diceCache: number, chanceId: string, prompt: string, quirkOfFateDiceCache: number) => {
       const isEnded = JSON.parse(isEndedStringified) as boolean
       console.log(playerStateStrings.length)
       const playerStates: PlayerType[] = playerStateStrings.map((raw) => {
@@ -270,7 +267,8 @@ export const TwoWorldsProvider = ({
             govIncome: govIncome,
             charityIncome: charityIncome,
             remainingCatastropheTurns: remainingCatastropheTurns,
-            remainingPandemicTurns: remainingPandemicTurns
+            remainingPandemicTurns: remainingPandemicTurns,
+            qofDiceCache: quirkOfFateDiceCache
           },
           ts: {
             doublesCount: doublesCount,
@@ -284,7 +282,7 @@ export const TwoWorldsProvider = ({
     })
 
     
-    socket.on("updateGameState", (playerStateStrings: string[], cellIds: number[], rawProperties: string, nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number) => {
+    socket.on("updateGameState", (playerStateStrings: string[], cellIds: number[], rawProperties: string, nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, qofDiceCache: number) => {
       console.log(playerStateStrings.length)
       const playerStates: PlayerType[] = playerStateStrings.map((raw) => {
         const parsed = JSON.parse(raw)
@@ -332,7 +330,9 @@ export const TwoWorldsProvider = ({
         govIncome: govIncome,
         charityIncome: charityIncome,
         remainingCatastropheTurns: remainingCatastropheTurns,
-        remainingPandemicTurns: remainingPandemicTurns}))
+        remainingPandemicTurns: remainingPandemicTurns,
+        qofDiceCache: qofDiceCache
+      }))
     })
 
     socket.on("showQuirkOfFateStatus", (dice1: number, dice2: number) => {
