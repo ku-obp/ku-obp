@@ -208,7 +208,6 @@ export const TwoWorldsProvider = ({
       console.log("Disconnected from Socket.io server");
     });
 
-
     socket.on("notifyRoomStatus", (playerEmails: string[], isEndedStringified: string) => {
       const isEnded = JSON.parse(isEndedStringified) as boolean
       dispatch(notifyRoomStatus({playerEmails,isEnded}))
@@ -251,8 +250,8 @@ export const TwoWorldsProvider = ({
           remainingJailTurns: remainingJailTurns as number
         } as PlayerType
       })
-
       const propertiesJSON = JSON.parse(rawProperties)
+
       console.log(propertiesJSON)
 
       const pairs = cellIds.map((cellId) => [cellId, parseProperty(propertiesJSON[`cell${cellId}`] as string)] as [number,PropertyType])
@@ -332,8 +331,11 @@ export const TwoWorldsProvider = ({
         remainingCatastropheTurns: remainingCatastropheTurns,
         remainingPandemicTurns: remainingPandemicTurns,
         qofDiceCache: qofDiceCache
+
       }))
     })
+
+    
 
     socket.on("showQuirkOfFateStatus", (dice1: number, dice2: number) => {
       dispatch(showQuirkOfFateStatus({dice1, dice2}))
