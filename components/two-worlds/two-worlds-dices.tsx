@@ -21,14 +21,19 @@ function validateDice(dv: number): DiceValueType {
 }
 
 function getDicePair(diceCache: number): {diceLeft: ValidDiceValueType, diceRight: ValidDiceValueType} | {diceLeft: 0, diceRight: 0} {
-    const converted = divmod(diceCache - 1, 6)
-    const diceLeft = validateDice(Math.floor(converted.quotient + 1))
-    const diceRight = validateDice(Math.floor(converted.remainder + 1))
-    if ((diceLeft !== 0) && (diceRight !== 0)) {
-        return { diceLeft, diceRight }
-    } else {
-        return { diceLeft: 0, diceRight: 0 }
-    }
+	if (diceCache > 0 && diceCache <= 36) {
+		const converted = divmod(diceCache - 1, 6)
+		const diceLeft = validateDice(converted.quotient + 1)
+		const diceRight = validateDice(converted.remainder + 1)
+		if ((diceLeft !== 0) && (diceRight !== 0)) {
+			return { diceLeft, diceRight }
+		} else {
+			return { diceLeft: 0, diceRight: 0 }
+		}
+	} else {
+		return { diceLeft: 0, diceRight: 0 }
+	}
+    
 }
 
 export const Dice = ({ dv }: { dv: DiceValueType }) => {
