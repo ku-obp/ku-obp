@@ -25,19 +25,19 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
 
     const [purchaseAmount, setPurchaseAmount] = useState<string>("")
 
-    const [trafficJamTarget, setTrafficJamTarget] = useState<number>(0)
+    const [trafficJamTarget, setTrafficJamTarget] = useState<string>("0")
 
-    const [tradeGive, setTradeGive] = useState<number>(0)
-    const [tradeGet, setTradeGet] = useState<number>(0)
+    const [tradeGive, setTradeGive] = useState<string>("0")
+    const [tradeGet, setTradeGet] = useState<string>("0")
 
-    const [extinctionTarget, setExtinctionTarget] = useState<number>(0)
+    const [extinctionTarget, setExtinctionTarget] = useState<string>("0")
 
-    const [quickMoveDest, setQuickMoveDest] = useState<number|null>(null)
+    const [quickMoveDest, setQuickMoveDest] = useState<string>("")
 
-    const [greenNewDealTarget, setGreenNewDealTarget] = useState<number>(0)
+    const [greenNewDealTarget, setGreenNewDealTarget] = useState<string>("0")
 
-    const [sellTarget, setSellTarget] = useState<number>(0)
-    const [sellAmount, setSellAmount] = useState<number>(0)
+    const [sellTarget, setSellTarget] = useState<string>("0")
+    const [sellAmount, setSellAmount] = useState<string>("0")
 
     useEffect(() => {
         const nowInTurn = gameState.nowInTurn
@@ -86,13 +86,12 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                     <button onClick={(e) => {
                         console.log(purchaseAmount)
                         if(purchaseAmount === "1") {
-                            socket.emit("purchase", {roomId: roomId, amount: 1})
+                            socket.emit("purchase", {roomId: roomId, amount: "1"})
                         } else if(purchaseAmount === "2") {
-                            socket.emit("purchase", {roomId: roomId, amount: 2})
+                            socket.emit("purchase", {roomId: roomId, amount: "2"})
                         } else if(purchaseAmount === "3") {
-                            socket.emit("purchase", {roomId: roomId, amount: 3})
-
-                        }
+                            socket.emit("purchase", {roomId: roomId, amount: "3"})                        }
+                        
                     }}>산다</button>
                     <button onClick={(e) => {
                         socket.emit("skip", {roomId: roomId})
@@ -119,15 +118,15 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                 <p style={{color: "white", textAlign: "center"}}><strong>교통정체</strong></p>
                 <input type="text" onChange={(e) => {
                     if(e.target.value.length === 2 && /([0-4]\d)|(5[0-4])/g.test(e.target.value)) {
-                        setTrafficJamTarget(parseInt(e.target.value))
+                        setTrafficJamTarget(parseInt(e.target.value).toString())
                     } else if (e.target.value.length === 1 && /\d/g.test(e.target.value)) {
-                        setTrafficJamTarget(parseInt(e.target.value))
+                        setTrafficJamTarget(parseInt(e.target.value).toString())
                     } else {
-                        setTrafficJamTarget(0)
+                        setTrafficJamTarget("0")
                     }
-                }} defaultValue={"00"} />
+                }} defaultValue={"0"} />
                 <button onClick={(e) => {
-                    if(trafficJamTarget !== 0) {
+                    if(trafficJamTarget !== "0") {
                         socket.emit("trafficJam", {roomId: roomId, target: trafficJamTarget})
                     }
                 }}>건물을 날린다</button>
@@ -140,40 +139,40 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                         const tget = tokens[1]
 
                         if(tgive.length === 2 && /([0-4]\d)|(5[0-4])/g.test(tgive)) {
-                            setTradeGive(parseInt(tgive))
+                            setTradeGive(parseInt(tgive).toString())
                         } else if (e.target.value.length === 1 && /\d/g.test(tgive)) {
-                            setTradeGive(parseInt(tgive))
+                            setTradeGive(parseInt(tgive).toString())
                         } else {
-                            setTradeGive(0)
+                            setTradeGive("0")
                         }
 
                         if(tget.length === 2 && /([0-4]\d)|(5[0-4])/g.test(tget)) {
-                            setTradeGet(parseInt(tget))
+                            setTradeGet(parseInt(tget).toString())
                         } else if (tget.length === 1 && /\d/g.test(tget)) {
-                            setTradeGet(parseInt(tget))
+                            setTradeGet(parseInt(tget).toString())
                         } else {
-                            setTradeGet(0)
+                            setTradeGet("0")
                         }
                     }
-                }} defaultValue={"00,00"} />
+                }} defaultValue={"0,0"} />
                 <button onClick={(e) => {
-                    if(tradeGet !== 0 && tradeGive !== 0) {
-                        socket.emit("trade", {roomId: roomId, toGive: tradeGive, toGet: tradeGet})
+                    if(tradeGet !== "0" && tradeGive !== "0") {
+                        socket.emit("trade", {roomId: roomId, toGive: `${tradeGive}`, toGet: `${tradeGet}`})
                     }
                 }}>교환한다</button>
             </> : (turnState.prompt === "extinction") ? <>
                 <p style={{color: "white", textAlign: "center"}}><strong>인구소멸</strong></p>
                 <input type="text" onChange={(e) => {
                     if(e.target.value.length === 2 && /(0\d)|(1[0-2])/g.test(e.target.value)) {
-                        setExtinctionTarget(parseInt(e.target.value))
+                        setExtinctionTarget(parseInt(e.target.value).toString())
                     } else if (e.target.value.length === 1 && /\d/g.test(e.target.value)) {
-                        setExtinctionTarget(parseInt(e.target.value))
+                        setExtinctionTarget(parseInt(e.target.value).toString())
                     } else {
-                        setExtinctionTarget(0)
+                        setExtinctionTarget("0")
                     }
                 }} defaultValue={"00"} />
                 <button onClick={(e) => {
-                    if(extinctionTarget !== 0) {
+                    if(extinctionTarget !== "0") {
                         socket.emit("extinction", {roomId: roomId, targetGroup: extinctionTarget})
                     }
                 }}>건물(들)을 날린다</button>
@@ -181,15 +180,15 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                 <p style={{color: "white", textAlign: "center"}}><strong>이동 티켓</strong></p>
                 <input type="text" onChange={(e) => {
                     if(e.target.value.length === 2 && /([0-4]\d)|(5[0-4])/g.test(e.target.value)) {
-                        setQuickMoveDest(parseInt(e.target.value))
+                        setQuickMoveDest(parseInt(e.target.value).toString())
                     } else if (e.target.value.length === 1 && /\d/g.test(e.target.value)) {
-                        setQuickMoveDest(parseInt(e.target.value))
+                        setQuickMoveDest(parseInt(e.target.value).toString())
                     } else {
-                        setQuickMoveDest(null)
+                        setQuickMoveDest("")
                     }
                 }} defaultValue={"00"} />
                 <button onClick={(e) => {
-                    if(quickMoveDest !== null) {
+                    if(quickMoveDest !== "") {
                         socket.emit("quickMove", {roomId: roomId, dest: quickMoveDest})
                     }
                 }}>이동한다</button>
@@ -197,15 +196,15 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                 <p style={{color: "white", textAlign: "center"}}><strong>그린뉴딜</strong></p>
                 <input type="text" onChange={(e) => {
                     if(e.target.value.length === 2 && /([0-4]\d)|(5[0-4])/g.test(e.target.value)) {
-                        setGreenNewDealTarget(parseInt(e.target.value))
+                        setGreenNewDealTarget(parseInt(e.target.value).toString())
                     } else if (e.target.value.length === 1 && /\d/g.test(e.target.value)) {
-                        setGreenNewDealTarget(parseInt(e.target.value))
+                        setGreenNewDealTarget(parseInt(e.target.value).toString())
                     } else {
-                        setGreenNewDealTarget(0)
+                        setGreenNewDealTarget("0")
                     }
                 }} defaultValue={"00"} />
                 <button onClick={(e) => {
-                    if(greenNewDealTarget !== 0) {
+                    if(greenNewDealTarget !== "0") {
                         socket.emit("greenNewDeal", {roomId: roomId, target: greenNewDealTarget})
                     }
                 }}>건설한다(무료)</button>
@@ -223,23 +222,23 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                         const ta = tokens[1]
 
                         if(tt.length === 2 && /([0-4]\d)|(5[0-4])/g.test(tt)) {
-                            setSellTarget(parseInt(tt))
+                            setSellTarget(parseInt(tt).toString())
                         } else if (e.target.value.length === 1 && /\d/g.test(tt)) {
-                            setSellTarget(parseInt(tt))
+                            setSellTarget(parseInt(tt).toString())
                         } else {
-                            setSellTarget(0)
+                            setSellTarget("0")
                         }
 
                         if (ta.length === 1 && /1|2|3/g.test(ta)) {
-                            setSellAmount(parseInt(ta))
+                            setSellAmount(parseInt(ta).toString())
                         } else {
-                            setSellAmount(0)
+                            setSellAmount("0")
                         }
                     }
                 }} defaultValue={"00,00"} />
                 <button onClick={(e) => {
-                    if(sellTarget !== 0 && sellAmount !== 0) {
-                        socket.emit("sellForDebt", {roomId: roomId, targetLocation: sellTarget, amount: sellAmount})
+                    if(sellTarget !== "0" && sellAmount !== "0") {
+                        socket.emit("sellForDebt", {roomId: roomId, targetLocation: `${sellTarget}`, amount: `${sellAmount}`})
                     }
                 }}>교환한다</button>
             </> : (turnState.prompt === "pickChance") ? <>
