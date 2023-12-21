@@ -39,6 +39,9 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
     const [sellTarget, setSellTarget] = useState<string>("0")
     const [sellAmount, setSellAmount] = useState<string>("0")
 
+    const [alreadyClicked, setAlreadyClicked] = useState<boolean>(false)
+
+
     useEffect(() => {
         const nowInTurn = gameState.nowInTurn
         if (roomState.playerEmails[nowInTurn] === playerEmail) {
@@ -49,12 +52,13 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
     }, [gameState, roomState, playerEmail])
 
     useEffect(() => {
-        if(turnState.prompt === "tryLotto") {
-            
-        } else {
+        if(turnState.prompt !== "tryLotto") {
             setUsingDoubleLotto(false)
             setDuringLotto(false)
         }
+
+        setAlreadyClicked(false)
+
     }, [turnState.prompt])
 
     return <div style={{margin: 20}}>
@@ -71,10 +75,14 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                     </div>
                     <button onClick={(e) => {
                         setDuringLotto(true)
-                        socket.emit("tryLotto", {roomId: roomId, usingDoubleLotto: usingDoubleLotto})
+                        if (!alreadyClicked) { socket.emit("tryLotto", {roomId: roomId, usingDoubleLotto: usingDoubleLotto}) }
+                        setAlreadyClicked(true)
                     }}>도전!</button>
                     <button onClick={(e) => {
-                        socket.emit("skip", {roomId: roomId})
+                        if(!alreadyClicked) {
+                            socket.emit("skip", {roomId: roomId})
+                        }
+                        setAlreadyClicked(true)
                     }}>건너뛴다</button>
                 </div>
             </> : (turnState.prompt === "purchase") ? <>
@@ -86,30 +94,41 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                     <button onClick={(e) => {
                         console.log(purchaseAmount)
                         if(purchaseAmount === "1") {
-                            socket.emit("purchase", {roomId: roomId, amount: "1"})
+                            if (!alreadyClicked) { socket.emit("purchase", {roomId: roomId, amount: "1"}) }
+                            setAlreadyClicked(true)
                         } else if(purchaseAmount === "2") {
-                            socket.emit("purchase", {roomId: roomId, amount: "2"})
+                            if (!alreadyClicked) { socket.emit("purchase", {roomId: roomId, amount: "2"}) }
+                            setAlreadyClicked(true)
                         } else if(purchaseAmount === "3") {
-                            socket.emit("purchase", {roomId: roomId, amount: "3"})                        }
+                            if (!alreadyClicked) { socket.emit("purchase", {roomId: roomId, amount: "3"}) }
+                            setAlreadyClicked(true)
+                        }
                         
                     }}>산다</button>
                     <button onClick={(e) => {
-                        socket.emit("skip", {roomId: roomId})
+                        if(!alreadyClicked){
+                            socket.emit("skip", {roomId: roomId})
+                        }
+                        
+                        setAlreadyClicked(true)
                     }}>건너뛴다</button>
                 </div>
             </> : (turnState.prompt === "jail") ? <>
                 <p style={{color: "white", textAlign: "center"}}><strong>감옥</strong></p>
                 <div>
                 <button onClick={(e) => {
-                        socket.emit("tryJailExitByDice", {roomId: roomId})
+                        if (!alreadyClicked) { socket.emit("tryJailExitByDice", {roomId: roomId}) }
+                        setAlreadyClicked(true)
                     }}>주사위로 시도한다</button>
                     <button onClick={(e) => {
-                        socket.emit("jailExitByCash", {roomId: roomId})
+                        if (!alreadyClicked) { socket.emit("jailExitByCash", {roomId: roomId}) }
+                        setAlreadyClicked(true)
                     }} disabled={
                         gameState.playerStates[gameState.nowInTurn].cash < 400000
                     }>40만을 지불한다</button>
                     <button onClick={(e) => {
-                        socket.emit("jailExitThanksToLawyer", {roomId: roomId})
+                        if (!alreadyClicked) { socket.emit("jailExitThanksToLawyer", {roomId: roomId}) }
+                        setAlreadyClicked(true)
                     }} disabled={
                         gameState.playerStates[gameState.nowInTurn].tickets.lawyer <= 0
                     }>인권변호사의 도움을 받는다</button>
@@ -127,7 +146,8 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                 }} defaultValue={"0"} />
                 <button onClick={(e) => {
                     if(trafficJamTarget !== "0") {
-                        socket.emit("trafficJam", {roomId: roomId, target: trafficJamTarget})
+                        if (!alreadyClicked) { socket.emit("trafficJam", {roomId: roomId, target: trafficJamTarget}) }
+                        setAlreadyClicked(true)
                     }
                 }}>건물을 날린다</button>
             </> : (turnState.prompt === "trade") ? <>
@@ -157,7 +177,8 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                 }} defaultValue={"0,0"} />
                 <button onClick={(e) => {
                     if(tradeGet !== "0" && tradeGive !== "0") {
-                        socket.emit("trade", {roomId: roomId, toGive: `${tradeGive}`, toGet: `${tradeGet}`})
+                        if (!alreadyClicked) { socket.emit("trade", {roomId: roomId, toGive: `${tradeGive}`, toGet: `${tradeGet}`}) }
+                        setAlreadyClicked(true)
                     }
                 }}>교환한다</button>
             </> : (turnState.prompt === "extinction") ? <>
@@ -173,7 +194,8 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                 }} defaultValue={"00"} />
                 <button onClick={(e) => {
                     if(extinctionTarget !== "0") {
-                        socket.emit("extinction", {roomId: roomId, targetGroup: extinctionTarget})
+                        if (!alreadyClicked) { socket.emit("extinction", {roomId: roomId, targetGroup: extinctionTarget}) }
+                        setAlreadyClicked(true)
                     }
                 }}>건물(들)을 날린다</button>
             </> : (turnState.prompt === "quickMove") ? <>
@@ -189,7 +211,8 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                 }} defaultValue={"00"} />
                 <button onClick={(e) => {
                     if(quickMoveDest !== "") {
-                        socket.emit("quickMove", {roomId: roomId, dest: quickMoveDest})
+                        if (!alreadyClicked) { socket.emit("quickMove", {roomId: roomId, dest: quickMoveDest}) }
+                        setAlreadyClicked(true)
                     }
                 }}>이동한다</button>
             </> : (turnState.prompt === "greenNewDeal") ? <>
@@ -205,13 +228,15 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                 }} defaultValue={"00"} />
                 <button onClick={(e) => {
                     if(greenNewDealTarget !== "0") {
-                        socket.emit("greenNewDeal", {roomId: roomId, target: greenNewDealTarget})
+                        if (!alreadyClicked) { socket.emit("greenNewDeal", {roomId: roomId, target: greenNewDealTarget}) }
+                        setAlreadyClicked(true)
                     }
                 }}>건설한다(무료)</button>
             </> : (turnState.prompt === "quirkOfFate") ? <>
                 <p style={{color: "white", textAlign: "center"}}><strong>왕자와 거지</strong></p>
                 <button onClick={(e) => {
-                    socket.emit("quirkOfFate", {roomId: roomId})
+                    if (!alreadyClicked) { socket.emit("quirkOfFate", {roomId: roomId}) }
+                    setAlreadyClicked(true)
                 }}>주사위를 굴린다</button>
             </> : (turnState.prompt === "sell") ? <>
                 <p style={{color: "white", textAlign: "center"}}><strong>땡처리</strong></p>
@@ -238,18 +263,21 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                 }} defaultValue={"00,00"} />
                 <button onClick={(e) => {
                     if(sellTarget !== "0" && sellAmount !== "0") {
-                        socket.emit("sellForDebt", {roomId: roomId, targetLocation: `${sellTarget}`, amount: `${sellAmount}`})
+                        if (!alreadyClicked) { socket.emit("sellForDebt", {roomId: roomId, targetLocation: `${sellTarget}`, amount: `${sellAmount}`}) }
+                        setAlreadyClicked(true)
                     }
                 }}>교환한다</button>
             </> : (turnState.prompt === "pickChance") ? <>
                 <p style={{color: "white", textAlign: "center"}}><strong>변화카드 뽑기</strong></p>
                 <button onClick={(e) => {
-                    socket.emit("pickChance", {roomId: roomId})
+                    if (!alreadyClicked) { socket.emit("pickChance", {roomId: roomId}) }
+                    setAlreadyClicked(true)
                 }}>변화 카드를 뽑는다</button>                
             </> : (turnState.prompt === "normal") ? <>
                 <p style={{color: "white", textAlign: "center"}}><strong>주사위 굴리기</strong></p>
                 <button onClick={(e) => {
-                    socket.emit("reportNormalTurnDice", {roomId: roomId})
+                    if (!alreadyClicked) { socket.emit("reportNormalTurnDice", {roomId: roomId}) }
+                    setAlreadyClicked(true)
                 }}>주사위를 굴린다</button> 
             </> : <></>
         }
