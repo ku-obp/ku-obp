@@ -11,5 +11,6 @@ export const TwoWorldsAllDisplay = ({height}: {height: number}) => {
                 <TwoWorldsControlPanel height={height} />
             </div>
         </>
+        
     )
 }
