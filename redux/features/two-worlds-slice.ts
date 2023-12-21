@@ -594,9 +594,6 @@ const parsePredefined: {
 
 
 import PredefinedCells from "./predefined_cells.json"
-import { AllStateType } from '@/redux/features/two-worlds-slice';
-import { AllStateType } from '@/redux/features/two-worlds-slice';
-import { GameStateType } from '@/redux/features/two-worlds-slice';
 import { ChanceCardDisplay } from './../../components/two-worlds/two-worlds-chance-card-display';
 
 
