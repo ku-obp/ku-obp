@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react"
 import { PLAYER_COLORS } from "@/lib/two-worlds"
 
-import {PlayerIconType, PREDEFINED_CELLS, PropertyType, PlayerType, GameStateType, AllStateType } from "@/redux/features/two-worlds-slice"
+import {PlayerIconType, PREDEFINED_CELLS, PropertyType, PlayerType, GameStateType, AllStateType, TurnState, RoomState, initialState } from "@/redux/features/two-worlds-slice"
 
 import { useDispatch } from "react-redux";
 import { AppDispatch, useAppSelector } from "@/redux/store";
@@ -20,7 +20,18 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
 
    
    const dispatch = useDispatch<AppDispatch>();
-   const {gameState, roomState, turnState}  = useAppSelector((state) => state.twoWorldsReducer);
+
+   const allState = useAppSelector((state) => state.twoWorldsReducer);
+
+   const [gameState,setGameState] = useState<GameStateType>(initialState.gameState)
+   const [roomState,setRoomState] = useState<RoomState>(initialState.roomState)
+   const [turnState, setTurnState] = useState<TurnState>(initialState.turnState)
+
+   useEffect(() => {
+      setRoomState(allState.roomState)
+      setGameState(allState.gameState)
+      setTurnState(allState.turnState)
+   }, [allState])
 
    const {
       socket, roomId, playerEmail

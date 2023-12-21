@@ -65,7 +65,7 @@ export type AllStateType = {
 
 
 
-const initialState: AllStateType = {
+export const initialState: AllStateType = {
   roomState: {
     playerEmails: [],
     isEnded: false
