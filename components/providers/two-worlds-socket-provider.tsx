@@ -214,23 +214,25 @@ export const TwoWorldsProvider = ({
           ticketFreeHospital,
           remainingJailTurns
         } = parsed
-        return {
-          icon: icon as number,
-          location: location as number,
-          displayLocation: displayLocation as number,
-          cash: cash as number,
-          cycles: cycles as number,
-          university: copy(university as string),
+        const output = {
+          icon: icon,
+          location: location,
+          displayLocation: displayLocation,
+          cash: cash,
+          cycles: cycles,
+          university: copy(university),
           tickets: {
-            feeExemption: ticketFeeExemption as number,
-            taxExemption: ticketTaxExemption as number,
-            bonus: ticketBonus as number,
-            doubleLotto: ticketDoubleLotto as number,
-            lawyer: ticketLawyer as number,
-            freeHospital: ticketFreeHospital as number
-          } as TicketType,
-          remainingJailTurns: remainingJailTurns as number
+            feeExemption: ticketFeeExemption,
+            taxExemption: ticketTaxExemption,
+            bonus: ticketBonus,
+            doubleLotto: ticketDoubleLotto,
+            lawyer: ticketLawyer,
+            freeHospital: ticketFreeHospital
+          },
+          remainingJailTurns: remainingJailTurns
         } as PlayerType
+        console.log(output)
+        return output
       })
       const propertiesJSON = JSON.parse(rawProperties)
 
@@ -238,6 +240,8 @@ export const TwoWorldsProvider = ({
 
       const pairs = cellIds.map((cellId) => [cellId, parseProperty(propertiesJSON[`cell${cellId}`] as string)] as [number,PropertyType])
 
+      console.log(pairs)
+      
       dispatch(refreshGameState(
         {
           playerEmails: playerEmails,
@@ -302,21 +306,21 @@ export const TwoWorldsProvider = ({
           remainingJailTurns
         } = parsed
         return {
-          icon: icon as number,
-          location: location as number,
-          displayLocation: displayLocation as number,
-          cash: cash as number,
-          cycles: cycles as number,
-          university: copy(university as string),
+          icon: icon,
+          location: location,
+          displayLocation: displayLocation,
+          cash: cash,
+          cycles: cycles,
+          university: copy(university),
           tickets: {
-            feeExemption: ticketFeeExemption as number,
-            taxExemption: ticketTaxExemption as number,
-            bonus: ticketBonus as number,
-            doubleLotto: ticketDoubleLotto as number,
-            lawyer: ticketLawyer as number,
-            freeHospital: ticketFreeHospital as number
-          } as TicketType,
-          remainingJailTurns: remainingJailTurns as number
+            feeExemption: ticketFeeExemption,
+            taxExemption: ticketTaxExemption,
+            bonus: ticketBonus,
+            doubleLotto: ticketDoubleLotto,
+            lawyer: ticketLawyer,
+            freeHospital: ticketFreeHospital
+          },
+          remainingJailTurns: remainingJailTurns
         } as PlayerType
       })
 
