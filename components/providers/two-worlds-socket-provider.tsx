@@ -231,16 +231,13 @@ export const TwoWorldsProvider = ({
           },
           remainingJailTurns: remainingJailTurns
         } as PlayerType
-        console.log(output)
         return output
       })
       const propertiesJSON = JSON.parse(rawProperties)
 
-      console.log(propertiesJSON)
 
       const pairs = cellIds.map((cellId) => [cellId, parseProperty(propertiesJSON[`cell${cellId}`] as string)] as [number,PropertyType])
 
-      console.log(pairs)
       
       dispatch(refreshGameState(
         {
@@ -248,18 +245,18 @@ export const TwoWorldsProvider = ({
           isEnded: isEnded,
           gs: {
             playerStates: copy(playerStates), properties: new Map<number,PropertyType>(pairs), nowInTurn: nowInTurn,
-            govIncome: govIncome,
-            charityIncome: charityIncome,
-            remainingCatastropheTurns: remainingCatastropheTurns,
-            remainingPandemicTurns: remainingPandemicTurns,
-            qofDiceCache: quirkOfFateDiceCache
+            govIncome: copy(govIncome),
+            charityIncome: copy(charityIncome),
+            remainingCatastropheTurns: copy(remainingCatastropheTurns),
+            remainingPandemicTurns: copy(remainingPandemicTurns),
+            qofDiceCache: copy(quirkOfFateDiceCache)
           },
           ts: {
-            doublesCount: doublesCount,
-            diceCache: diceCache,
-            quirkOfFateDiceCache: quirkOfFateDiceCache,
-            prompt: prompt,
-            chanceCardDisplay: chanceId
+            doublesCount: copy(doublesCount),
+            diceCache: copy(diceCache),
+            quirkOfFateDiceCache: copy(quirkOfFateDiceCache),
+            prompt: copy(prompt),
+            chanceCardDisplay: copy(chanceId)
           }
         }
       ))
