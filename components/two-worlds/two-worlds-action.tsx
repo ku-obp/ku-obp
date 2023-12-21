@@ -23,7 +23,7 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
 
     const [myState, setMyState] = useState<PlayerType | null>(null)
 
-    const [purchaseAmount, setPurchaseAmount] = useState<number>(0)
+    const [purchaseAmount, setPurchaseAmount] = useState<string>("")
 
     const [trafficJamTarget, setTrafficJamTarget] = useState<number>(0)
 
@@ -81,25 +81,17 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                 <p style={{color: "white", textAlign: "center"}}><strong>건설</strong></p>
                 <div>
                     <input type="text" onChange={(e) => {
-                        switch(e.target.value) {
-                            case "1":
-                                setPurchaseAmount(1)
-                                break;
-                            case "2":
-                                setPurchaseAmount(2)
-                                break;
-                            case "3":
-                                setPurchaseAmount(3)
-                                break;
-                            default:
-                                setPurchaseAmount(0)
-                                break;
-                        }
+                        setPurchaseAmount(e.target.value)                        
                     }} defaultValue={"0"} />
                     <button onClick={(e) => {
                         console.log(purchaseAmount)
-                        if(purchaseAmount !== 0) {
-                            socket.emit("purchase", {roomId: roomId, amount: purchaseAmount})
+                        if(purchaseAmount === "1") {
+                            socket.emit("purchase", {roomId: roomId, amount: 1})
+                        } else if(purchaseAmount === "2") {
+                            socket.emit("purchase", {roomId: roomId, amount: 2})
+                        } else if(purchaseAmount === "3") {
+                            socket.emit("purchase", {roomId: roomId, amount: 3})
+
                         }
                     }}>산다</button>
                     <button onClick={(e) => {
