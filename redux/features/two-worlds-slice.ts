@@ -90,6 +90,7 @@ const initialState: AllStateType = {
   }
 }
 
+
 export type UpdateGameStatePayload = {
     playerStates: Array<PlayerType>, properties: Map<number, PropertyType>,
     nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, qofDiceCache: number
@@ -141,12 +142,14 @@ function _updateGameState(payload: UpdateGameStatePayload): GameStateType {
             pandemic: copy(payload.remainingPandemicTurns)
         }
     }
+
 }
 
 export const twoWorldsSlice = createSlice({
   name: "two-worlds",
   initialState,
   reducers: {
+
     refreshGameState: (state, action: PayloadAction<RefreshGameStatePayload>) => {
         state = _refreshGameState(action.payload)
     },
@@ -158,6 +161,7 @@ export const twoWorldsSlice = createSlice({
             gameState: _updateGameState(action.payload),
             turnState
         }
+
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
         state.turnState.chanceCardDisplay = copy(action.payload)
@@ -206,6 +210,7 @@ export const twoWorldsSlice = createSlice({
 });
 
 export const {
+
     updateGameState, refreshGameState, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
     showDices, flushDices, updatePrompt, updateDoublesCount
 } = twoWorldsSlice.actions;
