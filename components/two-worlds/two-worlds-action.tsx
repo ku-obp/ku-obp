@@ -91,6 +91,7 @@ const TwoWorldsAction = ({roomId, socket, playerEmail}: {roomId: string, socket:
                             socket.emit("purchase", {roomId: roomId, amount: 2})
                         } else if(purchaseAmount === "3") {
                             socket.emit("purchase", {roomId: roomId, amount: 3})
+
                         }
                     }}>산다</button>
                     <button onClick={(e) => {
