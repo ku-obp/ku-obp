@@ -280,9 +280,8 @@ export const TwoWorldsProvider = ({
       dispatch(notifyRoomStatus({playerEmails,isEnded}))
     })
     
-
-    
     socket.on("updateGameState", (playerStateStrings: string[], cellIds: number[], rawProperties: string, nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, qofDiceCache: number) => {
+
       console.log(playerStateStrings.length)
       const playerStates: PlayerType[] = playerStateStrings.map((raw) => {
         const parsed = JSON.parse(raw)
@@ -319,8 +318,8 @@ export const TwoWorldsProvider = ({
           remainingJailTurns: remainingJailTurns as number
         } as PlayerType
       })
-
       const propertiesJSON = JSON.parse(rawProperties)
+
       console.log(propertiesJSON)
 
       const pairs = cellIds.map((cellId) => [cellId, parseProperty(propertiesJSON[`cell${cellId}`] as string)] as [number,PropertyType])
