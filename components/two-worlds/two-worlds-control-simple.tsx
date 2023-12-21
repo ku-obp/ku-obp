@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react"
 import { PLAYER_COLORS } from "@/lib/two-worlds"
 
+import copy from 'fast-copy'
+
 import {PlayerIconType, PREDEFINED_CELLS, PropertyType, PlayerType, GameStateType, AllStateType, TurnState, RoomState, initialState } from "@/redux/features/two-worlds-slice"
 
 import { useDispatch } from "react-redux";
@@ -23,16 +25,6 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
 
    const allState = useAppSelector((state) => state.twoWorldsReducer);
 
-   const [gameState,setGameState] = useState<GameStateType>(initialState.gameState)
-   const [roomState,setRoomState] = useState<RoomState>(initialState.roomState)
-   const [turnState, setTurnState] = useState<TurnState>(initialState.turnState)
-
-   useEffect(() => {
-      setRoomState(allState.roomState)
-      setGameState(allState.gameState)
-      setTurnState(allState.turnState)
-   }, [allState])
-
    const {
       socket, roomId, playerEmail
    } = useSocket()
@@ -44,26 +36,26 @@ export const TwoWorldsControlPanel = ({height}: {height: number}) => {
 
     return <>
       <div style={{backgroundColor: "black", width: 300, height: 600, justifyContent: "center", alignItems: "center", display:"flow-root"}}>
-         <p style={{color: PLAYER_COLORS[gameState.nowInTurn]}}>현재 턴 : {roomState.playerEmails[gameState.nowInTurn]}</p>
-         <DicesDisplay diceCache={turnState.diceCache} scale={0.75} />
+         <p style={{color: PLAYER_COLORS[allState.gameState.nowInTurn]}}>현재 턴 : {allState.roomState.playerEmails[allState.gameState.nowInTurn]}</p>
+         <DicesDisplay diceCache={allState.turnState.diceCache} scale={0.5} />
          <div style={{margin: 20}}>
             <p style={{color:"white", textAlign: "center"}}><strong>변화 카드</strong></p>
-            <ChanceCardDisplay chanceId={""} width={260}/>
+            <ChanceCardDisplay chanceId={allState.turnState.chanceCardDisplay} width={260}/>
          </div>
          <div>
             <p style={{color:"white", textAlign: "center"}}><strong>플레이어 현황</strong></p>
-            {gameState.playerStates.map((state) => 
+            {copy(allState.gameState.playerStates).map((state) => 
                <>
-                  <p style={{color: PLAYER_COLORS[state.icon]}}>{roomState.playerEmails[state.icon]}</p>
+                  <p style={{color: PLAYER_COLORS[state.icon]}}>{allState.roomState.playerEmails[state.icon]}</p>
                   <p style={{color: PLAYER_COLORS[state.icon]}}>현금 : {state.cash}</p>
                   <p style={{color: PLAYER_COLORS[state.icon]}}>바퀴수 : {state.cycles}</p>
                </>
             )}
          </div>
          <div>
-            {(roomState.playerEmails[gameState.nowInTurn] === playerEmail) && <TwoWorldsAction socket={socket} roomId={roomId} playerEmail={playerEmail} />}
+            {(allState.roomState.playerEmails[allState.gameState.nowInTurn] === playerEmail) && <TwoWorldsAction socket={socket} roomId={roomId} playerEmail={playerEmail} />}
          </div>
-         {turnState.prompt === "quirkOfFate" && <DicesDisplay diceCache={turnState.quirkOfFateDiceCache} scale={0.75} />}
+         {(allState.turnState.prompt === "quirkOfFate") ? <DicesDisplay diceCache={allState.turnState.quirkOfFateDiceCache} scale={0.5} /> : <></>}
       </div>
    </>
 }

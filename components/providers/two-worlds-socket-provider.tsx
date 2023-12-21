@@ -214,48 +214,49 @@ export const TwoWorldsProvider = ({
           ticketFreeHospital,
           remainingJailTurns
         } = parsed
-        return {
-          icon: icon as number,
-          location: location as number,
-          displayLocation: displayLocation as number,
-          cash: cash as number,
-          cycles: cycles as number,
-          university: copy(university as string),
+        const output = {
+          icon: icon,
+          location: location,
+          displayLocation: displayLocation,
+          cash: cash,
+          cycles: cycles,
+          university: copy(university),
           tickets: {
-            feeExemption: ticketFeeExemption as number,
-            taxExemption: ticketTaxExemption as number,
-            bonus: ticketBonus as number,
-            doubleLotto: ticketDoubleLotto as number,
-            lawyer: ticketLawyer as number,
-            freeHospital: ticketFreeHospital as number
-          } as TicketType,
-          remainingJailTurns: remainingJailTurns as number
+            feeExemption: ticketFeeExemption,
+            taxExemption: ticketTaxExemption,
+            bonus: ticketBonus,
+            doubleLotto: ticketDoubleLotto,
+            lawyer: ticketLawyer,
+            freeHospital: ticketFreeHospital
+          },
+          remainingJailTurns: remainingJailTurns
         } as PlayerType
+        return output
       })
       const propertiesJSON = JSON.parse(rawProperties)
 
-      console.log(propertiesJSON)
 
       const pairs = cellIds.map((cellId) => [cellId, parseProperty(propertiesJSON[`cell${cellId}`] as string)] as [number,PropertyType])
 
+      
       dispatch(refreshGameState(
         {
           playerEmails: playerEmails,
           isEnded: isEnded,
           gs: {
             playerStates: copy(playerStates), properties: new Map<number,PropertyType>(pairs), nowInTurn: nowInTurn,
-            govIncome: govIncome,
-            charityIncome: charityIncome,
-            remainingCatastropheTurns: remainingCatastropheTurns,
-            remainingPandemicTurns: remainingPandemicTurns,
-            qofDiceCache: quirkOfFateDiceCache
+            govIncome: copy(govIncome),
+            charityIncome: copy(charityIncome),
+            remainingCatastropheTurns: copy(remainingCatastropheTurns),
+            remainingPandemicTurns: copy(remainingPandemicTurns),
+            qofDiceCache: copy(quirkOfFateDiceCache)
           },
           ts: {
-            doublesCount: doublesCount,
-            diceCache: diceCache,
-            quirkOfFateDiceCache: quirkOfFateDiceCache,
-            prompt: prompt,
-            chanceCardDisplay: chanceId
+            doublesCount: copy(doublesCount),
+            diceCache: copy(diceCache),
+            quirkOfFateDiceCache: copy(quirkOfFateDiceCache),
+            prompt: copy(prompt),
+            chanceCardDisplay: copy(chanceId)
           }
         }
       ))
@@ -301,21 +302,21 @@ export const TwoWorldsProvider = ({
           remainingJailTurns
         } = parsed
         return {
-          icon: icon as number,
-          location: location as number,
-          displayLocation: displayLocation as number,
-          cash: cash as number,
-          cycles: cycles as number,
-          university: copy(university as string),
+          icon: icon,
+          location: location,
+          displayLocation: displayLocation,
+          cash: cash,
+          cycles: cycles,
+          university: copy(university),
           tickets: {
-            feeExemption: ticketFeeExemption as number,
-            taxExemption: ticketTaxExemption as number,
-            bonus: ticketBonus as number,
-            doubleLotto: ticketDoubleLotto as number,
-            lawyer: ticketLawyer as number,
-            freeHospital: ticketFreeHospital as number
-          } as TicketType,
-          remainingJailTurns: remainingJailTurns as number
+            feeExemption: ticketFeeExemption,
+            taxExemption: ticketTaxExemption,
+            bonus: ticketBonus,
+            doubleLotto: ticketDoubleLotto,
+            lawyer: ticketLawyer,
+            freeHospital: ticketFreeHospital
+          },
+          remainingJailTurns: remainingJailTurns
         } as PlayerType
       })
       const propertiesJSON = JSON.parse(rawProperties)

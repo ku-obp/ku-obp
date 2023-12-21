@@ -127,7 +127,7 @@ function _refreshGameState(payload: RefreshGameStatePayload): AllStateType {
             prompt: copy(payload.ts.prompt),
             chanceCardDisplay: copy(payload.ts.chanceCardDisplay)
         }
-    }
+    } as AllStateType
 }
 
 function _updateGameState(payload: UpdateGameStatePayload): GameStateType {
@@ -141,7 +141,7 @@ function _updateGameState(payload: UpdateGameStatePayload): GameStateType {
             catastrophe: copy(payload.remainingCatastropheTurns),
             pandemic: copy(payload.remainingPandemicTurns)
         }
-    }
+    } as GameStateType
 
 }
 
@@ -149,19 +149,22 @@ export const twoWorldsSlice = createSlice({
   name: "two-worlds",
   initialState,
   reducers: {
-
     refreshGameState: (state, action: PayloadAction<RefreshGameStatePayload>) => {
-        state = _refreshGameState(action.payload)
+        const payload = action.payload
+        state = _refreshGameState(payload)
+        console.log(state)
     },
     updateGameState: (state, action: PayloadAction<UpdateGameStatePayload>) => {
-        const {roomState, turnState} = copy(state)
-        turnState.quirkOfFateDiceCache = action.payload.qofDiceCache
-        state = {
-            roomState,
-            gameState: _updateGameState(action.payload),
-            turnState
+        const copied: AllStateType = {
+            ...copy(state),
+            turnState: {
+                ...copy(state.turnState),
+                quirkOfFateDiceCache: action.payload.qofDiceCache
+            },
+            gameState: _updateGameState(action.payload)
         }
-
+        state = copied
+        console.log(state)
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
         state.turnState.chanceCardDisplay = copy(action.payload)
