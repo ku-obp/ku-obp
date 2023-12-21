@@ -90,36 +90,78 @@ const initialState: AllStateType = {
   }
 }
 
-export type UpdateOtherStatesPayload = {
-    nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number
+
+export type UpdateGameStatePayload = {
+    playerStates: Array<PlayerType>, properties: Map<number, PropertyType>,
+    nowInTurn: number, govIncome: number, charityIncome: number, remainingCatastropheTurns: number, remainingPandemicTurns: number, qofDiceCache: number
+}
+
+export type RefreshGameStatePayload = {
+    playerEmails: string[],
+    isEnded: boolean,
+    gs: UpdateGameStatePayload,
+    ts: TurnState
+}
+
+function _refreshGameState(payload: RefreshGameStatePayload): AllStateType {
+    return {
+        roomState: {
+            playerEmails: copy(payload.playerEmails),
+            isEnded: copy(payload.isEnded)
+        },
+        gameState: {
+            playerStates: copy(payload.gs.playerStates),
+            properties: copy(payload.gs.properties),
+            nowInTurn: copy(payload.gs.nowInTurn),
+            govIncome: copy(payload.gs.govIncome),
+            charityIncome: copy(payload.gs.charityIncome),
+            sidecars: {
+                catastrophe: copy(payload.gs.remainingCatastropheTurns),
+                pandemic: copy(payload.gs.remainingPandemicTurns)
+            }
+        },
+        turnState: {
+            doublesCount: copy(payload.ts.doublesCount),
+            diceCache: copy(payload.ts.diceCache),
+            quirkOfFateDiceCache: copy(payload.ts.quirkOfFateDiceCache),
+            prompt: copy(payload.ts.prompt),
+            chanceCardDisplay: copy(payload.ts.chanceCardDisplay)
+        }
+    }
+}
+
+function _updateGameState(payload: UpdateGameStatePayload): GameStateType {
+    return {
+        playerStates: copy(payload.playerStates),
+        properties: copy(payload.properties),
+        nowInTurn: copy(payload.nowInTurn),
+        govIncome: copy(payload.govIncome),
+        charityIncome: copy(payload.charityIncome),
+        sidecars: {
+            catastrophe: copy(payload.remainingCatastropheTurns),
+            pandemic: copy(payload.remainingPandemicTurns)
+        }
+    }
+
 }
 
 export const twoWorldsSlice = createSlice({
   name: "two-worlds",
   initialState,
   reducers: {
-    updatePlayerStates: (state, action: PayloadAction<Array<PlayerType>>) => {
-        const sorted = action.payload.toSorted((a,b) => a.icon - b.icon)
-        for (const n of range(0,sorted.length)) {
-            if(state.gameState.playerStates.length <= n) {
-                state.gameState.playerStates.push(copy(sorted[n]))
-            } else {
-                state.gameState.playerStates[n] = copy(sorted[n])
-            }
+
+    refreshGameState: (state, action: PayloadAction<RefreshGameStatePayload>) => {
+        state = _refreshGameState(action.payload)
+    },
+    updateGameState: (state, action: PayloadAction<UpdateGameStatePayload>) => {
+        const {roomState, turnState} = copy(state)
+        turnState.quirkOfFateDiceCache = action.payload.qofDiceCache
+        state = {
+            roomState,
+            gameState: _updateGameState(action.payload),
+            turnState
         }
-    },
-    updateProperties: (state, action: PayloadAction<Map<number, PropertyType>>) => {
-        state.gameState.properties.clear()
-        action.payload.forEach((property, location) => {
-            state.gameState.properties = new Map<number, PropertyType>(state.gameState.properties).set(location,property)
-        })
-    },
-    updateOtherStates: (state, action: PayloadAction<UpdateOtherStatesPayload>) => {
-        state.gameState.charityIncome = copy(action.payload.charityIncome)
-        state.gameState.govIncome = copy(action.payload.govIncome)
-        state.gameState.nowInTurn = copy(action.payload.nowInTurn)
-        state.gameState.sidecars.catastrophe = copy(action.payload.remainingCatastropheTurns)
-        state.gameState.sidecars.pandemic = copy(action.payload.remainingPandemicTurns)
+
     },
     updateChanceCardDisplay: (state, action: PayloadAction<string>) => {
         state.turnState.chanceCardDisplay = copy(action.payload)
@@ -168,7 +210,8 @@ export const twoWorldsSlice = createSlice({
 });
 
 export const {
-    updatePlayerStates, updateProperties, updateOtherStates, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
+
+    updateGameState, refreshGameState, updateChanceCardDisplay, showQuirkOfFateStatus, eraseQuirkOfFateStatus, publishChanceCard, notifyRoomStatus,
     showDices, flushDices, updatePrompt, updateDoublesCount
 } = twoWorldsSlice.actions;
 
@@ -556,6 +599,7 @@ const parsePredefined: {
 
 
 import PredefinedCells from "./predefined_cells.json"
+import { ChanceCardDisplay } from './../../components/two-worlds/two-worlds-chance-card-display';
 
 
 
